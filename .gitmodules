@@ -1,0 +1,12 @@
+[submodule "MyGame/Vendor/SpdLog"]
+	path = MyGame/Vendor/SpdLog
+	url = https://github.com/gabime/spdlog
+[submodule "MyGame/Vendor/GLM"]
+	path = MyGame/Vendor/GLM
+	url = https://github.com/g-truc/glm
+[submodule "MyGame/Vendor/GLFW"]
+	path = MyGame/Vendor/GLFW
+	url = https://github.com/glfw/glfw
+[submodule "MyGame/Vendor/ImGui"]
+	path = MyGame/Vendor/ImGui
+	url = https://github.com/ocornut/imgui

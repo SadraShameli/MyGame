@@ -1,14 +1,15 @@
 #pragma once
 
+#include <cstdint>
 #include <iostream>
-#include <memory>
 #include <utility>
-#include <algorithm>
 #include <functional>
+#include <algorithm>
+#include <memory>
 
-#include <string>
-#include <string_view>
 #include <optional>
+#include <string_view>
+#include <string>
 #include <vector>
 #include <array>
 #include <unordered_map>
