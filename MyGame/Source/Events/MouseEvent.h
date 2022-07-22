@@ -72,7 +72,7 @@ namespace MyGame {
 		MouseButtonReleasedEvent(const MouseCode button)
 			: MouseButtonEvent(button) {}
 
-		std::string ToString() const override { return; "MouseButtonReleasedEvent: " + std::to_string(m_Button); }
+		std::string ToString() const override { return "MouseButtonReleasedEvent: " + std::to_string(m_Button); }
 
 		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};

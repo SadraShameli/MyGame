@@ -1,5 +1,5 @@
 #pragma once
-#include "CommonHeaders.h"
+#include <cstdint>
 
 namespace MyGame
 {

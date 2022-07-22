@@ -18,12 +18,6 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -31,51 +25,26 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)BinariesInt\$(Configuration)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)BinariesInt\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Vendor\GLM\glm;$(ProjectDir)\Vendor\GLFW\include\GLFW;$(ProjectDir)\Vendor\ImGui;$(ProjectDir)\Vendor\Vulkan\Include;$(ProjectDir)\Vendor\SpdLog\include;$(ProjectDir)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>MaxSpeed</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <MinimalRebuild>false</MinimalRebuild>
-      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
-      <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalOptions>/Yu"CommonHeaders.h" %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)BinariesInt\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -84,7 +53,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Vendor\GLM\glm;$(ProjectDir)\Vendor\GLFW\include\GLFW;$(ProjectDir)\Vendor\ImGui;$(ProjectDir)\Vendor\Vulkan\Include;$(ProjectDir)\Vendor\SpdLog\include;$(ProjectDir)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Vendor\GLAD\include;$(ProjectDir)\Vendor\GLM\;$(ProjectDir)\Vendor\GLFW\include\;$(ProjectDir)\Vendor\ImGui;$(ProjectDir)\Vendor\Vulkan\Include;$(ProjectDir)\Vendor\SpdLog\include;$(ProjectDir)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -100,25 +69,52 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalLibraryDirectories);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Vendor\GLAD\include;$(ProjectDir)\Vendor\GLM\;$(ProjectDir)\Vendor\GLFW\include\;$(ProjectDir)\Vendor\ImGui;$(ProjectDir)\Vendor\Vulkan\Include;$(ProjectDir)\Vendor\SpdLog\include;$(ProjectDir)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MYGAME_DEBUG</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\CommonHeaders.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeaderFile>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </AdditionalOptions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Source\Core\Log.cpp" />
     <ClCompile Include="Source\Core\Application.cpp" />
+    <ClCompile Include="Source\Core\Window.cpp" />
+    <ClCompile Include="Source\Core\Input.cpp" />
+    <ClCompile Include="Source\Core\LayerStack.cpp" />
+    <ClCompile Include="Source\Utilities\PlatformUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\Assert.h" />
+    <ClInclude Include="Source\Core\Base.h" />
+    <ClInclude Include="Source\Core\Input.h" />
+    <ClInclude Include="Source\Core\Layer.h" />
+    <ClInclude Include="Source\Core\LayerStack.h" />
+    <ClInclude Include="Source\Core\Timer.h" />
+    <ClInclude Include="Source\Core\Timestep.h" />
+    <ClInclude Include="Source\Core\Window.h" />
+    <ClInclude Include="Source\Debug\Instrumentor.h" />
     <ClInclude Include="Source\Events\EventCodes\KeyCodes.h" />
     <ClInclude Include="Source\Core\Log.h" />
     <ClInclude Include="Source\CommonHeaders.h" />
@@ -128,6 +124,12 @@
     <ClInclude Include="Source\Events\Event.h" />
     <ClInclude Include="Source\Events\KeyEvent.h" />
     <ClInclude Include="Source\Events\MouseEvent.h" />
+    <ClInclude Include="Source\Utilities\PlatformUtilities.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Vendor\GLFW\build\src\glfw.vcxproj">
+      <Project>{de488a62-5eb2-380c-81c0-ab68c1a0dc56}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

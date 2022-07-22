@@ -3,7 +3,7 @@
 
 namespace MyGame {
 
-	enum class EventType : uint16_t
+	enum class EventType : int
 	{
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
@@ -34,11 +34,7 @@ namespace MyGame {
 		virtual int GetCategoryFlags() const = 0;
 		virtual std::string ToString() const { return GetName(); }
 
-		bool IsInCategory(EventCategory category)
-		{
-			return GetCategoryFlags() & category;
-		}
-
+		bool IsInCategory(EventCategory category) { return GetCategoryFlags() & category; }
 		bool Handled = false;
 	};
 
@@ -63,14 +59,8 @@ namespace MyGame {
 		Event& m_Event;
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, const Event& e)
-	{
-		return os << e.ToString();
-	}
-
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 #define EVENT_CLASS_TYPE(type)         static EventType GetStaticType() { return EventType::type; }\
                                        virtual EventType GetEventType() const override { return GetStaticType(); }\
                                        virtual const char* GetName() const override { return #type; }
 }
-

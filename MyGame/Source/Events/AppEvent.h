@@ -15,8 +15,8 @@ namespace MyGame {
 
 		std::string ToString() const override { return  "WindowResizeEvent: " + std::to_string(m_Width) + ", " + std::to_string(m_Height); }
 
-		EVENT_CLASS_TYPE(WindowResize)
-			EVENT_CLASS_CATEGORY(EventCategoryApplication)
+		EVENT_CLASS_TYPE(WindowResize);
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
 	private:
 		unsigned int m_Width, m_Height;

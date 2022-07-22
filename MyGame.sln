@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyGame", "MyGame/MyGame.vcxproj", "{052136CD-2524-4131-9024-1044C6722D26}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyGame", "MyGame\MyGame.vcxproj", "{052136CD-2524-4131-9024-1044C6722D26}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B} = {DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}
+		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56} = {DE488A62-5EB2-380C-81C0-AB68C1A0DC56}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW", "MyGame\Vendor\GLFW\build\src\glfw.vcxproj", "{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLAD", "MyGame\Vendor\GLAD\build\glad.vcxproj", "{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,14 @@ Global
 		{052136CD-2524-4131-9024-1044C6722D26}.Debug|x64.Build.0 = Debug|x64
 		{052136CD-2524-4131-9024-1044C6722D26}.Release|x64.ActiveCfg = Release|x64
 		{052136CD-2524-4131-9024-1044C6722D26}.Release|x64.Build.0 = Release|x64
+		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}.Debug|x64.ActiveCfg = Debug|x64
+		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}.Debug|x64.Build.0 = Debug|x64
+		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}.Release|x64.ActiveCfg = Release|x64
+		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}.Release|x64.Build.0 = Release|x64
+		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}.Debug|x64.ActiveCfg = Debug|x64
+		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}.Debug|x64.Build.0 = Debug|x64
+		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}.Release|x64.ActiveCfg = Release|x64
+		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
