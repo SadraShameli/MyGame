@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{256C32C4-110E-5D9A-FAC8-70EEE609E4EA}</ProjectGuid>
+    <ProjectGuid>{C0FF640D-2C14-8DBE-F595-301E616989EF}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>MyGame</RootNamespace>
+    <RootNamespace>ImGui</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -41,30 +41,27 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\Binary\Debug\MyGame\</OutDir>
-    <IntDir>..\BinaryIntermediate\Debug\MyGame\</IntDir>
-    <TargetName>MyGame</TargetName>
+    <OutDir>..\Binary\Debug\ImGui\</OutDir>
+    <IntDir>..\BinaryIntermediate\Debug\ImGui\</IntDir>
+    <TargetName>ImGui</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\Binary\Release\MyGame\</OutDir>
-    <IntDir>..\BinaryIntermediate\Release\MyGame\</IntDir>
-    <TargetName>MyGame</TargetName>
+    <OutDir>..\Binary\Release\ImGui\</OutDir>
+    <IntDir>..\BinaryIntermediate\Release\ImGui\</IntDir>
+    <TargetName>ImGui</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLAD\include;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -73,11 +70,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLAD\include;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\Box2D;Vendor\GLFW;Vendor\GLAD;Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -85,7 +80,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,54 +88,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="Source\CommonHeaders.h" />
-    <ClInclude Include="Source\Core\Application.h" />
-    <ClInclude Include="Source\Core\Assert.h" />
-    <ClInclude Include="Source\Core\Base.h" />
-    <ClInclude Include="Source\Core\Input.h" />
-    <ClInclude Include="Source\Core\Layer.h" />
-    <ClInclude Include="Source\Core\LayerStack.h" />
-    <ClInclude Include="Source\Core\Log.h" />
-    <ClInclude Include="Source\Core\Timer.h" />
-    <ClInclude Include="Source\Core\Timestep.h" />
-    <ClInclude Include="Source\Core\Window.h" />
-    <ClInclude Include="Source\Debug\Instrumentor.h" />
-    <ClInclude Include="Source\Events\AppEvent.h" />
-    <ClInclude Include="Source\Events\Event.h" />
-    <ClInclude Include="Source\Events\EventCodes\KeyCodes.h" />
-    <ClInclude Include="Source\Events\EventCodes\MouseCodes.h" />
-    <ClInclude Include="Source\Events\KeyEvent.h" />
-    <ClInclude Include="Source\Events\MouseEvent.h" />
-    <ClInclude Include="Source\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="Source\Utilities\PlatformUtilities.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Source\CommonHeaders.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Application.cpp" />
-    <ClCompile Include="Source\Core\Input.cpp" />
-    <ClCompile Include="Source\Core\LayerStack.cpp" />
-    <ClCompile Include="Source\Core\Log.cpp" />
-    <ClCompile Include="Source\Core\Window.cpp" />
-    <ClCompile Include="Source\ImGui\ImGuiLayer.cpp" />
-    <ClCompile Include="Source\Utilities\PlatformUtilities.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Box2D.vcxproj">
-      <Project>{A434E80C-1049-10BE-D9CA-B31D459E0CEF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GLFW.vcxproj">
-      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GLAD.vcxproj">
-      <Project>{5D4A857C-4981-860D-F26D-6C10DE83020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="ImGui.vcxproj">
-      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

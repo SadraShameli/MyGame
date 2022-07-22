@@ -6,6 +6,7 @@
 #include <functional>
 #include <algorithm>
 #include <memory>
+#include <chrono>
 
 #include <optional>
 #include <string_view>
@@ -14,7 +15,5 @@
 #include <array>
 #include <unordered_map>
 #include <unordered_set>
-
-#include "Source/Core/Log.h"
 
 #include <Windows.h>

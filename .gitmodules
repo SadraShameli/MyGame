@@ -10,9 +10,9 @@
 [submodule "MyGame/Vendor/ImGui"]
 	path = MyGame/Vendor/ImGui
 	url = https://github.com/ocornut/imgui
-[submodule "MyGame/Vendor/GLAD/"]
-	path = MyGame/Vendor/GLAD/
-	url = https://github.com/Dav1dde/glad
 [submodule "MyGame/Vendor/ImGuizmo/"]
 	path = MyGame/Vendor/ImGuizmo/
 	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "MyGame/Vendor/Box2D"]
+	path = MyGame/Vendor/Box2D
+	url = https://github.com/erincatto/box2d

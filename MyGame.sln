@@ -1,17 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32630.192
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyGame", "MyGame\MyGame.vcxproj", "{052136CD-2524-4131-9024-1044C6722D26}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B} = {DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}
-		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56} = {DE488A62-5EB2-380C-81C0-AB68C1A0DC56}
-	EndProjectSection
+# Visual Studio Version 16
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyGame", "MyGame\MyGame.vcxproj", "{256C32C4-110E-5D9A-FAC8-70EEE609E4EA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW", "MyGame\Vendor\GLFW\build\src\glfw.vcxproj", "{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Box2D", "MyGame\Box2D.vcxproj", "{A434E80C-1049-10BE-D9CA-B31D459E0CEF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLAD", "MyGame\Vendor\GLAD\build\glad.vcxproj", "{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLAD", "MyGame\GLAD.vcxproj", "{5D4A857C-4981-860D-F26D-6C10DE83020F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW", "MyGame\GLFW.vcxproj", "{154B857C-0182-860D-AA6E-6C109684020F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "MyGame\ImGui.vcxproj", "{C0FF640D-2C14-8DBE-F595-301E616989EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,23 +17,28 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{052136CD-2524-4131-9024-1044C6722D26}.Debug|x64.ActiveCfg = Debug|x64
-		{052136CD-2524-4131-9024-1044C6722D26}.Debug|x64.Build.0 = Debug|x64
-		{052136CD-2524-4131-9024-1044C6722D26}.Release|x64.ActiveCfg = Release|x64
-		{052136CD-2524-4131-9024-1044C6722D26}.Release|x64.Build.0 = Release|x64
-		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}.Debug|x64.ActiveCfg = Debug|x64
-		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}.Debug|x64.Build.0 = Debug|x64
-		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}.Release|x64.ActiveCfg = Release|x64
-		{DE488A62-5EB2-380C-81C0-AB68C1A0DC56}.Release|x64.Build.0 = Release|x64
-		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}.Debug|x64.ActiveCfg = Debug|x64
-		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}.Debug|x64.Build.0 = Debug|x64
-		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}.Release|x64.ActiveCfg = Release|x64
-		{DB8C9E4F-8796-3AAE-814F-FD6CB4D49E3B}.Release|x64.Build.0 = Release|x64
+		{256C32C4-110E-5D9A-FAC8-70EEE609E4EA}.Debug|x64.ActiveCfg = Debug|x64
+		{256C32C4-110E-5D9A-FAC8-70EEE609E4EA}.Debug|x64.Build.0 = Debug|x64
+		{256C32C4-110E-5D9A-FAC8-70EEE609E4EA}.Release|x64.ActiveCfg = Release|x64
+		{256C32C4-110E-5D9A-FAC8-70EEE609E4EA}.Release|x64.Build.0 = Release|x64
+		{A434E80C-1049-10BE-D9CA-B31D459E0CEF}.Debug|x64.ActiveCfg = Debug|x64
+		{A434E80C-1049-10BE-D9CA-B31D459E0CEF}.Debug|x64.Build.0 = Debug|x64
+		{A434E80C-1049-10BE-D9CA-B31D459E0CEF}.Release|x64.ActiveCfg = Release|x64
+		{A434E80C-1049-10BE-D9CA-B31D459E0CEF}.Release|x64.Build.0 = Release|x64
+		{5D4A857C-4981-860D-F26D-6C10DE83020F}.Debug|x64.ActiveCfg = Debug|x64
+		{5D4A857C-4981-860D-F26D-6C10DE83020F}.Debug|x64.Build.0 = Debug|x64
+		{5D4A857C-4981-860D-F26D-6C10DE83020F}.Release|x64.ActiveCfg = Release|x64
+		{5D4A857C-4981-860D-F26D-6C10DE83020F}.Release|x64.Build.0 = Release|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Debug|x64.ActiveCfg = Debug|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Debug|x64.Build.0 = Debug|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Release|x64.ActiveCfg = Release|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Release|x64.Build.0 = Release|x64
+		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Debug|x64.ActiveCfg = Debug|x64
+		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Debug|x64.Build.0 = Debug|x64
+		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.ActiveCfg = Release|x64
+		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {7C009489-E170-49B5-9D02-5B43EC28DF1E}
 	EndGlobalSection
 EndGlobal
