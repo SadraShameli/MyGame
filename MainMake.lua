@@ -14,10 +14,11 @@ workspace "MyGame"
 	}
 
 outputdir = "%{cfg.buildcfg}"
+defaultDirectory = "MyGame"
 
 project "MyGame"
 	location "MyGame"
-	kind "StaticLib"
+	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
 	staticruntime "off"
@@ -30,8 +31,8 @@ project "MyGame"
 
 	files
 	{
-		"%{prj.name}/Source/**.h",
-		"%{prj.name}/Source/**.cpp",		
+		"" .. defaultDirectory .. "/Source/**.h",
+		"" .. defaultDirectory .. "/Source/**.cpp",		
 	}
 
 	defines
@@ -42,13 +43,13 @@ project "MyGame"
 
 	includedirs
 	{
-		"%{prj.name}/",
-		"%{prj.name}/Vendor/Box2D",
-		"%{prj.name}/Vendor/GLAD/include",
-		"%{prj.name}/Vendor/GLFW/include",
-		"%{prj.name}/Vendor/GLM",
-		"%{prj.name}/Vendor/ImGui",
-		"%{prj.name}/Vendor/SpdLog/include"
+		"" .. defaultDirectory .. "",
+		"" .. defaultDirectory .. "/Vendor/Box2D",
+		"" .. defaultDirectory .. "/Vendor/GLAD/include",
+		"" .. defaultDirectory .. "/Vendor/GLFW/include",
+		"" .. defaultDirectory .. "/Vendor/GLM",
+		"" .. defaultDirectory .. "/Vendor/ImGui",
+		"" .. defaultDirectory .. "/Vendor/SpdLog/include"
 	}
 
 	links
@@ -86,15 +87,15 @@ project "Box2D"
 
 	files
 	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/include/**.h"
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/**.h",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/**.cpp",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/include/**.h"
 	}
 
 	includedirs
 	{
-		"%{prj.name}/include",
-		"%{prj.name}/src"
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/include",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/src"
 	}
 
 	filter "system:windows"
@@ -123,13 +124,13 @@ project "GLAD"
 
     files
     {
-        "%{prj.name}/**.h",
-        "%{prj.name}/**.c"
+        "" .. defaultDirectory .. "/Vendor/%{prj.name}/**.h",
+        "" .. defaultDirectory .. "/Vendor/%{prj.name}/**.c"
     }
 
     includedirs
     {
-        "%{prj.name}/include"
+        "" .. defaultDirectory .. "/Vendor/%{prj.name}/include"
     }
     
     filter "system:windows"
@@ -151,15 +152,46 @@ project "GLFW"
 	targetdir ("%{wks.location}/Binary/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/BinaryIntermediate/" .. outputdir .. "/%{prj.name}")
 
+
 	files
-	{
-		"%{prj.name}/include/*.h",
-		"%{prj.name}/src/*.c" 
+	{	
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/include/GLFW/glfw3.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/include/GLFW/glfw3native.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/internal.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/platform.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/mappings.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/context.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/init.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/input.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/monitor.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/platform.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/vulkan.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/window.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/egl_context.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/osmesa_context.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/null_platform.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/null_joystick.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/null_init.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/null_monitor.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/null_window.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/null_joystick.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_init.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_module.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_joystick.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_monitor.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_time.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_time.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_thread.h",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_thread.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/win32_window.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/wgl_context.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/egl_context.c",
+    	"" .. defaultDirectory .. "/Vendor/%{prj.name}/src/osmesa_context.c"
 	}
 
 	includedirs
 	{
-		"%{prj.name}/include"
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/include"
 	}
 
 	filter "system:windows"
@@ -168,7 +200,8 @@ project "GLFW"
 
 		defines 
 		{ 
-			"_GLFW_WIN64",
+			"_GLFW_WIN32",
+			"_GLFW_USE_HYBRID_HPG",
 			"_CRT_SECURE_NO_WARNINGS"
 		}
 
@@ -190,8 +223,16 @@ project "ImGui"
 
 	files
 	{
-		"%{prj.name}/*.h",
-		"%{prj.name}/*.cpp" 
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imconfig.h",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui.h",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui.cpp",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_draw.cpp",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_internal.h",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_widgets.cpp",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imstb_rectpack.h",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imstb_textedit.h",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imstb_truetype.h",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_demo.cpp"
 	}
 
 	filter "system:windows"

@@ -20,9 +20,7 @@ namespace MyGame {
 		m_Window->SetEventCallback(MYGAME_BIND_EVENT_FN(Application::OnEvent));
 	}
 
-	Application::~Application()
-	{
-	}
+	Application::~Application() {}
 
 	void Application::OnEvent(Event& e)
 	{
