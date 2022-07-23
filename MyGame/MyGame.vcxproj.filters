@@ -4,8 +4,11 @@
     <Filter Include="Core">
       <UniqueIdentifier>{2EB4837C-1AEB-840D-C3D7-6A10AFED000F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Debug">
-      <UniqueIdentifier>{0C95060D-78A9-2EBE-412B-D21DADFE2AEF}</UniqueIdentifier>
+    <Filter Include="Debugs">
+      <UniqueIdentifier>{FF36D9AD-EBD8-0384-D493-17D8C0D48AD4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX">
+      <UniqueIdentifier>{D86A6D73-444A-EC0E-4D62-77E5B9C05270}</UniqueIdentifier>
     </Filter>
     <Filter Include="Events">
       <UniqueIdentifier>{3A8963B1-262B-8E87-0FE6-A1DBFB2615D8}</UniqueIdentifier>
@@ -52,8 +55,11 @@
     <ClInclude Include="Source\Core\Window.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Debug\Instrumentor.h">
-      <Filter>Debug</Filter>
+    <ClInclude Include="Source\Debugs\Instrumentor.h">
+      <Filter>Debugs</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\DirectXBuild.h">
+      <Filter>DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Source\Events\AppEvent.h">
       <Filter>Events</Filter>
@@ -96,6 +102,12 @@
     </ClCompile>
     <ClCompile Include="Source\Core\Window.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\DirectXBuild.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\ImGuiBuild.cpp">
+      <Filter>ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImGui\ImGuiLayer.cpp">
       <Filter>ImGui</Filter>

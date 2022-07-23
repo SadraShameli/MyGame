@@ -31,7 +31,7 @@ namespace MyGame {
 		void SetVSync(bool);
 		bool IsVSync() const;
 
-		void* GetNativeWindow() const { return m_Window; }
+		GLFWwindow* GetNativeWindow() const { return m_Window; }
 
 	private:
 		void Init(const WindowProps&);

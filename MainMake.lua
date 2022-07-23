@@ -69,11 +69,12 @@ project "MyGame"
 		defines "MYGAME_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		optimize "Speed"
 
 	filter "configurations:Release"
 		defines "MYGAME_RELEASE"
 		runtime "Release"
-		optimize "on"
+		optimize "Speed"
 
 project "Box2D"
 	location "MyGame"
@@ -104,14 +105,11 @@ project "Box2D"
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
+		optimize "Speed"
 
 	filter "configurations:Release"
 		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		runtime "Release"
-		optimize "on"
+		optimize "Speed"
 
 project "GLAD"
 	location "MyGame"
@@ -139,10 +137,11 @@ project "GLAD"
     filter "configurations:Debug"
         runtime "Debug"
         symbols "on"
+		optimize "Speed"
 
     filter "configurations:Release"
         runtime "Release"
-        optimize "on"
+        optimize "Speed"
 
 project "GLFW"
 	location "MyGame"
@@ -151,7 +150,6 @@ project "GLFW"
 
 	targetdir ("%{wks.location}/Binary/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/BinaryIntermediate/" .. outputdir .. "/%{prj.name}")
-
 
 	files
 	{	
@@ -208,10 +206,11 @@ project "GLFW"
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
+		optimize "Speed"
 
 	filter "configurations:Release"
-		runtime "Release"
-		optimize "on"
+		runtime "Release"		
+		optimize "Speed"
 
 project "ImGui"
 	location "MyGame"
@@ -227,12 +226,18 @@ project "ImGui"
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui.h",
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui.cpp",
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_draw.cpp",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_tables.h",
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_internal.h",
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_widgets.cpp",
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imstb_rectpack.h",
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imstb_textedit.h",
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imstb_truetype.h",
 		"" .. defaultDirectory .. "/Vendor/%{prj.name}/imgui_demo.cpp"
+	}
+
+	includedirs
+	{
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}"
 	}
 
 	filter "system:windows"
@@ -243,10 +248,11 @@ project "ImGui"
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
+		optimize "Speed"
 
 	filter "configurations:Release"
 		runtime "Release"
-		optimize "on"
+		optimize "Speed"
 
 group "Dependencies"
 	includedirs "MyGame/Vendor/Box2D"

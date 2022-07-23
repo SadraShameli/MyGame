@@ -1,29 +1,51 @@
 #include "CommonHeaders.h"
 #include "Application.h"
+#include "Log.h"
 
 #include "Source/Events/AppEvent.h"
-
-#include "Log.h"
-#include "Source/Debug/Instrumentor.h"
+#include "Source/Debugs/Instrumentor.h"
 
 namespace MyGame {
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application()
-	{
+	Application::Application() {
 		MYGAME_PROFILE_FUNCTION();
 		MYGAME_ASSERT(s_Instance, "Application already exists!");
 		s_Instance = this;
 
 		m_Window = Window::Create(WindowProps());
 		m_Window->SetEventCallback(MYGAME_BIND_EVENT_FN(Application::OnEvent));
+
+		//Renderer::Init();
+
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
 	}
 
-	Application::~Application() {}
+	Application::~Application() {
+		MYGAME_PROFILE_FUNCTION();
 
-	void Application::OnEvent(Event& e)
-	{
+		//Renderer::Shutdown();
+	}
+
+	void Application::PushLayer(Layer* layer) {
+		MYGAME_PROFILE_FUNCTION();
+
+		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
+	}
+
+	void Application::PushOverlay(Layer* layer) {
+		MYGAME_PROFILE_FUNCTION();
+
+		m_LayerStack.PushOverlay(layer);
+		layer->OnAttach();
+	}
+
+	void Application::Close() { m_Running = false; }
+
+	void Application::OnEvent(Event& e) {
 		MYGAME_PROFILE_FUNCTION();
 
 		MYGAME_INFO("{0}", e.ToString());
@@ -54,12 +76,10 @@ namespace MyGame {
 				for (Layer* layer : m_LayerStack)
 					layer->OnUpdate(timestep);
 
-				//m_ImGuiLayer->Begin();
-				//{
-//					for (Layer* layer : m_LayerStack)
-						//layer->OnImGuiRender();
-				//}
-				//m_ImGuiLayer->End();
+				m_ImGuiLayer->Begin();
+				for (Layer* layer : m_LayerStack)
+					layer->OnImGuiRender();
+				m_ImGuiLayer->End();
 			}
 			m_Window->OnUpdate();
 		}
@@ -80,12 +100,13 @@ namespace MyGame {
 		}
 
 		m_Minimized = false;
+		//Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
 		return false;
 	}
 }
 
-int main()
-{
+int main() {
 	MyGame::Log::Init();
 	MYGAME_INFO("Welcome to MyGame!");
 
