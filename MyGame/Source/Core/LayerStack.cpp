@@ -1,9 +1,10 @@
 #pragma once
 #include "CommonHeaders.h"
+
 #include "LayerStack.h"
 
-namespace MyGame {
-
+namespace MyGame
+{
 	LayerStack::~LayerStack()
 	{
 		for (Layer* layer : m_Layers)

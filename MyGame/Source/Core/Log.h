@@ -2,8 +2,8 @@
 
 #include "spdlog/spdlog.h"
 
-namespace MyGame {
-
+namespace MyGame
+{
 	class Log
 	{
 	public:

@@ -1,17 +1,19 @@
 #include "CommonHeaders.H"
+
 #include "Window.h"
 
-#include "Source/Core/Assert.h"
 #include "Source/Core/Log.h"
 #include "Source/Core/Input.h"
-#include "Source/Debugs/Instrumentor.h"
 
 #include "Source/Events/AppEvent.h"
 #include "Source/Events/MouseEvent.h"
 #include "Source/Events/KeyEvent.h"
 
-namespace MyGame {
+#include "Source/Debugs/Assert.h"
+#include "Source/Debugs/Instrumentor.h"
 
+namespace MyGame
+{
 	static uint8_t s_GLFWWindowCount = 0;
 	static void GLFWErrorCallback(int error, const char* description) { MYGAME_ERROR("GLFW Error ({0}): {1}", error, description); }
 

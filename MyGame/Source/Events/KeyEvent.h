@@ -3,31 +3,28 @@
 #include "Source/Events/Event.h"
 #include "Source/Events/EventCodes/KeyCodes.h"
 
-namespace MyGame {
-
+namespace MyGame
+{
 	class KeyEvent : public Event
 	{
 	public:
-		KeyCode GetKeyCode() const { return m_KeyCode; }
+		int GetKeyCode() const { return m_KeyCode; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 
 	protected:
-		KeyEvent(const KeyCode keycode)
-			: m_KeyCode(keycode) {}
-
-		KeyCode m_KeyCode;
+		KeyEvent(const int keycode) : m_KeyCode(keycode) {}
+		int m_KeyCode;
 	};
 
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(const KeyCode keycode, bool isRepeat = false)
-			: KeyEvent(keycode), m_IsRepeat(isRepeat) {}
-
-		std::string ToString() const override { return "KeyPressedEvent: " + std::to_string(m_KeyCode) + " - repeat = " + std::to_string(m_IsRepeat); }
+		KeyPressedEvent(const int keycode, bool isRepeat = false) : KeyEvent(keycode), m_IsRepeat(isRepeat) {}
 
 		bool IsRepeat() const { return m_IsRepeat; }
+
+		std::string ToString() const override { return "KeyPressedEvent: " + std::to_string(m_KeyCode) + " - repeat = " + std::to_string(m_IsRepeat); }
 
 		EVENT_CLASS_TYPE(KeyPressed)
 
@@ -38,8 +35,7 @@ namespace MyGame {
 	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(const KeyCode keycode)
-			: KeyEvent(keycode) {}
+		KeyReleasedEvent(const int keycode) : KeyEvent(keycode) {}
 
 		std::string ToString() const override { return "KeyReleasedEvent: " + std::to_string(m_KeyCode); }
 
@@ -49,8 +45,7 @@ namespace MyGame {
 	class KeyTypedEvent : public KeyEvent
 	{
 	public:
-		KeyTypedEvent(const KeyCode keycode)
-			: KeyEvent(keycode) {}
+		KeyTypedEvent(const int keycode) : KeyEvent(keycode) {}
 
 		std::string ToString() const override { return "KeyTypedEvent: " + std::to_string(m_KeyCode); }
 

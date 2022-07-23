@@ -6,8 +6,8 @@
 #include "Source/Events/EventCodes/KeyCodes.h"
 #include "Source/Events/EventCodes/MouseCodes.h"
 
-namespace MyGame {
-
+namespace MyGame
+{
 	class ImGuiLayer : public Layer
 	{
 	public:
@@ -23,7 +23,8 @@ namespace MyGame {
 
 		void BlockEvents(bool block) { m_BlockEvents = block; }
 
-		void SetDarkThemeColors();
+		void SetLightMode();
+		void SetDarkMode();
 
 	private:
 		bool m_BlockEvents = true;

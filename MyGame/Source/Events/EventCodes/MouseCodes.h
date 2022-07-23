@@ -3,11 +3,9 @@
 
 namespace MyGame
 {
-	using MouseCode = uint16_t;
-
 	namespace Mouse
 	{
-		enum : MouseCode
+		enum
 		{
 			Button0 = 0,
 			Button1 = 1,

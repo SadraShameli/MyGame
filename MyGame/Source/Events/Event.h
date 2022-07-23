@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 
-namespace MyGame {
-
+namespace MyGame
+{
 	enum class EventType : int
 	{
 		None = 0,
@@ -22,11 +22,9 @@ namespace MyGame {
 		EventCategoryMouseButton = 1 << 4
 	};
 
-
 	class Event
 	{
 	public:
-
 		virtual ~Event() = default;
 
 		virtual EventType GetEventType() const = 0;
@@ -41,8 +39,7 @@ namespace MyGame {
 	class EventDispatcher
 	{
 	public:
-		EventDispatcher(Event& event)
-			: m_Event(event) {}
+		EventDispatcher(Event& event) : m_Event(event) {}
 
 		template<typename T, typename F>
 		bool Dispatch(const F& func)

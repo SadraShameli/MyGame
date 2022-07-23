@@ -3,11 +3,9 @@
 
 namespace MyGame
 {
-	using KeyCode = uint16_t;
-
 	namespace Key
 	{
-		enum : KeyCode
+		enum
 		{
 			Space = 32,
 			Apostrophe = 39,

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Source/Core/Base.h"
-#include "Source/Core/Timestep.h"
+#include "Source/Core/Time.h"
 #include "Source/Events/Event.h"
 
-namespace MyGame {
-
+namespace MyGame
+{
 	class Layer
 	{
 	public:

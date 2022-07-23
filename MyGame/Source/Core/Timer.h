@@ -2,8 +2,8 @@
 
 #include <chrono>
 
-namespace MyGame {
-
+namespace MyGame
+{
 	class Timer
 	{
 	public:
@@ -12,7 +12,6 @@ namespace MyGame {
 		void Reset() { m_Start = std::chrono::high_resolution_clock::now(); }
 
 		float Elapsed() { return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - m_Start).count(); }
-
 		float ElapsedMillis() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_Start).count(); }
 
 	private:

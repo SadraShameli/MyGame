@@ -1,11 +1,11 @@
 #pragma once
-#include "Source/Core/Base.h"
+
 #include "Source/Core/Layer.h"
 
 #include <vector>
 
-namespace MyGame {
-
+namespace MyGame
+{
 	class LayerStack
 	{
 	public:

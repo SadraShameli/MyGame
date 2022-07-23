@@ -1,15 +1,19 @@
 #include "CommonHeaders.h"
+
 #include "Application.h"
 #include "Log.h"
 
 #include "Source/Events/AppEvent.h"
+
+#include "Source/Debugs/Assert.h"
 #include "Source/Debugs/Instrumentor.h"
 
-namespace MyGame {
-
+namespace MyGame
+{
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application() {
+	Application::Application()
+	{
 		MYGAME_PROFILE_FUNCTION();
 		MYGAME_ASSERT(s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -23,29 +27,31 @@ namespace MyGame {
 		PushOverlay(m_ImGuiLayer);
 	}
 
-	Application::~Application() {
+	Application::~Application()
+	{
 		MYGAME_PROFILE_FUNCTION();
 
 		//Renderer::Shutdown();
 	}
 
-	void Application::PushLayer(Layer* layer) {
+	void Application::PushLayer(Layer* layer)
+	{
 		MYGAME_PROFILE_FUNCTION();
 
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
-	void Application::PushOverlay(Layer* layer) {
+	void Application::PushOverlay(Layer* layer)
+	{
 		MYGAME_PROFILE_FUNCTION();
 
 		m_LayerStack.PushOverlay(layer);
 		layer->OnAttach();
 	}
 
-	void Application::Close() { m_Running = false; }
-
-	void Application::OnEvent(Event& e) {
+	void Application::OnEvent(Event& e)
+	{
 		MYGAME_PROFILE_FUNCTION();
 
 		MYGAME_INFO("{0}", e.ToString());
@@ -62,11 +68,12 @@ namespace MyGame {
 		}
 	}
 
-	void Application::Run() {
+	void Application::Run()
+	{
 		MYGAME_PROFILE_FUNCTION();
 
-		while (m_Running) {
-
+		while (m_Running)
+		{
 			float time = (float)glfwGetTime();
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
@@ -85,12 +92,14 @@ namespace MyGame {
 		}
 	}
 
-	bool Application::OnWindowClose(WindowCloseEvent& e) {
+	bool Application::OnWindowClose(WindowCloseEvent& e)
+	{
 		m_Running = false;
 		return true;
 	}
 
-	bool Application::OnWindowResize(WindowResizeEvent& e) {
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
 		MYGAME_PROFILE_FUNCTION();
 
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
@@ -104,6 +113,8 @@ namespace MyGame {
 
 		return false;
 	}
+
+	void Application::Close() { m_Running = false; }
 }
 
 int main() {

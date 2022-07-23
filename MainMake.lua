@@ -57,7 +57,10 @@ project "MyGame"
 		"Box2D",
 		"GLFW",
 		"GLAD",
-		"ImGui"
+		"ImGui",
+		"d3d12.lib",
+		"d3dcompiler.lib",
+		"dxgi.lib"
 	}
 
 	filter "system:windows"

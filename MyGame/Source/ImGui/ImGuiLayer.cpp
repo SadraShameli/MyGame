@@ -7,7 +7,7 @@
 #include "Source/ImGui/ImGuiLayer.h"
 #include "Source/DirectX/DirectXBuild.h"
 
-// Graphics framework
+// Graphics Framework
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_dx12.h>
@@ -35,9 +35,12 @@ namespace MyGame
 			return;
 		}
 
-		// Setup Dear ImGui context
+		// Setup Dear ImGui UI
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
+		ImGui::StyleColorsDark();
+		ImGui::StyleColorsClassic();
+		SetDarkMode();
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -47,11 +50,7 @@ namespace MyGame
 		io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Light.ttf", fontSize);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
-		ImGui::StyleColorsDark();
-		ImGui::StyleColorsClassic();
-
-		SetDarkThemeColors();
-
+		// Initialize Graphics API
 		ImGui_ImplGlfw_InitForOther(window, true);
 		ImGui_ImplDX12_Init(DirectX::g_pd3dDevice, DirectX::NUM_FRAMES_IN_FLIGHT, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::g_pd3dSrvDescHeap,
 			DirectX::g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
@@ -77,6 +76,10 @@ namespace MyGame
 		}
 	}
 
+	bool show_demo_window = true;
+	bool show_another_window = false;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 	void ImGuiLayer::Begin()
 	{
 		MYGAME_PROFILE_FUNCTION();
@@ -99,7 +102,7 @@ namespace MyGame
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), nullptr);
 	}
 
-	void ImGuiLayer::SetDarkThemeColors()
+	void ImGuiLayer::SetDarkMode()
 	{
 		auto& colors = ImGui::GetStyle().Colors;
 		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };

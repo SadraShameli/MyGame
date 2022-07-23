@@ -28,9 +28,6 @@
     <ClInclude Include="Source\Core\Application.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Assert.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\Base.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -49,7 +46,7 @@
     <ClInclude Include="Source\Core\Timer.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Timestep.h">
+    <ClInclude Include="Source\Core\Time.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Window.h">
@@ -82,9 +79,10 @@
     <ClInclude Include="Source\ImGui\ImGuiLayer.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Utilities\PlatformUtilities.h">
+    <ClInclude Include="Source\Utilities\FileDialogs.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Debugs\Assert.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CommonHeaders.cpp" />
@@ -103,16 +101,13 @@
     <ClCompile Include="Source\Core\Window.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DirectX\DirectXBuild.cpp">
-      <Filter>DirectX</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ImGui\ImGuiBuild.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImGui\ImGuiLayer.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Utilities\PlatformUtilities.cpp">
+    <ClCompile Include="Source\Utilities\FileDialogs.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>

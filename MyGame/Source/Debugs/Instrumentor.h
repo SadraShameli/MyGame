@@ -8,8 +8,8 @@
 #include <mutex>
 #include <sstream>
 
-namespace MyGame {
-
+namespace MyGame
+{
 	struct ProfileResult
 	{
 		std::string Name;
@@ -39,10 +39,10 @@ namespace MyGame {
 				// Subsequent profiling output meant for the original session will end up in the
 				// newly opened session instead.  That's better than having badly formatted
 				// profiling output.
+
 				if (Log::GetLogger()) // Edge case: BeginSession() might be before Log::Init()
-				{
 					MYGAME_ERROR("Instrumentor::BeginSession('{0}') when session '{1}' already open.", name, m_CurrentSession->Name);
-				}
+
 				InternalEndSession();
 			}
 			m_OutputStream.open(filepath);
@@ -55,9 +55,7 @@ namespace MyGame {
 			else
 			{
 				if (Log::GetLogger()) // Edge case: BeginSession() might be before Log::Init()
-				{
 					MYGAME_ERROR("Instrumentor could not open results file '{0}'.", filepath);
-				}
 			}
 		}
 
@@ -95,16 +93,10 @@ namespace MyGame {
 			static Instrumentor instance;
 			return instance;
 		}
-	private:
-		Instrumentor()
-			: m_CurrentSession(nullptr)
-		{
-		}
 
-		~Instrumentor()
-		{
-			EndSession();
-		}
+	private:
+		Instrumentor() : m_CurrentSession(nullptr) {}
+		~Instrumentor() { EndSession(); }
 
 		void WriteHeader()
 		{
@@ -130,26 +122,18 @@ namespace MyGame {
 				m_CurrentSession = nullptr;
 			}
 		}
+
 	private:
-		std::mutex m_Mutex;
 		InstrumentationSession* m_CurrentSession;
 		std::ofstream m_OutputStream;
+		std::mutex m_Mutex;
 	};
 
 	class InstrumentationTimer
 	{
 	public:
-		InstrumentationTimer(const char* name)
-			: m_Name(name), m_Stopped(false)
-		{
-			m_StartTimepoint = std::chrono::steady_clock::now();
-		}
-
-		~InstrumentationTimer()
-		{
-			if (!m_Stopped)
-				Stop();
-		}
+		InstrumentationTimer(const char* name) : m_Name(name), m_Stopped(false) { m_StartTimepoint = std::chrono::steady_clock::now(); }
+		~InstrumentationTimer() { if (!m_Stopped) Stop(); }
 
 		void Stop()
 		{
@@ -158,17 +142,17 @@ namespace MyGame {
 			auto elapsedTime = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch() - std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch();
 
 			Instrumentor::Get().WriteProfile({ m_Name, highResStart, elapsedTime, std::this_thread::get_id() });
-
 			m_Stopped = true;
 		}
+
 	private:
 		const char* m_Name;
 		std::chrono::time_point<std::chrono::steady_clock> m_StartTimepoint;
 		bool m_Stopped;
 	};
 
-	namespace InstrumentorUtils {
-
+	namespace InstrumentorUtilities
+	{
 		template <size_t N>
 		struct ChangeResult
 		{
@@ -199,9 +183,11 @@ namespace MyGame {
 
 
 #if MYGAME_DEBUG
+
 // Resolve which function signature macro will be used. Note that this only
 // is resolved when the (pre)compiler starts, so the syntax highlighting
 // could mark the wrong one in your editor!
+
 #if defined(__GNUC__) || (defined(__MWERKS__) && (__MWERKS__ >= 0x3000)) || (defined(__ICC) && (__ICC >= 600)) || defined(__ghs__)
 #define MYGAME_FUNC_SIG __PRETTY_FUNCTION__
 #elif defined(__DMC__) && (__DMC__ >= 0x810)
@@ -222,14 +208,17 @@ namespace MyGame {
 
 #define MYGAME_PROFILE_BEGIN_SESSION(name, filepath) ::MyGame::Instrumentor::Get().BeginSession(name, filepath)
 #define MYGAME_PROFILE_END_SESSION() ::MyGame::Instrumentor::Get().EndSession()
-#define MYGAME_PROFILE_SCOPE_LINE2(name, line) constexpr auto fixedName##line = ::MyGame::InstrumentorUtils::CleanupOutputString(name, "__cdecl ");\
+#define MYGAME_PROFILE_SCOPE_LINE2(name, line) constexpr auto fixedName##line = ::MyGame::InstrumentorUtilities::CleanupOutputString(name, "__cdecl ");\
 											   ::MyGame::InstrumentationTimer timer##line(fixedName##line.Data)
 #define MYGAME_PROFILE_SCOPE_LINE(name, line) MYGAME_PROFILE_SCOPE_LINE2(name, line)
 #define MYGAME_PROFILE_SCOPE(name) MYGAME_PROFILE_SCOPE_LINE(name, __LINE__)
 #define MYGAME_PROFILE_FUNCTION() MYGAME_PROFILE_SCOPE(MYGAME_FUNC_SIG)
+
 #else
+
 #define MYGAME_PROFILE_BEGIN_SESSION(name, filepath)
 #define MYGAME_PROFILE_END_SESSION()
 #define MYGAME_PROFILE_SCOPE(name)
 #define MYGAME_PROFILE_FUNCTION()
+
 #endif
