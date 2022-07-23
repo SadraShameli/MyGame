@@ -76,7 +76,7 @@
     <ClInclude Include="Source\Events\MouseEvent.h">
       <Filter>Events</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ImGui\ImGuiLayer.h">
+    <ClInclude Include="Source\Layers\ImGui\ImGuiLayer.h">
       <Filter>ImGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\Utilities\FileDialogs.h">
@@ -101,10 +101,10 @@
     <ClCompile Include="Source\Core\Window.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ImGui\ImGuiBuild.cpp">
+    <ClCompile Include="Source\Layers\ImGui\ImGuiBuild.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ImGui\ImGuiLayer.cpp">
+    <ClCompile Include="Source\Layers\ImGui\ImGuiLayer.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utilities\FileDialogs.cpp">

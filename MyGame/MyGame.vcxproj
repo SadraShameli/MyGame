@@ -123,7 +123,7 @@
     <ClInclude Include="Source\Events\EventCodes\MouseCodes.h" />
     <ClInclude Include="Source\Events\KeyEvent.h" />
     <ClInclude Include="Source\Events\MouseEvent.h" />
-    <ClInclude Include="Source\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="Source\Layers\ImGui\ImGuiLayer.h" />
     <ClInclude Include="Source\Utilities\FileDialogs.h" />
   </ItemGroup>
   <ItemGroup>
@@ -135,8 +135,8 @@
     <ClCompile Include="Source\Core\LayerStack.cpp" />
     <ClCompile Include="Source\Core\Log.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
-    <ClCompile Include="Source\ImGui\ImGuiBuild.cpp" />
-    <ClCompile Include="Source\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="Source\Layers\ImGui\ImGuiBuild.cpp" />
+    <ClCompile Include="Source\Layers\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="Source\Utilities\FileDialogs.cpp" />
   </ItemGroup>
   <ItemGroup>

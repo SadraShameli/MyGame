@@ -1,10 +1,12 @@
 #include "CommonHeaders.h"
 
-#include "Source/Core/Log.h"
+#include "Source/Core/Window.h" 
 #include "Source/Core/Application.h"
+
+#include "Source/Core/Log.h"
 #include "Source/Debugs/Instrumentor.h"
 
-#include "Source/ImGui/ImGuiLayer.h"
+#include "Source/Layers/ImGui/ImGuiLayer.h"
 #include "Source/DirectX/DirectXBuild.h"
 
 // Graphics Framework
@@ -12,7 +14,6 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_dx12.h>
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
 
 namespace MyGame
 {
@@ -42,6 +43,7 @@ namespace MyGame
 		ImGui::StyleColorsClassic();
 		SetDarkMode();
 
+		// Initialize IO Events
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -76,9 +78,10 @@ namespace MyGame
 		}
 	}
 
-	bool show_demo_window = true;
-	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	void ImGuiLayer::OnImGuiRender()
+	{
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	}
 
 	void ImGuiLayer::Begin()
 	{
@@ -97,9 +100,51 @@ namespace MyGame
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
-		// Rendering
+		// Rendering ImGui
 		ImGui::Render();
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), nullptr);
+
+		// Rendering DirectX 12 API
+		using namespace DirectX;
+		FrameContext* frameCtx = WaitForNextFrameResources();
+		UINT backBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
+		frameCtx->CommandAllocator->Reset();
+
+		D3D12_RESOURCE_BARRIER barrier = {};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = g_mainRenderTargetResource[backBufferIdx];
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		g_pd3dCommandList->Reset(frameCtx->CommandAllocator, NULL);
+		g_pd3dCommandList->ResourceBarrier(1, &barrier);
+
+		// Render DirectX 12
+		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+		g_pd3dCommandList->ClearRenderTargetView(g_mainRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, NULL);
+		g_pd3dCommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, NULL);
+		g_pd3dCommandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
+
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_pd3dCommandList);
+
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+		g_pd3dCommandList->ResourceBarrier(1, &barrier);
+		g_pd3dCommandList->Close();
+
+		g_pd3dCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&g_pd3dCommandList);
+
+		// Setting VSync
+		if (app.GetWindow().IsVSync())
+			g_pSwapChain->Present(1, 0); // VSync Off
+		else
+			g_pSwapChain->Present(0, 0); // VSync On
+
+		UINT64 fenceValue = g_fenceLastSignaledValue + 1;
+		g_pd3dCommandQueue->Signal(g_fence, fenceValue);
+		g_fenceLastSignaledValue = fenceValue;
+		frameCtx->FenceValue = fenceValue;
 	}
 
 	void ImGuiLayer::SetDarkMode()
