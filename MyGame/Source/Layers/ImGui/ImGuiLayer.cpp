@@ -28,14 +28,6 @@ namespace MyGame
 		Application& app = Application::Get();
 		GLFWwindow* window = app.GetWindow().GetNativeWindow();
 
-		// Initialize Direct3D
-		if (!DirectX::CreateDeviceD3D(window))
-		{
-			DirectX::CleanupDeviceD3D();
-			MYGAME_ERROR("Failed to initialite Direct3D");
-			return;
-		}
-
 		// Setup Dear ImGui UI
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -53,10 +45,11 @@ namespace MyGame
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
 		// Initialize Graphics API
+		using namespace DirectXImpl;
 		ImGui_ImplGlfw_InitForOther(window, true);
-		ImGui_ImplDX12_Init(DirectX::g_pd3dDevice, DirectX::NUM_FRAMES_IN_FLIGHT, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::g_pd3dSrvDescHeap,
-			DirectX::g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-			DirectX::g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
+		ImGui_ImplDX12_Init(g_pd3dDevice, NUM_FRAMES_IN_FLIGHT, DXGI_FORMAT_R8G8B8A8_UNORM, g_pd3dSrvDescHeap,
+			g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
+			g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
 	}
 
 	void ImGuiLayer::OnDetach()
@@ -78,9 +71,33 @@ namespace MyGame
 		}
 	}
 
+	int temp1 = 0;
+	bool check1;
+
 	void ImGuiLayer::OnImGuiRender()
 	{
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::GetStyle().FrameRounding = 7.0f;
+		ImGui::PushItemWidth(200);
+
+		ImGui::Text("Frametime: %.3f ms\nFramerate: %.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+		// Ambient Occlusion
+		std::array<const char*, 3> ambientOcclusionList = { "Off", "Performance", "Quality" };
+		ImGui::Text("Ambient Occlusion");
+		ImGui::ListBox(" ", &temp1, ambientOcclusionList.data(), 3);
+
+		ImGui::Text("Anisotropic Filtering");
+		ImGui::SliderInt(" ", &temp1, 0, 16);
+
+		// Antialiasing	
+		ImGui::Text("Anitialiasing - Transparency");
+		ImGui::SliderInt(" ", &temp1, 0, 8);
+		ImGui::SameLine();
+		ImGui::Checkbox("FXAA", &check1);
+
+		// MSAA
+		ImGui::Text("MSAA Quality");
+		ImGui::SliderInt(" ", &temp1, 0, 8);
 	}
 
 	void ImGuiLayer::Begin()
@@ -104,7 +121,8 @@ namespace MyGame
 		ImGui::Render();
 
 		// Rendering DirectX 12 API
-		using namespace DirectX;
+		using namespace DirectXImpl;
+
 		FrameContext* frameCtx = WaitForNextFrameResources();
 		UINT backBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
 		frameCtx->CommandAllocator->Reset();

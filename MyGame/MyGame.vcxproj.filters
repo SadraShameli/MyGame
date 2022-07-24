@@ -16,8 +16,14 @@
     <Filter Include="Events\EventCodes">
       <UniqueIdentifier>{990BEA22-0522-E8B8-4E99-73DABAEEB840}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ImGui">
-      <UniqueIdentifier>{C0FF640D-2C14-8DBE-F595-301E616989EF}</UniqueIdentifier>
+    <Filter Include="Layers">
+      <UniqueIdentifier>{157446C0-0116-7196-EAD0-84EAD611F8E6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Layers\ImGui">
+      <UniqueIdentifier>{FFE4DC83-EB47-6C28-94CD-A4DE800F38AB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{7CCE658F-689B-C09A-91B4-AE427DE0F528}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utilities">
       <UniqueIdentifier>{010A8043-6D74-34BA-B6B2-E55F225C120F}</UniqueIdentifier>
@@ -43,14 +49,17 @@
     <ClInclude Include="Source\Core\Log.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Timer.h">
+    <ClInclude Include="Source\Core\Time.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Time.h">
+    <ClInclude Include="Source\Core\Timer.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Window.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Debugs\Assert.h">
+      <Filter>Debugs</Filter>
     </ClInclude>
     <ClInclude Include="Source\Debugs\Instrumentor.h">
       <Filter>Debugs</Filter>
@@ -77,12 +86,14 @@
       <Filter>Events</Filter>
     </ClInclude>
     <ClInclude Include="Source\Layers\ImGui\ImGuiLayer.h">
-      <Filter>ImGui</Filter>
+      <Filter>Layers\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer\Renderer.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Source\Utilities\FileDialogs.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Debugs\Assert.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CommonHeaders.cpp" />
@@ -101,11 +112,17 @@
     <ClCompile Include="Source\Core\Window.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DirectX\DirectXBuild.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Layers\ImGui\ImGuiBuild.cpp">
-      <Filter>ImGui</Filter>
+      <Filter>Layers\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\Layers\ImGui\ImGuiLayer.cpp">
-      <Filter>ImGui</Filter>
+      <Filter>Layers\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Renderer.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utilities\FileDialogs.cpp">
       <Filter>Utilities</Filter>

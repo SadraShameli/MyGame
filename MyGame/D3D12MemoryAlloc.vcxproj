@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C0FF640D-2C14-8DBE-F595-301E616989EF}</ProjectGuid>
+    <ProjectGuid>{07890626-F381-2578-1CB4-0AFD080C0584}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ImGui</RootNamespace>
+    <RootNamespace>D3D12MemoryAlloc</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -41,15 +41,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\Binary\Debug\ImGui\</OutDir>
-    <IntDir>..\BinaryIntermediate\Debug\ImGui\</IntDir>
-    <TargetName>ImGui</TargetName>
+    <OutDir>..\Binary\Debug\D3D12MemoryAlloc\</OutDir>
+    <IntDir>..\BinaryIntermediate\Debug\D3D12MemoryAlloc\</IntDir>
+    <TargetName>D3D12MemoryAlloc</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\Binary\Release\ImGui\</OutDir>
-    <IntDir>..\BinaryIntermediate\Release\ImGui\</IntDir>
-    <TargetName>ImGui</TargetName>
+    <OutDir>..\Binary\Release\D3D12MemoryAlloc\</OutDir>
+    <IntDir>..\BinaryIntermediate\Release\D3D12MemoryAlloc\</IntDir>
+    <TargetName>D3D12MemoryAlloc</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -57,7 +57,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -79,7 +79,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;Vendor\Box2D;Vendor\GLFW;Vendor\GLAD;Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -95,21 +95,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="Vendor\ImGui\imconfig.h" />
-    <ClInclude Include="Vendor\ImGui\imgui.h" />
-    <ClInclude Include="Vendor\ImGui\imgui_internal.h" />
-    <ClInclude Include="Vendor\ImGui\imgui_tables.h" />
-    <ClInclude Include="Vendor\ImGui\imstb_rectpack.h" />
-    <ClInclude Include="Vendor\ImGui\imstb_textedit.h" />
-    <ClInclude Include="Vendor\ImGui\imstb_truetype.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Vendor\ImGui\imgui.cpp" />
-    <ClCompile Include="Vendor\ImGui\imgui_demo.cpp" />
-    <ClCompile Include="Vendor\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="Vendor\ImGui\imgui_widgets.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Log.h"
 
+#include "Source/Renderer/Renderer.h"
 #include "Source/Events/AppEvent.h"
 
 #include "Source/Debugs/Assert.h"
@@ -112,7 +113,7 @@ namespace MyGame
 		}
 
 		m_Minimized = false;
-		//Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
 		return false;
 	}

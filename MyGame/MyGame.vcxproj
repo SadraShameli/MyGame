@@ -61,7 +61,7 @@
       <WarningLevel>Level3</WarningLevel>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLAD\include;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLAD\include;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -85,8 +85,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLAD\include;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_RELEASE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLAD\include;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -111,8 +111,8 @@
     <ClInclude Include="Source\Core\Layer.h" />
     <ClInclude Include="Source\Core\LayerStack.h" />
     <ClInclude Include="Source\Core\Log.h" />
-    <ClInclude Include="Source\Core\Timer.h" />
     <ClInclude Include="Source\Core\Time.h" />
+    <ClInclude Include="Source\Core\Timer.h" />
     <ClInclude Include="Source\Core\Window.h" />
     <ClInclude Include="Source\Debugs\Assert.h" />
     <ClInclude Include="Source\Debugs\Instrumentor.h" />
@@ -124,6 +124,7 @@
     <ClInclude Include="Source\Events\KeyEvent.h" />
     <ClInclude Include="Source\Events\MouseEvent.h" />
     <ClInclude Include="Source\Layers\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Utilities\FileDialogs.h" />
   </ItemGroup>
   <ItemGroup>
@@ -135,8 +136,10 @@
     <ClCompile Include="Source\Core\LayerStack.cpp" />
     <ClCompile Include="Source\Core\Log.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
+    <ClCompile Include="Source\DirectX\DirectXBuild.cpp" />
     <ClCompile Include="Source\Layers\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="Source\Layers\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Utilities\FileDialogs.cpp" />
   </ItemGroup>
   <ItemGroup>

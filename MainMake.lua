@@ -49,7 +49,12 @@ project "MyGame"
 		"" .. defaultDirectory .. "/Vendor/GLFW/include",
 		"" .. defaultDirectory .. "/Vendor/GLM",
 		"" .. defaultDirectory .. "/Vendor/ImGui",
-		"" .. defaultDirectory .. "/Vendor/SpdLog/include"
+		"" .. defaultDirectory .. "/Vendor/SpdLog/include",
+		"" .. defaultDirectory .. "/Vendor/DirectXTK12/Inc",
+		"" .. defaultDirectory .. "/Vendor/DirectXTK12/Src",
+		"" .. defaultDirectory .. "/Vendor/D3D12MemoryAlloc/include",
+		"" .. defaultDirectory .. "/Vendor/D3D12MemoryAlloc/src"
+
 	}
 
 	links
@@ -76,6 +81,7 @@ project "MyGame"
 
 	filter "configurations:Release"
 		defines "MYGAME_RELEASE"
+		defines "NDEBUG"
 		runtime "Release"
 		optimize "Speed"
 
@@ -103,16 +109,15 @@ project "Box2D"
 	}
 
 	filter "system:windows"
-		systemversion "latest"
+	systemversion "latest"
+	optimize "Speed"
 
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
-		optimize "Speed"
 
 	filter "configurations:Release"
 		runtime "Release"
-		optimize "Speed"
 
 project "GLAD"
 	location "MyGame"
@@ -136,15 +141,14 @@ project "GLAD"
     
     filter "system:windows"
         systemversion "latest"
+		optimize "Speed"
 
     filter "configurations:Debug"
         runtime "Debug"
         symbols "on"
-		optimize "Speed"
 
     filter "configurations:Release"
         runtime "Release"
-        optimize "Speed"
 
 project "GLFW"
 	location "MyGame"
@@ -198,6 +202,7 @@ project "GLFW"
 	filter "system:windows"
 		systemversion "latest"
 		staticruntime "On"
+		optimize "Speed"
 
 		defines 
 		{ 
@@ -209,11 +214,9 @@ project "GLFW"
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
-		optimize "Speed"
 
 	filter "configurations:Release"
 		runtime "Release"		
-		optimize "Speed"
 
 project "ImGui"
 	location "MyGame"
@@ -247,15 +250,68 @@ project "ImGui"
 		systemversion "latest"
 		cppdialect "C++17"
 		staticruntime "On"
+		optimize "Speed"
 
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
-		optimize "Speed"
 
 	filter "configurations:Release"
 		runtime "Release"
+
+project "DirectXTK12"
+	location "MyGame"
+	kind "StaticLib"
+	language "C++"
+
+	targetdir ("%{wks.location}/Binary/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{wks.location}/BinaryIntermediate/" .. outputdir .. "/%{prj.name}")
+
+	includedirs
+	{
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/Inc",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/Src",
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+		cppdialect "C++17"
+		staticruntime "On"
 		optimize "Speed"
+
+	filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		runtime "Release"
+		
+project "D3D12MemoryAlloc"
+	location "MyGame"
+	kind "StaticLib"
+	language "C++"
+
+	targetdir ("%{wks.location}/Binary/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{wks.location}/BinaryIntermediate/" .. outputdir .. "/%{prj.name}")
+
+	includedirs
+	{
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/include",
+		"" .. defaultDirectory .. "/Vendor/%{prj.name}/src",
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+		cppdialect "C++17"
+		staticruntime "On"
+		optimize "Speed"
+
+	filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		runtime "Release"
 
 group "Dependencies"
 	includedirs "MyGame/Vendor/Box2D"

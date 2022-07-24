@@ -12,6 +12,8 @@
 #include "Source/Debugs/Assert.h"
 #include "Source/Debugs/Instrumentor.h"
 
+#include "Source/DirectX/DirectXBuild.h"
+
 namespace MyGame
 {
 	static uint8_t s_GLFWWindowCount = 0;
@@ -43,6 +45,14 @@ namespace MyGame
 		MYGAME_PROFILE_SCOPE("glfwCreateWindow");
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		++s_GLFWWindowCount;
+
+		// Initialize Direct3D
+		if (!DirectXImpl::CreateDeviceD3D(m_Window))
+		{
+			DirectXImpl::CleanupDeviceD3D();
+			MYGAME_ERROR("Failed to initialite Direct3D");
+			return;
+		}
 
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, &m_Data);

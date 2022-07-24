@@ -16,3 +16,9 @@
 [submodule "MyGame/Vendor/Box2D"]
 	path = MyGame/Vendor/Box2D
 	url = https://github.com/erincatto/box2d
+[submodule "MyGame/Vendor/DirectXTK12"]
+	path = MyGame/Vendor/DirectXTK12
+	url = https://github.com/microsoft/DirectXTK12
+[submodule "MyGame/Vendor/D3D12MemoryAlloc"]
+	path = MyGame/Vendor/D3D12MemoryAlloc
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator
