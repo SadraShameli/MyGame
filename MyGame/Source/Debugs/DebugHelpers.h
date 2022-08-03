@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Source/Core/Log.h"
+#include "../Core/Log.h"
 
 #include <filesystem>
+#include <string>
+#include <comdef.h>
 
 #ifdef MYGAME_DEBUG
 
 #define MYGAME_DEBUGBREAK() __debugbreak()
-#define MYGAME_ENABLE_ASSERTS
 
-#define MYGAME_INTERNAL_ASSERT_IMPL(type, check, msg, ...) { if(!(check)) { MYGAME_ERROR(msg, __VA_ARGS__); __debugbreak(); } }
+#define MYGAME_INTERNAL_ASSERT_IMPL(type, check, msg, ...) if(!(check)) { MYGAME_ERROR(msg, __VA_ARGS__); __debugbreak(); } 
 #define MYGAME_INTERNAL_ASSERT_WITH_MSG(type, check, ...) MYGAME_INTERNAL_ASSERT_IMPL(type, check, "Assertion failed: {0}", __VA_ARGS__)
 #define MYGAME_INTERNAL_ASSERT_NO_MSG(type, check) MYGAME_INTERNAL_ASSERT_IMPL(type, check, "Assertion '{0}' failed at {1}:{2}", #check, std::filesystem::path(__FILE__).filename().string(), __LINE__)
 
@@ -18,9 +19,27 @@
 
 #define MYGAME_ASSERT(...) MYGAME_INTERNAL_ASSERT_GET_MACRO(__VA_ARGS__)(_, __VA_ARGS__)
 
+#define MYGAME_HRESULT_TOSTR(x) { if (FAILED(x)) { MYGAME_ERROR(_com_error(x).ErrorMessage()); } }
+#define MYGAME_VERIFY_HRESULT(x) { if (FAILED(x)) { MYGAME_HRESULT_TOSTR(x); return false; } }
+
+#ifdef MYGAME_ENABLE_INFO_EVENTS 
+#define MYGAME_INFO_EVENTS(x) MYGAME_INFO("{0}", x.ToString());
+#else
+#define MYGAME_INFO_EVENTS(x)
+#endif 
+
 #else
 
 #define MYGAME_ASSERT(x, ...) x
 #define HZ_DEBUGBREAK()
 
+#define MYGAME_HRESULT_TOSTR(x) x
+#define MYGAME_VERIFY_HRESULT(x) x
+#define MYGAME_INFO_EVENTS(x)
+
 #endif
+
+namespace MyGame
+{
+
+}

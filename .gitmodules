@@ -22,3 +22,6 @@
 [submodule "MyGame/Vendor/D3D12MemoryAlloc"]
 	path = MyGame/Vendor/D3D12MemoryAlloc
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator
+[submodule "MyGame/Vendor/DirectXShaderCompiler"]
+	path = MyGame/Vendor/DirectXShaderCompiler
+	url = https://github.com/Microsoft/DirectXShaderCompiler

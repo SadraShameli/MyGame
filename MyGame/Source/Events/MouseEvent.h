@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/Events/Event.h"
-#include "Source/Events/EventCodes/MouseCodes.h"
+#include "../Events/Event.h"
+#include "../Events/EventCodes/MouseCodes.h"
 
 namespace MyGame
 {

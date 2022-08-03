@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/Core/Time.h"
-#include "Source/Events/Event.h"
+#include "../Core/Time.h"
+#include "../Events/Event.h"
 
 namespace MyGame
 {

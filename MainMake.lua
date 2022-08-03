@@ -31,8 +31,9 @@ project "MyGame"
 
 	files
 	{
+		--"" .. defaultDirectory .. "/Assets/Shaders/**.hlsl",
 		"" .. defaultDirectory .. "/Source/**.h",
-		"" .. defaultDirectory .. "/Source/**.cpp",		
+		"" .. defaultDirectory .. "/Source/**.cpp"
 	}
 
 	defines
@@ -45,7 +46,6 @@ project "MyGame"
 	{
 		"" .. defaultDirectory .. "",
 		"" .. defaultDirectory .. "/Vendor/Box2D",
-		"" .. defaultDirectory .. "/Vendor/GLAD/include",
 		"" .. defaultDirectory .. "/Vendor/GLFW/include",
 		"" .. defaultDirectory .. "/Vendor/GLM",
 		"" .. defaultDirectory .. "/Vendor/ImGui",
@@ -61,7 +61,6 @@ project "MyGame"
 	{
 		"Box2D",
 		"GLFW",
-		"GLAD",
 		"ImGui",
 		"d3d12.lib",
 		"d3dcompiler.lib",
@@ -74,7 +73,11 @@ project "MyGame"
 		systemversion "latest"
 
 	filter "configurations:Debug"
-		defines "MYGAME_DEBUG"
+		defines 
+		{
+			"MYGAME_DEBUG"			
+		}
+
 		runtime "Debug"
 		symbols "on"
 		optimize "Speed"
@@ -84,6 +87,20 @@ project "MyGame"
 		defines "NDEBUG"
 		runtime "Release"
 		optimize "Speed"
+
+--	filter { "files:**.hlsl" }
+--   		flags "ExcludeFromBuild"
+--   		shadermodel "6.5"
+--
+--	filter { "files:**Pixel.hlsl" }
+--   		removeflags "ExcludeFromBuild"
+--   		shadertype "Pixel"
+--   		shaderentry "ForPixel"
+--
+--	filter { "files:**Vertex.hlsl" }
+--   		removeflags "ExcludeFromBuild"
+--   		shadertype "Vertex"
+--   		shaderentry "ForVertex"			
 
 project "Box2D"
 	location "MyGame"
@@ -118,37 +135,6 @@ project "Box2D"
 
 	filter "configurations:Release"
 		runtime "Release"
-
-project "GLAD"
-	location "MyGame"
-    kind "StaticLib"
-    language "C"
-    staticruntime "off"
-    
-	targetdir ("%{wks.location}/Binary/" .. outputdir .. "/%{prj.name}")
-	objdir ("%{wks.location}/BinaryIntermediate/" .. outputdir .. "/%{prj.name}")
-
-    files
-    {
-        "" .. defaultDirectory .. "/Vendor/%{prj.name}/**.h",
-        "" .. defaultDirectory .. "/Vendor/%{prj.name}/**.c"
-    }
-
-    includedirs
-    {
-        "" .. defaultDirectory .. "/Vendor/%{prj.name}/include"
-    }
-    
-    filter "system:windows"
-        systemversion "latest"
-		optimize "Speed"
-
-    filter "configurations:Debug"
-        runtime "Debug"
-        symbols "on"
-
-    filter "configurations:Release"
-        runtime "Release"
 
 project "GLFW"
 	location "MyGame"
@@ -316,6 +302,5 @@ project "D3D12MemoryAlloc"
 group "Dependencies"
 	includedirs "MyGame/Vendor/Box2D"
 	includedirs "MyGame/Vendor/GLFW"
-	includedirs "MyGame/Vendor/GLAD"
 	includedirs "MyGame/Vendor/ImGui"
 group ""

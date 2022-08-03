@@ -1,11 +1,17 @@
 #pragma once
 
-#include "Source/Events/Event.h"
+#include "../Events/Event.h"
 
+// Window API
+#define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 
-namespace MyGame {
+#include <memory>
+#include <functional>
 
+namespace MyGame
+{
 	struct WindowProps
 	{
 		std::string Title;
@@ -31,7 +37,7 @@ namespace MyGame {
 		void SetVSync(bool);
 		bool IsVSync() const;
 
-		GLFWwindow* GetNativeWindow() const { return m_Window; }
+		GLFWwindow* GetWindow() const { return m_Window; }
 
 	private:
 		void Init(const WindowProps&);

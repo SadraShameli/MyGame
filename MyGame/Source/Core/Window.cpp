@@ -2,61 +2,46 @@
 
 #include "Window.h"
 
-#include "Source/Core/Log.h"
-#include "Source/Core/Input.h"
+#include "../Core/Log.h"
+#include "../Core/Input.h"
 
-#include "Source/Events/AppEvent.h"
-#include "Source/Events/MouseEvent.h"
-#include "Source/Events/KeyEvent.h"
+#include "../Events/AppEvent.h"
+#include "../Events/MouseEvent.h"
+#include "../Events/KeyEvent.h"
 
-#include "Source/Debugs/Assert.h"
-#include "Source/Debugs/Instrumentor.h"
-
-#include "Source/DirectX/DirectXBuild.h"
+#include "../Debugs/DebugHelpers.h"
+#include "../Debugs/Instrumentor.h"
 
 namespace MyGame
 {
-	static uint8_t s_GLFWWindowCount = 0;
 	static void GLFWErrorCallback(int error, const char* description) { MYGAME_ERROR("GLFW Error ({0}): {1}", error, description); }
 
-	Window::Window(const WindowProps& props) { Init(props); }
-	Window::~Window() { Shutdown(); }
+	std::unique_ptr<Window> Window::Create(WindowProps&& props)
+	{
+		return std::make_unique<Window>(std::forward<WindowProps>(props));
+	}
 
-	std::unique_ptr<Window> Window::Create(WindowProps&& props) { return std::make_unique<Window>(std::forward<WindowProps>(props)); }
-
-	void Window::Init(const WindowProps& props)
+	Window::Window(const WindowProps& props)
 	{
 		MYGAME_PROFILE_FUNCTION();
 
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
+		m_Data.VSync = false;
 
 		MYGAME_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
-		if (!s_GLFWWindowCount)
-		{
-			MYGAME_PROFILE_SCOPE("glfwInit");
-			MYGAME_INFO("Initializing GLFW");
-			MYGAME_ASSERT(glfwInit(), "Could not initialize GLFW!");
-			glfwSetErrorCallback(GLFWErrorCallback);
-		}
+		MYGAME_PROFILE_SCOPE("glfwInit");
+		MYGAME_INFO("Initializing GLFW");
+		MYGAME_ASSERT(glfwInit(), "Could not initialize GLFW!");
+		glfwSetErrorCallback(GLFWErrorCallback);
 
 		MYGAME_PROFILE_SCOPE("glfwCreateWindow");
-		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		++s_GLFWWindowCount;
-
-		// Initialize Direct3D
-		if (!DirectXImpl::CreateDeviceD3D(m_Window))
-		{
-			DirectXImpl::CleanupDeviceD3D();
-			MYGAME_ERROR("Failed to initialite Direct3D");
-			return;
-		}
+		MYGAME_ASSERT(m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr));
 
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 			{
@@ -144,13 +129,11 @@ namespace MyGame
 				data.EventCallback(event); });
 	}
 
-	void Window::Shutdown()
+
+	Window::~Window()
 	{
 		glfwDestroyWindow(m_Window);
-		--s_GLFWWindowCount;
-
-		if (!s_GLFWWindowCount)
-			glfwTerminate();
+		glfwTerminate();
 	}
 
 	void Window::OnUpdate()

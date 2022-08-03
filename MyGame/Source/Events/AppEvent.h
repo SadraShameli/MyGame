@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Events/Event.h"
+#include "../Events/Event.h"
 
 namespace MyGame
 {

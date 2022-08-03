@@ -3,32 +3,28 @@
 #include "Application.h"
 #include "Log.h"
 
-#include "Source/Renderer/Renderer.h"
-#include "Source/Events/AppEvent.h"
+#include "../Renderer/Renderer.h"
+#include "../Events/AppEvent.h"
 
-#include "Source/Debugs/Assert.h"
-#include "Source/Debugs/Instrumentor.h"
+#include "../Debugs/DebugHelpers.h"
+#include "../Debugs/Instrumentor.h"
 
 namespace MyGame
 {
-	Application* Application::s_Instance = nullptr;
-
-	Application::Application()
+	void Application::Init()
 	{
 		MYGAME_PROFILE_FUNCTION();
-		MYGAME_ASSERT(s_Instance, "Application already exists!");
-		s_Instance = this;
 
 		m_Window = Window::Create(WindowProps());
 		m_Window->SetEventCallback(MYGAME_BIND_EVENT_FN(Application::OnEvent));
 
-		//Renderer::Init();
+		Renderer::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 	}
 
-	Application::~Application()
+	void Application::Destroy()
 	{
 		MYGAME_PROFILE_FUNCTION();
 
@@ -55,13 +51,13 @@ namespace MyGame
 	{
 		MYGAME_PROFILE_FUNCTION();
 
-		MYGAME_INFO("{0}", e.ToString());
+		MYGAME_INFO_EVENTS(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(MYGAME_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(MYGAME_BIND_EVENT_FN(Application::OnWindowResize));
 
-		for (auto it = m_LayerStack.end(); it-- != m_LayerStack.begin();)
+		for (auto it = m_LayerStack.end(); --it != m_LayerStack.begin();)
 		{
 			if (e.Handled)
 				break;
@@ -81,15 +77,13 @@ namespace MyGame
 
 			if (!m_Minimized)
 			{
-				//for (Layer* layer : m_LayerStack)
-					//layer->OnUpdate(timestep);
-
 				for (Layer* layer : m_LayerStack)
-				{
-					m_ImGuiLayer->Begin();
+					layer->OnUpdate(timestep);
+
+				m_ImGuiLayer->Begin();
+				for (Layer* layer : m_LayerStack)
 					layer->OnImGuiRender();
-					m_ImGuiLayer->End();
-				}
+				m_ImGuiLayer->End();
 			}
 
 			m_Window->OnUpdate();
@@ -119,15 +113,19 @@ namespace MyGame
 	}
 
 	void Application::Close() { m_Running = false; }
+
+	Application application;
 }
 
-int main() {
+int main()
+{
 	MyGame::Log::Init();
 	MYGAME_INFO("Welcome to MyGame!");
 
-	MyGame::Application* app = new MyGame::Application();
-	app->Run();
+	// Application lifetime
+	MyGame::application.Init();
+	MyGame::application.Run();
+	MyGame::application.Destroy();
 
-	delete app;
 	return 0;
 }

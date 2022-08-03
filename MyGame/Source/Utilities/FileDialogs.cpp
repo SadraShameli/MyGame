@@ -1,13 +1,11 @@
 #include "CommonHeaders.h"
 
-#include "Source/Core/Application.h"
-#include "Source/Utilities/FileDialogs.h"
+#include "../Core/Application.h"
+#include "../Utilities/FileDialogs.h"
 
 #include <commdlg.h>
 
-#define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
 
 namespace MyGame
 {
@@ -18,7 +16,7 @@ namespace MyGame
 		CHAR currentDir[256] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = glfwGetWin32Window(Application::Get().GetWindow().GetNativeWindow());
+		ofn.hwndOwner = application.GetWin32Window();
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
 		if (GetCurrentDirectoryA(256, currentDir))
@@ -40,7 +38,7 @@ namespace MyGame
 		CHAR currentDir[256] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow());
+		ofn.hwndOwner = application.GetWin32Window();
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
 		if (GetCurrentDirectoryA(256, currentDir))

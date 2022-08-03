@@ -1,11 +1,11 @@
 #pragma once
 
-// Windows
+// Window
 #include "Window.h"
 
 // Layers
 #include "LayerStack.h"
-#include "Source/Layers/ImGui/ImGuiLayer.h"
+#include "../Layers/ImGui/ImGuiLayer.h"
 
 #include "Base.h"
 
@@ -14,8 +14,8 @@ namespace MyGame
 	class Application
 	{
 	public:
-		Application();
-		~Application();
+		void Init();
+		void Destroy();
 
 		void Run();
 		void Close();
@@ -25,15 +25,15 @@ namespace MyGame
 		void PushOverlay(Layer* layer);
 		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 
-		static Application& Get() { return *s_Instance; }
 		Window& GetWindow() { return *m_Window; }
+		GLFWwindow* GetNativeWindow() const { return m_Window->GetWindow(); }
+		HWND GetWin32Window() const { return glfwGetWin32Window(m_Window->GetWindow()); }
 
 	private:
 		bool OnWindowClose(WindowCloseEvent&);
 		bool OnWindowResize(WindowResizeEvent&);
 
 	private:
-		static Application* s_Instance;
 		std::unique_ptr<Window> m_Window;
 
 		ImGuiLayer* m_ImGuiLayer;
@@ -43,4 +43,6 @@ namespace MyGame
 		bool m_Running = true;
 		bool m_Minimized = false;
 	};
+
+	extern Application application;
 }

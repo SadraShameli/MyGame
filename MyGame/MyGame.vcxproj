@@ -61,7 +61,7 @@
       <WarningLevel>Level3</WarningLevel>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLAD\include;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -86,7 +86,7 @@
       <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_RELEASE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLAD\include;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -104,6 +104,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DirectXHelpers.h" />
     <ClInclude Include="Source\CommonHeaders.h" />
     <ClInclude Include="Source\Core\Application.h" />
     <ClInclude Include="Source\Core\Base.h" />
@@ -114,9 +115,11 @@
     <ClInclude Include="Source\Core\Time.h" />
     <ClInclude Include="Source\Core\Timer.h" />
     <ClInclude Include="Source\Core\Window.h" />
-    <ClInclude Include="Source\Debugs\Assert.h" />
+    <ClInclude Include="Source\Debugs\DebugHelpers.h" />
     <ClInclude Include="Source\Debugs\Instrumentor.h" />
-    <ClInclude Include="Source\DirectX\DirectXBuild.h" />
+    <ClInclude Include="Source\DirectX\DirectXImpl.h" />
+    <ClInclude Include="Source\DirectX\DirectXIncludes.h" />
+    <ClInclude Include="Source\DirectX\Shader.h" />
     <ClInclude Include="Source\Events\AppEvent.h" />
     <ClInclude Include="Source\Events\Event.h" />
     <ClInclude Include="Source\Events\EventCodes\KeyCodes.h" />
@@ -124,6 +127,11 @@
     <ClInclude Include="Source\Events\KeyEvent.h" />
     <ClInclude Include="Source\Events\MouseEvent.h" />
     <ClInclude Include="Source\Layers\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="Source\Layers\Triangle\Triangle.h" />
+    <ClInclude Include="Source\Renderer\Camera.h" />
+    <ClInclude Include="Source\Renderer\EditorCamera.h" />
+    <ClInclude Include="Source\Renderer\OrthographicCamera.h" />
+    <ClInclude Include="Source\Renderer\OrthographicCameraController.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Utilities\FileDialogs.h" />
   </ItemGroup>
@@ -136,9 +144,13 @@
     <ClCompile Include="Source\Core\LayerStack.cpp" />
     <ClCompile Include="Source\Core\Log.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
-    <ClCompile Include="Source\DirectX\DirectXBuild.cpp" />
-    <ClCompile Include="Source\Layers\ImGui\ImGuiBuild.cpp" />
+    <ClCompile Include="Source\DirectX\DirectXImpl.cpp" />
+    <ClCompile Include="Source\DirectX\Shader.cpp" />
     <ClCompile Include="Source\Layers\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="Source\Layers\Triangle\Triangle.cpp" />
+    <ClCompile Include="Source\Renderer\EditorCamera.cpp" />
+    <ClCompile Include="Source\Renderer\OrthographicCamera.cpp" />
+    <ClCompile Include="Source\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Utilities\FileDialogs.cpp" />
   </ItemGroup>
@@ -148,9 +160,6 @@
     </ProjectReference>
     <ProjectReference Include="GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GLAD.vcxproj">
-      <Project>{5D4A857C-4981-860D-F26D-6C10DE83020F}</Project>
     </ProjectReference>
     <ProjectReference Include="ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>

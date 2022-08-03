@@ -1,9 +1,11 @@
 #pragma once
 
-class Renderer
+namespace MyGame
 {
-public:
-	static void OnWindowResize(const int, const int);
-
-};
-
+	class Renderer
+	{
+	public:
+		static void Init();
+		static void OnWindowResize(const int, const int);
+	};
+}

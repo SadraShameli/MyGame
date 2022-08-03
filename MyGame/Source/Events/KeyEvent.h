@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/Events/Event.h"
-#include "Source/Events/EventCodes/KeyCodes.h"
+#include "../Events/Event.h"
+#include "../Events/EventCodes/KeyCodes.h"
 
 namespace MyGame
 {

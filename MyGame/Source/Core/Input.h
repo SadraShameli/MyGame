@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Source/Events/EventCodes/KeyCodes.h"
-#include "Source/Events/EventCodes/MouseCodes.h"
+#include "../Events/EventCodes/KeyCodes.h"
+#include "../Events/EventCodes/MouseCodes.h"
 
-#include <glm/glm.hpp>
+#include <DirectXMath.h>
 
 namespace MyGame
 {
@@ -13,7 +13,7 @@ namespace MyGame
 		static bool IsKeyPressed(const int);
 		static bool IsMouseButtonPressed(const int);
 
-		static glm::vec2 GetMousePosition();
+		static DirectX::XMFLOAT2 GetMousePosition();
 		static float GetMouseX();
 		static float GetMouseY();
 	};

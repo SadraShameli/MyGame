@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Core/Log.h"
+#include "../Core/Log.h"
 
 #include <fstream>
 #include <iomanip>

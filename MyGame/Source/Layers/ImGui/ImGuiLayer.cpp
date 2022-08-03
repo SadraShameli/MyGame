@@ -1,19 +1,26 @@
 #include "CommonHeaders.h"
 
-#include "Source/Core/Window.h" 
-#include "Source/Core/Application.h"
+#include "ImGuiLayer.h"
 
-#include "Source/Core/Log.h"
-#include "Source/Debugs/Instrumentor.h"
+#include "../../Core/Window.h" 
+#include "../../Core/Application.h"
 
-#include "Source/Layers/ImGui/ImGuiLayer.h"
-#include "Source/DirectX/DirectXBuild.h"
+#include "../../Core/Log.h"
+#include "../../Debugs/Instrumentor.h"
+#include "../../Debugs/DebugHelpers.h"
+
+#include "../../DirectX/DirectXImpl.h"
 
 // Graphics Framework
-#include <imgui.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_dx12.h>
 #include <GLFW/glfw3.h>
+
+// ImGui
+#include <imgui.h>
+#include <imgui_tables.cpp>
+#include <backends/imgui_impl_glfw.cpp>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_dx12.cpp>
+#include <backends/imgui_impl_dx12.h>
 
 namespace MyGame
 {
@@ -25,13 +32,11 @@ namespace MyGame
 
 		//if (!std::filesystem::exists("imgui.ini") && std::filesystem::exists("imgui_default.ini")) { std::filesystem::copy_file("imgui_default.ini", "imgui.ini"); }
 
-		Application& app = Application::Get();
-		GLFWwindow* window = app.GetWindow().GetNativeWindow();
+		GLFWwindow* window = application.GetNativeWindow();
 
 		// Setup Dear ImGui UI
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImGui::StyleColorsDark();
 		ImGui::StyleColorsClassic();
 		SetDarkMode();
 
@@ -45,11 +50,8 @@ namespace MyGame
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
 		// Initialize Graphics API
-		using namespace DirectXImpl;
-		ImGui_ImplGlfw_InitForOther(window, true);
-		ImGui_ImplDX12_Init(g_pd3dDevice, NUM_FRAMES_IN_FLIGHT, DXGI_FORMAT_R8G8B8A8_UNORM, g_pd3dSrvDescHeap,
-			g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-			g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
+		MYGAME_ASSERT(ImGui_ImplGlfw_InitForOther(window, true));
+		DirectX.InitImGui();
 	}
 
 	void ImGuiLayer::OnDetach()
@@ -113,60 +115,16 @@ namespace MyGame
 	{
 		MYGAME_PROFILE_FUNCTION();
 
-		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::Get();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
-
 		// Rendering ImGui
-		ImGui::Render();
+		ImGui::GetIO().DisplaySize = ImVec2((float)application.GetWindow().GetWidth(), (float)application.GetWindow().GetHeight());
 
-		// Rendering DirectX 12 API
-		using namespace DirectXImpl;
-
-		FrameContext* frameCtx = WaitForNextFrameResources();
-		UINT backBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
-		frameCtx->CommandAllocator->Reset();
-
-		D3D12_RESOURCE_BARRIER barrier = {};
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		barrier.Transition.pResource = g_mainRenderTargetResource[backBufferIdx];
-		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		g_pd3dCommandList->Reset(frameCtx->CommandAllocator, NULL);
-		g_pd3dCommandList->ResourceBarrier(1, &barrier);
-
-		// Render DirectX 12
-		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-		const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-		g_pd3dCommandList->ClearRenderTargetView(g_mainRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, NULL);
-		g_pd3dCommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, NULL);
-		g_pd3dCommandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
-
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_pd3dCommandList);
-
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-		g_pd3dCommandList->ResourceBarrier(1, &barrier);
-		g_pd3dCommandList->Close();
-
-		g_pd3dCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&g_pd3dCommandList);
-
-		// Setting VSync
-		if (app.GetWindow().IsVSync())
-			g_pSwapChain->Present(1, 0); // VSync Off
-		else
-			g_pSwapChain->Present(0, 0); // VSync On
-
-		UINT64 fenceValue = g_fenceLastSignaledValue + 1;
-		g_pd3dCommandQueue->Signal(g_fence, fenceValue);
-		g_fenceLastSignaledValue = fenceValue;
-		frameCtx->FenceValue = fenceValue;
+		// Rendering DirectX
+		DirectX.RenderImGui();
 	}
 
 	void ImGuiLayer::SetDarkMode()
 	{
+		ImGui::StyleColorsDark();
 		auto& colors = ImGui::GetStyle().Colors;
 		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
 
