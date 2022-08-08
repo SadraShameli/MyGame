@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Log.h"
+
+#include <source_location>
 #include <chrono>
 
 namespace MyGame
@@ -7,7 +10,8 @@ namespace MyGame
 	class Timer
 	{
 	public:
-		Timer() { Reset(); }
+		Timer(const std::source_location& location = std::source_location::current()) { m_Location = location;  Reset(); }
+		~Timer() { MYGAME_INFO("{} took {}ms", m_Location.function_name(), ElapsedMillis()); }
 
 		void Reset() { m_Start = std::chrono::high_resolution_clock::now(); }
 
@@ -16,5 +20,6 @@ namespace MyGame
 
 	private:
 		std::chrono::time_point<std::chrono::high_resolution_clock> m_Start;
+		std::source_location m_Location;
 	};
 }

@@ -1,4 +1,4 @@
-#include "CommonHeaders.H"
+#include "CommonHeaders.h"
 
 #include "Window.h"
 

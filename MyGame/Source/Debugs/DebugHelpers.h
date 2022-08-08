@@ -38,8 +38,3 @@
 #define MYGAME_INFO_EVENTS(x)
 
 #endif
-
-namespace MyGame
-{
-
-}

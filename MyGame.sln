@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyGame", "MyGame\MyGame.vcxproj", "{256C32C4-110E-5D9A-FAC8-70EEE609E4EA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Box2D", "MyGame\Box2D.vcxproj", "{A434E80C-1049-10BE-D9CA-B31D459E0CEF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D12MemoryAlloc", "MyGame\D3D12MemoryAlloc.vcxproj", "{07890626-F381-2578-1CB4-0AFD080C0584}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK12", "MyGame\DirectXTK12.vcxproj", "{3A6C86EF-A621-FFE4-2F16-F9BB9BCAF5E8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK12", "MyGame\Vendor\DirectXTK12\DirectXTK_Windows10_2022.vcxproj", "{945B8F0E-AE5F-447C-933A-9D069532D3E4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW", "MyGame\GLFW.vcxproj", "{154B857C-0182-860D-AA6E-6C109684020F}"
 EndProject
@@ -31,10 +33,10 @@ Global
 		{07890626-F381-2578-1CB4-0AFD080C0584}.Debug|x64.Build.0 = Debug|x64
 		{07890626-F381-2578-1CB4-0AFD080C0584}.Release|x64.ActiveCfg = Release|x64
 		{07890626-F381-2578-1CB4-0AFD080C0584}.Release|x64.Build.0 = Release|x64
-		{3A6C86EF-A621-FFE4-2F16-F9BB9BCAF5E8}.Debug|x64.ActiveCfg = Debug|x64
-		{3A6C86EF-A621-FFE4-2F16-F9BB9BCAF5E8}.Debug|x64.Build.0 = Debug|x64
-		{3A6C86EF-A621-FFE4-2F16-F9BB9BCAF5E8}.Release|x64.ActiveCfg = Release|x64
-		{3A6C86EF-A621-FFE4-2F16-F9BB9BCAF5E8}.Release|x64.Build.0 = Release|x64
+		{945B8F0E-AE5F-447C-933A-9D069532D3E4}.Debug|x64.ActiveCfg = Debug|x64
+		{945B8F0E-AE5F-447C-933A-9D069532D3E4}.Debug|x64.Build.0 = Debug|x64
+		{945B8F0E-AE5F-447C-933A-9D069532D3E4}.Release|x64.ActiveCfg = Release|x64
+		{945B8F0E-AE5F-447C-933A-9D069532D3E4}.Release|x64.Build.0 = Release|x64
 		{154B857C-0182-860D-AA6E-6C109684020F}.Debug|x64.ActiveCfg = Debug|x64
 		{154B857C-0182-860D-AA6E-6C109684020F}.Debug|x64.Build.0 = Debug|x64
 		{154B857C-0182-860D-AA6E-6C109684020F}.Release|x64.ActiveCfg = Release|x64
@@ -46,5 +48,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D6BCEE46-B049-481B-A6C3-86F087A39A7A}
 	EndGlobalSection
 EndGlobal

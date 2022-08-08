@@ -21,6 +21,8 @@ namespace MyGame
 		Renderer::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
+
+		PushLayer(new TriangleLayer());
 		PushOverlay(m_ImGuiLayer);
 	}
 
@@ -68,9 +70,10 @@ namespace MyGame
 	void Application::Run()
 	{
 		MYGAME_PROFILE_FUNCTION();
-
 		while (m_Running)
 		{
+			Timer timer;
+
 			float time = (float)glfwGetTime();
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;

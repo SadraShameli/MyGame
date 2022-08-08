@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <DirectXMath.h>
 
 namespace MyGame
 {
@@ -8,13 +8,13 @@ namespace MyGame
 	{
 	public:
 		Camera() = default;
-		Camera(const glm::mat4& projection) : m_Projection(projection) {}
+		Camera(const DirectX::XMMATRIX projection) : m_Projection(projection) {}
 
 		virtual ~Camera() = default;
 
-		const glm::mat4& GetProjection() const { return m_Projection; }
+		const DirectX::XMMATRIX& GetProjection() const { return m_Projection; }
 
 	protected:
-		glm::mat4 m_Projection = glm::mat4(1.0f);
+		DirectX::XMMATRIX m_Projection = DirectX::XMMatrixIdentity();
 	};
 }

@@ -2,8 +2,6 @@
 
 #include "../Events/Event.h"
 
-// Window API
-#define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
@@ -38,6 +36,7 @@ namespace MyGame
 		bool IsVSync() const;
 
 		GLFWwindow* GetWindow() const { return m_Window; }
+		HWND GetNativeWindow() const { return glfwGetWin32Window(m_Window); }
 
 	private:
 		void Init(const WindowProps&);

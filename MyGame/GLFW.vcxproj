@@ -42,13 +42,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\Binary\Debug\GLFW\</OutDir>
-    <IntDir>..\BinaryIntermediate\Debug\GLFW\</IntDir>
+    <IntDir>..\BinaryInt\Debug\GLFW\</IntDir>
     <TargetName>GLFW</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\Binary\Release\GLFW\</OutDir>
-    <IntDir>..\BinaryIntermediate\Release\GLFW\</IntDir>
+    <IntDir>..\BinaryInt\Release\GLFW\</IntDir>
     <TargetName>GLFW</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -58,7 +58,7 @@
       <WarningLevel>Level3</WarningLevel>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PreprocessorDefinitions>_GLFW_WIN32;_GLFW_USE_HYBRID_HPG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\GLFW\.github;Vendor\GLFW\CMake;Vendor\GLFW\deps;Vendor\GLFW\docs;Vendor\GLFW\examples;Vendor\GLFW\include;Vendor\GLFW\src;Vendor\GLFW\tests;Vendor\GLFW\.github\workflows;Vendor\GLFW\CMake\modules;Vendor\GLFW\deps\glad;Vendor\GLFW\deps\mingw;Vendor\GLFW\deps\vs2008;Vendor\GLFW\include\GLFW;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -67,6 +67,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -80,7 +81,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;_GLFW_USE_HYBRID_HPG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\GLFW\.github;Vendor\GLFW\CMake;Vendor\GLFW\deps;Vendor\GLFW\docs;Vendor\GLFW\examples;Vendor\GLFW\include;Vendor\GLFW\src;Vendor\GLFW\tests;Vendor\GLFW\.github\workflows;Vendor\GLFW\CMake\modules;Vendor\GLFW\deps\glad;Vendor\GLFW\deps\mingw;Vendor\GLFW\deps\vs2008;Vendor\GLFW\include\GLFW;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -88,6 +89,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

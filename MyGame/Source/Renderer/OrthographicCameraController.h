@@ -7,7 +7,7 @@
 #include "../Events/AppEvent.h"
 #include "../Events/MouseEvent.h"
 
-#include <glm/glm.hpp>
+#include <DirectXMath.h>
 
 namespace MyGame
 {
@@ -38,8 +38,8 @@ namespace MyGame
 
 		bool m_Rotation;
 
-		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
-		float m_CameraRotation = 0.0f; //In degrees, in the anti-clockwise direction
+		DirectX::XMFLOAT3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
+		float m_CameraRotation = 0.0f; // In degrees, in the anti-clockwise direction
 		float m_CameraTranslationSpeed = 5.0f, m_CameraRotationSpeed = 180.0f;
 	};
 }

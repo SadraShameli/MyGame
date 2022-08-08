@@ -4,12 +4,12 @@
 
 #include "../Debugs/Instrumentor.h"
 
-#include <glm/gtc/matrix_transform.hpp>
+using namespace DirectX;
 
 namespace MyGame
 {
 	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
-		: m_ProjectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f)), m_ViewMatrix(1.0f)
+		: m_ProjectionMatrix(XMMatrixOrthographicLH(left, right, bottom, top)), m_ViewMatrix(XMMatrixIdentity())
 	{
 		MYGAME_PROFILE_FUNCTION();
 
@@ -20,7 +20,7 @@ namespace MyGame
 	{
 		MYGAME_PROFILE_FUNCTION();
 
-		m_ProjectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		m_ProjectionMatrix = XMMatrixOrthographicLH(left, right, bottom, top);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 
@@ -28,10 +28,8 @@ namespace MyGame
 	{
 		MYGAME_PROFILE_FUNCTION();
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Position) *
-			glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation), glm::vec3(0, 0, 1));
-
-		m_ViewMatrix = glm::inverse(transform);
+		XMMATRIX transform = XMMatrixTranslationFromVector(XMLoadFloat3(&m_Position)) * XMMatrixRotationAxis({ 0,0,1 }, XMConvertToRadians(m_Rotation));
+		m_ViewMatrix = XMMatrixInverse(nullptr, transform);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 }

@@ -67,13 +67,61 @@
     <ClInclude Include="Source\Debugs\Instrumentor.h">
       <Filter>Debugs</Filter>
     </ClInclude>
+    <ClInclude Include="Source\DirectX\ColorBuffer.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\CommandAllocatorPool.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\CommandContext.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\CommandList.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\CommandSignature.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\DepthBuffer.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\DescriptorHeap.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\DirectXHelpers.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
     <ClInclude Include="Source\DirectX\DirectXImpl.h">
       <Filter>DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DirectX\DirectXIncludes.h">
+    <ClInclude Include="Source\DirectX\DynamicDescriptorHeap.h">
       <Filter>DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DirectX\Shader.h">
+    <ClInclude Include="Source\DirectX\GpuBuffer.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\GpuResource.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\LinearAllocator.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\PipelineState.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\PixelBuffer.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\ReadBackBuffer.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\RootSignature.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\SamplerManager.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\UploadBuffer.h">
       <Filter>DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Source\Events\AppEvent.h">
@@ -103,6 +151,9 @@
     <ClInclude Include="Source\Renderer\Camera.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Renderer\Color.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Renderer\EditorCamera.h">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -115,11 +166,26 @@
     <ClInclude Include="Source\Renderer\Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Utilities\FileDialogs.h">
+    <ClInclude Include="Source\Renderer\Shader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer\Texture.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer\TextureManager.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utilities\CommonMath.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXHelpers.h">
-      <Filter>DirectX</Filter>
+    <ClInclude Include="Source\Utilities\FileManager.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utilities\Hash.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utilities\Utility.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -139,10 +205,55 @@
     <ClCompile Include="Source\Core\Window.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DirectX\ColorBuffer.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\CommandAllocatorPool.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\CommandContext.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\CommandList.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\CommandSignature.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\DepthBuffer.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\DescriptorHeap.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
     <ClCompile Include="Source\DirectX\DirectXImpl.cpp">
       <Filter>DirectX</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DirectX\Shader.cpp">
+    <ClCompile Include="Source\DirectX\DynamicDescriptorHeap.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\GpuBuffer.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\LinearAllocator.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\PipelineState.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\PixelBuffer.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\ReadBackBuffer.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\RootSignature.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\SamplerManager.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\UploadBuffer.cpp">
       <Filter>DirectX</Filter>
     </ClCompile>
     <ClCompile Include="Source\Layers\ImGui\ImGuiLayer.cpp">
@@ -150,6 +261,9 @@
     </ClCompile>
     <ClCompile Include="Source\Layers\Triangle\Triangle.cpp">
       <Filter>Layers\Triangle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Color.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\EditorCamera.cpp">
       <Filter>Renderer</Filter>
@@ -163,8 +277,14 @@
     <ClCompile Include="Source\Renderer\Renderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Utilities\FileDialogs.cpp">
-      <Filter>Utilities</Filter>
+    <ClCompile Include="Source\Renderer\Shader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Texture.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\TextureManager.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

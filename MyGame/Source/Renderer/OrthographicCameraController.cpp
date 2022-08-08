@@ -8,6 +8,8 @@
 
 #include "../Debugs/Instrumentor.h"
 
+using namespace DirectX;
+
 namespace MyGame
 {
 	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation)
@@ -19,24 +21,24 @@ namespace MyGame
 
 		if (Input::IsKeyPressed(Key::A))
 		{
-			m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
-			m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.x -= cos(XMConvertToRadians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.y -= sin(XMConvertToRadians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		}
 		else if (Input::IsKeyPressed(Key::D))
 		{
-			m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
-			m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.x += cos(XMConvertToRadians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.y += sin(XMConvertToRadians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		}
 
 		if (Input::IsKeyPressed(Key::W))
 		{
-			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
-			m_CameraPosition.y += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.x += -sin(XMConvertToRadians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.y += cos(XMConvertToRadians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		}
 		else if (Input::IsKeyPressed(Key::S))
 		{
-			m_CameraPosition.x -= -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
-			m_CameraPosition.y -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.x -= -sin(XMConvertToRadians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
+			m_CameraPosition.y -= cos(XMConvertToRadians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		}
 
 		if (m_Rotation)
@@ -53,9 +55,7 @@ namespace MyGame
 
 			m_Camera.SetRotation(m_CameraRotation);
 		}
-
 		m_Camera.SetPosition(m_CameraPosition);
-
 		m_CameraTranslationSpeed = m_ZoomLevel;
 	}
 
@@ -79,7 +79,7 @@ namespace MyGame
 		MYGAME_PROFILE_FUNCTION();
 
 		m_ZoomLevel -= e.GetYOffset() * 0.25f;
-		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+		m_ZoomLevel = (std::max)(m_ZoomLevel, 0.25f);
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;
 	}

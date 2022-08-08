@@ -1,13 +1,11 @@
 #pragma once
 
-// Window
-#include "Window.h"
-
-// Layers
-#include "LayerStack.h"
-#include "../Layers/ImGui/ImGuiLayer.h"
-
 #include "Base.h"
+#include "Window.h"
+#include "LayerStack.h"
+
+#include "../Layers/ImGui/ImGuiLayer.h"
+#include "../Layers/Triangle/Triangle.h"
 
 namespace MyGame
 {
@@ -27,7 +25,7 @@ namespace MyGame
 
 		Window& GetWindow() { return *m_Window; }
 		GLFWwindow* GetNativeWindow() const { return m_Window->GetWindow(); }
-		HWND GetWin32Window() const { return glfwGetWin32Window(m_Window->GetWindow()); }
+		HWND GetWin32Window() const { return m_Window->GetNativeWindow(); }
 
 	private:
 		bool OnWindowClose(WindowCloseEvent&);

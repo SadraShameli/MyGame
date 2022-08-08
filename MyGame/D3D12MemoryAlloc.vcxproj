@@ -42,13 +42,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\Binary\Debug\D3D12MemoryAlloc\</OutDir>
-    <IntDir>..\BinaryIntermediate\Debug\D3D12MemoryAlloc\</IntDir>
+    <IntDir>..\BinaryInt\Debug\D3D12MemoryAlloc\</IntDir>
     <TargetName>D3D12MemoryAlloc</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\Binary\Release\D3D12MemoryAlloc\</OutDir>
-    <IntDir>..\BinaryIntermediate\Release\D3D12MemoryAlloc\</IntDir>
+    <IntDir>..\BinaryInt\Release\D3D12MemoryAlloc\</IntDir>
     <TargetName>D3D12MemoryAlloc</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -57,7 +57,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\D3D12MemoryAlloc\bin;Vendor\D3D12MemoryAlloc\docs;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;Vendor\D3D12MemoryAlloc\tools;Vendor\D3D12MemoryAlloc\docs\gfx;Vendor\D3D12MemoryAlloc\docs\html;Vendor\D3D12MemoryAlloc\docs\html\search;Vendor\D3D12MemoryAlloc\src\Shaders;Vendor\D3D12MemoryAlloc\tools\GpuMemDumpVis;Vendor\D3D12MemoryAlloc\tools\GpuMemDumpVis\README_files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -66,7 +66,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -79,7 +79,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;Vendor\Box2D;Vendor\GLFW;Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\D3D12MemoryAlloc\bin;Vendor\D3D12MemoryAlloc\docs;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;Vendor\D3D12MemoryAlloc\tools;Vendor\D3D12MemoryAlloc\docs\gfx;Vendor\D3D12MemoryAlloc\docs\html;Vendor\D3D12MemoryAlloc\docs\html\search;Vendor\D3D12MemoryAlloc\src\Shaders;Vendor\D3D12MemoryAlloc\tools\GpuMemDumpVis;Vendor\D3D12MemoryAlloc\tools\GpuMemDumpVis\README_files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -87,7 +87,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -95,6 +95,9 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Vendor\D3D12MemoryAlloc\src\D3D12MemAlloc.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

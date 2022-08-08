@@ -42,13 +42,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\Binary\Debug\ImGui\</OutDir>
-    <IntDir>..\BinaryIntermediate\Debug\ImGui\</IntDir>
+    <IntDir>..\BinaryInt\Debug\ImGui\</IntDir>
     <TargetName>ImGui</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\Binary\Release\ImGui\</OutDir>
-    <IntDir>..\BinaryIntermediate\Release\ImGui\</IntDir>
+    <IntDir>..\BinaryInt\Release\ImGui\</IntDir>
     <TargetName>ImGui</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -57,7 +57,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\ImGui\.github;Vendor\ImGui\backends;Vendor\ImGui\docs;Vendor\ImGui\examples;Vendor\ImGui\misc;Vendor\ImGui\.github\workflows;Vendor\ImGui\backends\vulkan;Vendor\ImGui\examples\example_allegro5;Vendor\ImGui\examples\example_android_opengl3;Vendor\ImGui\examples\example_apple_metal;Vendor\ImGui\examples\example_apple_opengl2;Vendor\ImGui\examples\example_emscripten_opengl3;Vendor\ImGui\examples\example_emscripten_wgpu;Vendor\ImGui\examples\example_glfw_metal;Vendor\ImGui\examples\example_glfw_opengl2;Vendor\ImGui\examples\example_glfw_opengl3;Vendor\ImGui\examples\example_glfw_vulkan;Vendor\ImGui\examples\example_glut_opengl2;Vendor\ImGui\examples\example_null;Vendor\ImGui\examples\example_sdl_directx11;Vendor\ImGui\examples\example_sdl_metal;Vendor\ImGui\examples\example_sdl_opengl2;Vendor\ImGui\examples\example_sdl_opengl3;Vendor\ImGui\examples\example_sdl_sdlrenderer;Vendor\ImGui\examples\example_sdl_vulkan;Vendor\ImGui\examples\example_win32_directx10;Vendor\ImGui\examples\example_win32_directx11;Vendor\ImGui\examples\example_win32_directx12;Vendor\ImGui\examples\example_win32_directx9;Vendor\ImGui\examples\libs;Vendor\ImGui\examples\example_android_opengl3\android;Vendor\ImGui\examples\example_android_opengl3\android\app;Vendor\ImGui\examples\example_android_opengl3\android\app\src;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main\java;Vendor\ImGui\examples\example_apple_metal\example_apple_metal.xcodeproj;Vendor\ImGui\examples\example_apple_metal\iOS;Vendor\ImGui\examples\example_apple_metal\macOS;Vendor\ImGui\examples\example_apple_opengl2\example_apple_opengl2.xcodeproj;Vendor\ImGui\examples\example_emscripten_wgpu\web;Vendor\ImGui\examples\libs\glfw;Vendor\ImGui\examples\libs\usynergy;Vendor\ImGui\examples\libs\glfw\include;Vendor\ImGui\examples\libs\glfw\lib-vc2010-32;Vendor\ImGui\examples\libs\glfw\lib-vc2010-64;Vendor\ImGui\examples\libs\glfw\include\GLFW;Vendor\ImGui\misc\cpp;Vendor\ImGui\misc\debuggers;Vendor\ImGui\misc\fonts;Vendor\ImGui\misc\freetype;Vendor\ImGui\misc\single_file;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -66,7 +66,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -79,7 +79,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Vendor\ImGui\.github;Vendor\ImGui\backends;Vendor\ImGui\docs;Vendor\ImGui\examples;Vendor\ImGui\misc;Vendor\ImGui\.github\workflows;Vendor\ImGui\backends\vulkan;Vendor\ImGui\examples\example_allegro5;Vendor\ImGui\examples\example_android_opengl3;Vendor\ImGui\examples\example_apple_metal;Vendor\ImGui\examples\example_apple_opengl2;Vendor\ImGui\examples\example_emscripten_opengl3;Vendor\ImGui\examples\example_emscripten_wgpu;Vendor\ImGui\examples\example_glfw_metal;Vendor\ImGui\examples\example_glfw_opengl2;Vendor\ImGui\examples\example_glfw_opengl3;Vendor\ImGui\examples\example_glfw_vulkan;Vendor\ImGui\examples\example_glut_opengl2;Vendor\ImGui\examples\example_null;Vendor\ImGui\examples\example_sdl_directx11;Vendor\ImGui\examples\example_sdl_metal;Vendor\ImGui\examples\example_sdl_opengl2;Vendor\ImGui\examples\example_sdl_opengl3;Vendor\ImGui\examples\example_sdl_sdlrenderer;Vendor\ImGui\examples\example_sdl_vulkan;Vendor\ImGui\examples\example_win32_directx10;Vendor\ImGui\examples\example_win32_directx11;Vendor\ImGui\examples\example_win32_directx12;Vendor\ImGui\examples\example_win32_directx9;Vendor\ImGui\examples\libs;Vendor\ImGui\examples\example_android_opengl3\android;Vendor\ImGui\examples\example_android_opengl3\android\app;Vendor\ImGui\examples\example_android_opengl3\android\app\src;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main\java;Vendor\ImGui\examples\example_apple_metal\example_apple_metal.xcodeproj;Vendor\ImGui\examples\example_apple_metal\iOS;Vendor\ImGui\examples\example_apple_metal\macOS;Vendor\ImGui\examples\example_apple_opengl2\example_apple_opengl2.xcodeproj;Vendor\ImGui\examples\example_emscripten_wgpu\web;Vendor\ImGui\examples\libs\glfw;Vendor\ImGui\examples\libs\usynergy;Vendor\ImGui\examples\libs\glfw\include;Vendor\ImGui\examples\libs\glfw\lib-vc2010-32;Vendor\ImGui\examples\libs\glfw\lib-vc2010-64;Vendor\ImGui\examples\libs\glfw\include\GLFW;Vendor\ImGui\misc\cpp;Vendor\ImGui\misc\debuggers;Vendor\ImGui\misc\fonts;Vendor\ImGui\misc\freetype;Vendor\ImGui\misc\single_file;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -87,7 +87,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

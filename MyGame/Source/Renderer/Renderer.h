@@ -6,6 +6,9 @@ namespace MyGame
 	{
 	public:
 		static void Init();
+		static void InitImGui();
+		static void RenderImGui();
+
 		static void OnWindowResize(const int, const int);
 	};
 }

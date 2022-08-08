@@ -9,8 +9,6 @@
 #include "../../Debugs/Instrumentor.h"
 #include "../../Debugs/DebugHelpers.h"
 
-#include "../../DirectX/DirectXImpl.h"
-
 namespace MyGame
 {
 	TriangleLayer::TriangleLayer() : Layer("Triangle") {}
@@ -18,6 +16,7 @@ namespace MyGame
 	void TriangleLayer::OnAttach()
 	{
 		MYGAME_PROFILE_FUNCTION();
+
 
 	}
 

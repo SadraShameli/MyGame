@@ -43,14 +43,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Binary\Debug\MyGame\</OutDir>
-    <IntDir>..\BinaryIntermediate\Debug\MyGame\</IntDir>
+    <IntDir>..\BinaryInt\Debug\MyGame\</IntDir>
     <TargetName>MyGame</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Binary\Release\MyGame\</OutDir>
-    <IntDir>..\BinaryIntermediate\Release\MyGame\</IntDir>
+    <IntDir>..\BinaryInt\Release\MyGame\</IntDir>
     <TargetName>MyGame</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
@@ -60,8 +60,8 @@
       <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_EXPOSE_NATIVE_WIN32;MYGAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>Source;Vendor\Box2D;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -70,6 +70,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/Gm- /Ob2 /Ot /GL /GT %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -77,7 +78,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DirectXTK12.lib;d3d12.lib;d3dcompiler.lib;dxcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -85,8 +86,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MYGAME_RELEASE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Vendor\Box2D;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\D3D12MemoryAlloc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_EXPOSE_NATIVE_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>Source;Vendor\Box2D;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -100,11 +101,10 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DirectXTK12.lib;d3d12.lib;d3dcompiler.lib;dxcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DirectXHelpers.h" />
     <ClInclude Include="Source\CommonHeaders.h" />
     <ClInclude Include="Source\Core\Application.h" />
     <ClInclude Include="Source\Core\Base.h" />
@@ -117,9 +117,25 @@
     <ClInclude Include="Source\Core\Window.h" />
     <ClInclude Include="Source\Debugs\DebugHelpers.h" />
     <ClInclude Include="Source\Debugs\Instrumentor.h" />
+    <ClInclude Include="Source\DirectX\ColorBuffer.h" />
+    <ClInclude Include="Source\DirectX\CommandAllocatorPool.h" />
+    <ClInclude Include="Source\DirectX\CommandContext.h" />
+    <ClInclude Include="Source\DirectX\CommandList.h" />
+    <ClInclude Include="Source\DirectX\CommandSignature.h" />
+    <ClInclude Include="Source\DirectX\DepthBuffer.h" />
+    <ClInclude Include="Source\DirectX\DescriptorHeap.h" />
+    <ClInclude Include="Source\DirectX\DirectXHelpers.h" />
     <ClInclude Include="Source\DirectX\DirectXImpl.h" />
-    <ClInclude Include="Source\DirectX\DirectXIncludes.h" />
-    <ClInclude Include="Source\DirectX\Shader.h" />
+    <ClInclude Include="Source\DirectX\DynamicDescriptorHeap.h" />
+    <ClInclude Include="Source\DirectX\GpuBuffer.h" />
+    <ClInclude Include="Source\DirectX\GpuResource.h" />
+    <ClInclude Include="Source\DirectX\LinearAllocator.h" />
+    <ClInclude Include="Source\DirectX\PipelineState.h" />
+    <ClInclude Include="Source\DirectX\PixelBuffer.h" />
+    <ClInclude Include="Source\DirectX\ReadBackBuffer.h" />
+    <ClInclude Include="Source\DirectX\RootSignature.h" />
+    <ClInclude Include="Source\DirectX\SamplerManager.h" />
+    <ClInclude Include="Source\DirectX\UploadBuffer.h" />
     <ClInclude Include="Source\Events\AppEvent.h" />
     <ClInclude Include="Source\Events\Event.h" />
     <ClInclude Include="Source\Events\EventCodes\KeyCodes.h" />
@@ -129,11 +145,18 @@
     <ClInclude Include="Source\Layers\ImGui\ImGuiLayer.h" />
     <ClInclude Include="Source\Layers\Triangle\Triangle.h" />
     <ClInclude Include="Source\Renderer\Camera.h" />
+    <ClInclude Include="Source\Renderer\Color.h" />
     <ClInclude Include="Source\Renderer\EditorCamera.h" />
     <ClInclude Include="Source\Renderer\OrthographicCamera.h" />
     <ClInclude Include="Source\Renderer\OrthographicCameraController.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
-    <ClInclude Include="Source\Utilities\FileDialogs.h" />
+    <ClInclude Include="Source\Renderer\Shader.h" />
+    <ClInclude Include="Source\Renderer\Texture.h" />
+    <ClInclude Include="Source\Renderer\TextureManager.h" />
+    <ClInclude Include="Source\Utilities\CommonMath.h" />
+    <ClInclude Include="Source\Utilities\FileManager.h" />
+    <ClInclude Include="Source\Utilities\Hash.h" />
+    <ClInclude Include="Source\Utilities\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CommonHeaders.cpp">
@@ -144,15 +167,33 @@
     <ClCompile Include="Source\Core\LayerStack.cpp" />
     <ClCompile Include="Source\Core\Log.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
+    <ClCompile Include="Source\DirectX\ColorBuffer.cpp" />
+    <ClCompile Include="Source\DirectX\CommandAllocatorPool.cpp" />
+    <ClCompile Include="Source\DirectX\CommandContext.cpp" />
+    <ClCompile Include="Source\DirectX\CommandList.cpp" />
+    <ClCompile Include="Source\DirectX\CommandSignature.cpp" />
+    <ClCompile Include="Source\DirectX\DepthBuffer.cpp" />
+    <ClCompile Include="Source\DirectX\DescriptorHeap.cpp" />
     <ClCompile Include="Source\DirectX\DirectXImpl.cpp" />
-    <ClCompile Include="Source\DirectX\Shader.cpp" />
+    <ClCompile Include="Source\DirectX\DynamicDescriptorHeap.cpp" />
+    <ClCompile Include="Source\DirectX\GpuBuffer.cpp" />
+    <ClCompile Include="Source\DirectX\LinearAllocator.cpp" />
+    <ClCompile Include="Source\DirectX\PipelineState.cpp" />
+    <ClCompile Include="Source\DirectX\PixelBuffer.cpp" />
+    <ClCompile Include="Source\DirectX\ReadBackBuffer.cpp" />
+    <ClCompile Include="Source\DirectX\RootSignature.cpp" />
+    <ClCompile Include="Source\DirectX\SamplerManager.cpp" />
+    <ClCompile Include="Source\DirectX\UploadBuffer.cpp" />
     <ClCompile Include="Source\Layers\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="Source\Layers\Triangle\Triangle.cpp" />
+    <ClCompile Include="Source\Renderer\Color.cpp" />
     <ClCompile Include="Source\Renderer\EditorCamera.cpp" />
     <ClCompile Include="Source\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="Source\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
-    <ClCompile Include="Source\Utilities\FileDialogs.cpp" />
+    <ClCompile Include="Source\Renderer\Shader.cpp" />
+    <ClCompile Include="Source\Renderer\Texture.cpp" />
+    <ClCompile Include="Source\Renderer\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Box2D.vcxproj">
@@ -163,6 +204,9 @@
     </ProjectReference>
     <ProjectReference Include="ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="D3D12MemoryAlloc.vcxproj">
+      <Project>{07890626-F381-2578-1CB4-0AFD080C0584}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

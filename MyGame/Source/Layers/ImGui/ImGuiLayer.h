@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Core/Layer.h"
+#include "../../Core/Timer.h"
 
 #include "../../Events/AppEvent.h"
 #include "../../Events/EventCodes/KeyCodes.h"

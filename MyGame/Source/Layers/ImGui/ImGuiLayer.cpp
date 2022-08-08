@@ -4,12 +4,11 @@
 
 #include "../../Core/Window.h" 
 #include "../../Core/Application.h"
-
 #include "../../Core/Log.h"
+#include "../../Renderer/Renderer.h"
+
 #include "../../Debugs/Instrumentor.h"
 #include "../../Debugs/DebugHelpers.h"
-
-#include "../../DirectX/DirectXImpl.h"
 
 // Graphics Framework
 #include <GLFW/glfw3.h>
@@ -51,7 +50,7 @@ namespace MyGame
 
 		// Initialize Graphics API
 		MYGAME_ASSERT(ImGui_ImplGlfw_InitForOther(window, true));
-		DirectX.InitImGui();
+		Renderer::InitImGui();
 	}
 
 	void ImGuiLayer::OnDetach()
@@ -71,6 +70,15 @@ namespace MyGame
 			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
 			e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
 		}
+	}
+
+	void ImGuiLayer::Begin()
+	{
+		MYGAME_PROFILE_FUNCTION();
+
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 	}
 
 	int temp1 = 0;
@@ -102,24 +110,16 @@ namespace MyGame
 		ImGui::SliderInt(" ", &temp1, 0, 8);
 	}
 
-	void ImGuiLayer::Begin()
-	{
-		MYGAME_PROFILE_FUNCTION();
-
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-	}
-
 	void ImGuiLayer::End()
 	{
 		MYGAME_PROFILE_FUNCTION();
 
 		// Rendering ImGui
 		ImGui::GetIO().DisplaySize = ImVec2((float)application.GetWindow().GetWidth(), (float)application.GetWindow().GetHeight());
+		ImGui::Render();
 
 		// Rendering DirectX
-		DirectX.RenderImGui();
+		Renderer::RenderImGui();
 	}
 
 	void ImGuiLayer::SetDarkMode()
