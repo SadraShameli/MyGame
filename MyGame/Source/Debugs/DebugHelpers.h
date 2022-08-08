@@ -30,11 +30,11 @@
 
 #else
 
-#define MYGAME_ASSERT(x, ...) x
+#define MYGAME_ASSERT(x, ...) (x)
 #define HZ_DEBUGBREAK()
 
-#define MYGAME_HRESULT_TOSTR(x) x
-#define MYGAME_VERIFY_HRESULT(x) x
+#define MYGAME_HRESULT_TOSTR(x) 
+#define MYGAME_VERIFY_HRESULT(x) 
 #define MYGAME_INFO_EVENTS(x)
 
 #endif

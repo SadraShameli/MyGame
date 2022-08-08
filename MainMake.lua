@@ -25,7 +25,6 @@ workspace "MyGame"
 		"MultiProcessorCompile"		
 	}	
 
-	staticruntime "On"
 	optimize "Speed"		
 
 outputdir = "%{cfg.buildcfg}"
@@ -49,8 +48,7 @@ project "MyGame"
 
 	defines
 	{
-		"_CRT_SECURE_NO_WARNINGS",
-		"GLFW_EXPOSE_NATIVE_WIN32",
+		"_CRT_SECURE_NO_WARNINGS",		
 	}
 
 	includedirs
@@ -71,7 +69,7 @@ project "MyGame"
 		"Box2D",
 		"GLFW",
 		"ImGui",
-		"DirectXTK12",
+		"DirectXTK_Desktop_2022_Win10",
 		"D3D12MemoryAlloc",
 		"d3d12.lib",
 		"d3dcompiler.lib",
@@ -212,7 +210,7 @@ project "ImGui"
 		"%{prj.location}/Vendor/%{prj.name}/**",
 	}
 
-externalproject ("DirectXTK_Windows10_2022")
+externalproject ("DirectXTK_Desktop_2022_Win10")
  	location ("%{wks.name}/Vendor/DirectXTK12")
 	uuid "3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0"
 	kind "StaticLib"

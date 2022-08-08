@@ -32,7 +32,7 @@ namespace MyGame
 		void SetClearColor(Color ClearColor) { m_ClearColor = ClearColor; }
 		void SetMsaaMode(uint32_t NumColorSamples, uint32_t NumCoverageSamples)
 		{
-			MYGAME_ASSERT(NumCoverageSamples >= NumColorSamples);
+			assert(NumCoverageSamples >= NumColorSamples);
 			m_FragmentCount = NumColorSamples;
 			m_SampleCount = NumCoverageSamples;
 		}

@@ -57,11 +57,10 @@ namespace MyGame
 	{
 		if (m_CurrentOffset == 0)
 		{
-			MYGAME_ASSERT(m_CurrentHeapPtr == nullptr);
+			MYGAME_ASSERT(!m_CurrentHeapPtr);
 			return;
 		}
 
-		MYGAME_ASSERT(m_CurrentHeapPtr != nullptr);
 		m_RetiredHeaps.push_back(m_CurrentHeapPtr);
 		m_CurrentHeapPtr = nullptr;
 		m_CurrentOffset = 0;

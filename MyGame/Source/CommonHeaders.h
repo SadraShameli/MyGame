@@ -30,6 +30,7 @@
 #include <dxgi1_6.h>
 #include <dxcapi.h>
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 
 // Debug
 #ifdef MYGAME_DEBUG

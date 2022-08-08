@@ -16,7 +16,7 @@ namespace MyGame
 		void SetRootSignature(const RootSignature& BindMappings) { m_RootSignature = &BindMappings; }
 		const RootSignature& GetRootSignature() const
 		{
-			MYGAME_ASSERT(m_RootSignature != nullptr);
+			assert(m_RootSignature != nullptr);
 			return *m_RootSignature;
 		}
 

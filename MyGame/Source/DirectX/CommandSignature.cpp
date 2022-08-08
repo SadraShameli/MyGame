@@ -55,7 +55,7 @@ namespace MyGame
 
 		ID3D12RootSignature* pRootSig = RootSignature ? RootSignature->GetSignature() : nullptr;
 		if (RequiresRootSignature)
-			MYGAME_ASSERT(pRootSig != nullptr)
+			assert(pRootSig != nullptr);
 		else
 			pRootSig = nullptr;
 

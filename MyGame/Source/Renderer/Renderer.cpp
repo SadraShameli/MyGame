@@ -8,8 +8,6 @@
 #include "../DirectX/DirectXImpl.h"
 
 #include <backends/imgui_impl_dx12.h>
-#include <PlatformHelpers.h>
-#include <DirectXMath.h>
 
 using namespace DirectX;
 

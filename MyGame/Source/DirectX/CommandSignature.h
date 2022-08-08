@@ -79,13 +79,13 @@ namespace MyGame
 
 		IndirectParameter& operator[] (size_t EntryIndex)
 		{
-			MYGAME_ASSERT(EntryIndex < m_NumParameters);
+			assert(EntryIndex < m_NumParameters);
 			return m_ParamArray.get()[EntryIndex];
 		}
 
 		const IndirectParameter& operator[] (size_t EntryIndex) const
 		{
-			MYGAME_ASSERT(EntryIndex < m_NumParameters);
+			assert(EntryIndex < m_NumParameters);
 			return m_ParamArray.get()[EntryIndex];
 		}
 
