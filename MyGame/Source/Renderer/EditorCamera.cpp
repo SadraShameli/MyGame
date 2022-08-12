@@ -2,8 +2,8 @@
 
 #include "EditorCamera.h"
 
-#include "../Core/Input.h"
 #include "../Core/Base.h"
+#include "../Core/Input.h"
 
 using namespace DirectX;
 
@@ -76,11 +76,7 @@ namespace MyGame
 		UpdateView();
 	}
 
-	void EditorCamera::OnEvent(Event& e)
-	{
-		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<MouseScrolledEvent>(MYGAME_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
-	}
+	void EditorCamera::OnEvent(Event& e) { MYGAME_BIND_FN(EditorCamera::OnMouseScroll); }
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
 	{

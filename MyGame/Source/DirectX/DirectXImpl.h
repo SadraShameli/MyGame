@@ -10,41 +10,32 @@ namespace MyGame
 		static void OnInit();
 		static void OnDestroy();
 
-	private:
 		inline static constexpr UINT FrameCount = 3;
-		inline static constexpr UINT NumContexts = 3;
-
-		struct FrameContext
-		{
-			Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CommandAllocator;
-			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> CommandList;
-			UINT64 FenceValue;
-		};
-		inline static FrameContext m_frameContext[FrameCount] = {};
 
 		inline static CD3DX12_VIEWPORT m_viewport;
 		inline static CD3DX12_RECT m_scissorRect;
-		inline static Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
-		inline static Microsoft::WRL::ComPtr<ID3D12Device> m_device;
-		inline static Microsoft::WRL::ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
-		inline static Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencil;
-		inline static Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
-		inline static Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
-		inline static Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
-		inline static Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
-		inline static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-		inline static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_srvHeap;
-		inline static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
-		inline static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_cbvSrvHeap;
-		inline static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_samplerHeap;
-		inline static Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;
+		inline static IDXGISwapChain3* m_swapChain;
+		inline static ID3D12Device* D12Device;
+		inline static ID3D12Resource* m_renderTargets[FrameCount];
+		inline static ID3D12Resource* m_depthStencil;
+		inline static ID3D12CommandAllocator* m_commandAllocator;
+		inline static ID3D12GraphicsCommandList* m_commandList;
+		inline static ID3D12CommandQueue* m_commandQueue;
+		inline static ID3D12RootSignature* m_rootSignature;
+		inline static ID3D12DescriptorHeap* m_rtvHeap;
+		inline static ID3D12DescriptorHeap* m_srvHeap;
+		inline static ID3D12DescriptorHeap* m_dsvHeap;
+		inline static ID3D12DescriptorHeap* m_cbvSrvHeap;
+		inline static ID3D12DescriptorHeap* m_samplerHeap;
+		inline static ID3D12PipelineState* m_pipelineState;
+		inline static ID3D12Fence* m_fence;
 
 		inline static UINT m_frameIndex;
 		inline static HANDLE m_fenceEvent;
-		inline static Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
 		inline static UINT64 m_fenceValue;
 		inline static UINT64 m_LastfenceValue;
 		inline static UINT m_rtvDescriptorSize;
+		inline static UINT m_dsvDescriptorSize;
 		inline static bool m_useWarpDevice = false;
 
 		static void LoadPipeline();
@@ -55,12 +46,7 @@ namespace MyGame
 		static void WaitForGpu();
 		static void GetHardwareAdapter(IDXGIFactory4*, IDXGIAdapter1**);
 
-		// Remove
-		static void WaitForLastSubmittedFrame();
-		static FrameContext* WaitForNextFrameResources();
-		inline static HANDLE m_swapChainWaitableObject = NULL;
-
-	private:
+	protected:
 		friend class Renderer;
 		friend class DescriptorHeap;
 		friend class DescriptorAllocator;

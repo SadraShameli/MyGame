@@ -61,7 +61,7 @@ namespace MyGame
 			m_SRVHandle = DirectXImpl::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		}
 
-		ID3D12Resource* Resource = m_pResource.Get();
+		ID3D12Resource* Resource = m_pResource;
 		Device->CreateRenderTargetView(Resource, &RTVDesc, m_RTVHandle);
 		Device->CreateShaderResourceView(Resource, &SRVDesc, m_SRVHandle);
 
@@ -79,10 +79,10 @@ namespace MyGame
 
 	void ColorBuffer::CreateFromSwapChain(const std::wstring& Name, ID3D12Resource* BaseResource)
 	{
-		AssociateWithResource(DirectXImpl::m_device.Get(), Name, BaseResource, D3D12_RESOURCE_STATE_PRESENT);
+		AssociateWithResource(DirectXImpl::D12Device, Name, BaseResource, D3D12_RESOURCE_STATE_PRESENT);
 
 		m_RTVHandle = DirectXImpl::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		DirectXImpl::m_device->CreateRenderTargetView(m_pResource.Get(), nullptr, m_RTVHandle);
+		DirectXImpl::D12Device->CreateRenderTargetView(m_pResource, nullptr, m_RTVHandle);
 	}
 
 	void ColorBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t NumMips, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMem)
@@ -101,8 +101,8 @@ namespace MyGame
 		ClearValue.Color[2] = m_ClearColor.B();
 		ClearValue.Color[3] = m_ClearColor.A();
 
-		CreateTextureResource(DirectXImpl::m_device.Get(), Name, ResourceDesc, ClearValue, VidMem);
-		CreateDerivedViews(DirectXImpl::m_device.Get(), Format, 1, NumMips);
+		CreateTextureResource(DirectXImpl::D12Device, Name, ResourceDesc, ClearValue, VidMem);
+		CreateDerivedViews(DirectXImpl::D12Device, Format, 1, NumMips);
 	}
 
 	void ColorBuffer::CreateArray(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t ArrayCount, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMem)
@@ -117,8 +117,8 @@ namespace MyGame
 		ClearValue.Color[2] = m_ClearColor.B();
 		ClearValue.Color[3] = m_ClearColor.A();
 
-		CreateTextureResource(DirectXImpl::m_device.Get(), Name, ResourceDesc, ClearValue, VidMem);
-		CreateDerivedViews(DirectXImpl::m_device.Get(), Format, ArrayCount, 1);
+		CreateTextureResource(DirectXImpl::D12Device, Name, ResourceDesc, ClearValue, VidMem);
+		CreateDerivedViews(DirectXImpl::D12Device, Format, ArrayCount, 1);
 	}
 
 	void ColorBuffer::GenerateMipMaps(CommandContext& BaseContext)

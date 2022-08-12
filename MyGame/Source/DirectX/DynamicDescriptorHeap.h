@@ -11,7 +11,7 @@ namespace MyGame
 	public:
 		DynamicDescriptorHeap(CommandContext& OwningContext, D3D12_DESCRIPTOR_HEAP_TYPE HeapType);
 
-		static void DestroyAll(void)
+		static void DestroyAll()
 		{
 			sm_DescriptorHeapPool[0].clear();
 			sm_DescriptorHeapPool[1].clear();

@@ -9,10 +9,10 @@ namespace MyGame
 	public:
 		WindowResizeEvent(unsigned int width, unsigned int height) : m_Width(width), m_Height(height) {}
 
-		unsigned int GetWidth() const { return m_Width; }
-		unsigned int GetHeight() const { return m_Height; }
+		inline unsigned int GetWidth() { return m_Width; }
+		inline unsigned int GetHeight() { return m_Height; }
 
-		std::string ToString() const override { return  "WindowResizeEvent: " + std::to_string(m_Width) + ", " + std::to_string(m_Height); }
+		inline std::string ToString() override { return  "WindowResizeEvent: " + std::to_string(m_Width) + ", " + std::to_string(m_Height); }
 
 		EVENT_CLASS_TYPE(WindowResize) EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
@@ -20,35 +20,18 @@ namespace MyGame
 		unsigned int m_Width, m_Height;
 	};
 
-	class WindowCloseEvent : public Event
+	class WindowMinimizeEvent : public Event
 	{
 	public:
-		WindowCloseEvent() = default;
+		WindowMinimizeEvent(bool minimized) : m_Minimized(minimized) {}
 
-		EVENT_CLASS_TYPE(WindowClose) EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
+		inline bool GetMinimized() { return m_Minimized; }
 
-	class AppTickEvent : public Event
-	{
-	public:
-		AppTickEvent() = default;
+		inline std::string ToString() override { return  "WindowMinimizeEvent: " + std::to_string(m_Minimized); }
 
-		EVENT_CLASS_TYPE(AppTick) EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
+		EVENT_CLASS_TYPE(WindowMinimize) EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
-	class AppUpdateEvent : public Event
-	{
-	public:
-		AppUpdateEvent() = default;
-
-		EVENT_CLASS_TYPE(AppUpdate)	EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
-
-	class AppRenderEvent : public Event
-	{
-	public:
-		AppRenderEvent() = default;
-
-		EVENT_CLASS_TYPE(AppRender)	EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	private:
+		bool m_Minimized;
 	};
 }

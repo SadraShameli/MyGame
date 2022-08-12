@@ -20,13 +20,13 @@ namespace MyGame
 	{
 		std::lock_guard<std::mutex> LockGuard(sm_AllocationMutex);
 
-		D3D12_DESCRIPTOR_HEAP_DESC Desc;
+		D3D12_DESCRIPTOR_HEAP_DESC Desc = {};
 		Desc.Type = Type;
 		Desc.NumDescriptors = sm_NumDescriptorsPerHeap;
 		Desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
 		ComPtr<ID3D12DescriptorHeap> pHeap;
-		ThrowIfFailed(DirectXImpl::m_device->CreateDescriptorHeap(&Desc, IID_PPV_ARGS(&pHeap)));
+		ThrowIfFailed(DirectXImpl::D12Device->CreateDescriptorHeap(&Desc, IID_PPV_ARGS(&pHeap)));
 		sm_DescriptorHeapPool.emplace_back(pHeap);
 		return pHeap.Get();
 	}
@@ -40,7 +40,7 @@ namespace MyGame
 			m_RemainingFreeHandles = sm_NumDescriptorsPerHeap;
 
 			if (m_DescriptorSize == 0)
-				m_DescriptorSize = DirectXImpl::m_device->GetDescriptorHandleIncrementSize(m_Type);
+				m_DescriptorSize = DirectXImpl::D12Device->GetDescriptorHandleIncrementSize(m_Type);
 		}
 
 		D3D12_CPU_DESCRIPTOR_HANDLE ret = m_CurrentHandle;
@@ -49,18 +49,15 @@ namespace MyGame
 		return ret;
 	}
 
-	void DescriptorHeap::Create(const std::wstring_view& Name, D3D12_DESCRIPTOR_HEAP_TYPE Type, uint32_t MaxCount)
+	void DescriptorHeap::Create(const std::wstring& Name, D3D12_DESCRIPTOR_HEAP_TYPE Type, uint32_t MaxCount)
 	{
 		m_HeapDesc.Type = Type;
 		m_HeapDesc.NumDescriptors = MaxCount;
 		m_HeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-		ThrowIfFailed(DirectXImpl::m_device->CreateDescriptorHeap(&m_HeapDesc, IID_PPV_ARGS(m_Heap.ReleaseAndGetAddressOf())));
+		ThrowIfFailed(DirectXImpl::D12Device->CreateDescriptorHeap(&m_HeapDesc, IID_PPV_ARGS(m_Heap.ReleaseAndGetAddressOf())));
+		NAME_D3D12_OBJ_STR(m_Heap, Name);
 
-#ifdef MYGAME_DEBUG
-		m_Heap->SetName(Name.data());
-#endif
-
-		m_DescriptorSize = DirectXImpl::m_device->GetDescriptorHandleIncrementSize(m_HeapDesc.Type);
+		m_DescriptorSize = DirectXImpl::D12Device->GetDescriptorHandleIncrementSize(m_HeapDesc.Type);
 		m_NumFreeDescriptors = m_HeapDesc.NumDescriptors;
 		m_FirstHandle = DescriptorHandle(m_Heap->GetCPUDescriptorHandleForHeapStart(), m_Heap->GetGPUDescriptorHandleForHeapStart());
 		m_NextFreeHandle = m_FirstHandle;
@@ -75,7 +72,7 @@ namespace MyGame
 		return ret;
 	}
 
-	bool DescriptorHeap::ValidateHandle(const DescriptorHandle& DHandle) const
+	bool DescriptorHeap::ValidateHandle(DescriptorHandle& DHandle)
 	{
 		if (DHandle.GetCpuPtr() < m_FirstHandle.GetCpuPtr() || DHandle.GetCpuPtr() >= m_FirstHandle.GetCpuPtr() + m_HeapDesc.NumDescriptors * m_DescriptorSize)
 			return false;

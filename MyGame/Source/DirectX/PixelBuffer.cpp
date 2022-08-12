@@ -277,12 +277,12 @@ namespace MyGame
 		}
 	}
 
-	void PixelBuffer::AssociateWithResource(ID3D12Device* Device, const std::wstring_view& Name, ID3D12Resource* Resource, D3D12_RESOURCE_STATES CurrentState)
+	void PixelBuffer::AssociateWithResource(ID3D12Device* Device, const std::wstring& Name, ID3D12Resource* Resource, D3D12_RESOURCE_STATES CurrentState)
 	{
 		MYGAME_ASSERT(Resource != nullptr);
 		D3D12_RESOURCE_DESC ResourceDesc = Resource->GetDesc();
 
-		m_pResource.Attach(Resource);
+		m_pResource->QueryInterface(&Resource);
 		m_UsageState = CurrentState;
 
 		m_Width = (uint32_t)ResourceDesc.Width;
@@ -290,7 +290,7 @@ namespace MyGame
 		m_ArraySize = ResourceDesc.DepthOrArraySize;
 		m_Format = ResourceDesc.Format;
 
-		NAME_D3D12_OBJECT_STR(m_pResource, Name.data());
+		NAME_D3D12_OBJ_STR(m_pResource, Name);
 	}
 
 	D3D12_RESOURCE_DESC PixelBuffer::DescribeTex2D(uint32_t Width, uint32_t Height, uint32_t DepthOrArraySize, uint32_t NumMips, DXGI_FORMAT Format, UINT Flags)
@@ -316,7 +316,7 @@ namespace MyGame
 		return Desc;
 	}
 
-	void PixelBuffer::CreateTextureResource(ID3D12Device* Device, const std::wstring_view& Name, const D3D12_RESOURCE_DESC& ResourceDesc, D3D12_CLEAR_VALUE ClearValue, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
+	void PixelBuffer::CreateTextureResource(ID3D12Device* Device, const std::wstring& Name, const D3D12_RESOURCE_DESC& ResourceDesc, D3D12_CLEAR_VALUE ClearValue, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
 	{
 		Destroy();
 
@@ -326,10 +326,10 @@ namespace MyGame
 		m_UsageState = D3D12_RESOURCE_STATE_COMMON;
 		m_GpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
 
-		NAME_D3D12_OBJECT_STR(m_pResource.Get(), Name.data());
+		NAME_D3D12_OBJ_STR(m_pResource, Name);
 	}
 
-	void PixelBuffer::ExportToFile(const std::wstring_view& FilePath)
+	void PixelBuffer::ExportToFile(const std::string& FilePath)
 	{
 		ReadbackBuffer TempBuffer;
 		CommandContext& Context = CommandContext::Begin(L"Copy texture to memory");

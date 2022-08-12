@@ -7,7 +7,7 @@ using namespace DirectX;
 
 namespace MyGame
 {
-	void ReadbackBuffer::Create(const std::wstring_view& name, uint32_t NumElements, uint32_t ElementSize)
+	void ReadbackBuffer::Create(std::wstring&& name, uint32_t NumElements, uint32_t ElementSize)
 	{
 		Destroy();
 
@@ -35,11 +35,11 @@ namespace MyGame
 		ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		ResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		ThrowIfFailed(DirectXImpl::m_device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
+		ThrowIfFailed(DirectXImpl::D12Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
 			D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&m_pResource)));
 
 		m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
-		NAME_D3D12_OBJECT_STR(m_pResource.Get(), name.data());
+		NAME_D3D12_OBJ_STR(m_pResource, name);
 	}
 
 	void* ReadbackBuffer::Map(void)

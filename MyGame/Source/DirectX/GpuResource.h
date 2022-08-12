@@ -30,18 +30,18 @@ namespace MyGame
 			++m_VersionID;
 		}
 
-		ID3D12Resource* operator->() { return m_pResource.Get(); }
-		const ID3D12Resource* operator->() const { return m_pResource.Get(); }
+		ID3D12Resource* operator->() { return m_pResource; }
+		const ID3D12Resource* operator->() const { return m_pResource; }
 
-		ID3D12Resource* GetResource() { return m_pResource.Get(); }
-		const ID3D12Resource* GetResource() const { return m_pResource.Get(); }
+		ID3D12Resource* GetResource() { return m_pResource; }
+		const ID3D12Resource* GetResource() const { return m_pResource; }
 
-		ID3D12Resource** GetAddressOf() { return m_pResource.GetAddressOf(); }
+		ID3D12Resource** GetAddressOf() { return &m_pResource; }
 		D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const { return m_GpuVirtualAddress; }
 		uint32_t GetVersionID() const { return m_VersionID; }
 
 	protected:
-		Microsoft::WRL::ComPtr<ID3D12Resource> m_pResource;
+		ID3D12Resource* m_pResource;
 		D3D12_RESOURCE_STATES m_UsageState;
 		D3D12_RESOURCE_STATES m_TransitioningState;
 		D3D12_GPU_VIRTUAL_ADDRESS m_GpuVirtualAddress;

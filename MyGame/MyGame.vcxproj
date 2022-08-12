@@ -29,6 +29,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -41,7 +42,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Binary\Debug\MyGame\</OutDir>
     <IntDir>..\BinaryInt\Debug\MyGame\</IntDir>
     <TargetName>MyGame</TargetName>
@@ -59,25 +60,18 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MYGAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\Box2D;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>Source;Vendor\Box2D;Vendor\ImGui;Vendor\ImGui\.github;Vendor\ImGui\backends;Vendor\ImGui\docs;Vendor\ImGui\examples;Vendor\ImGui\misc;Vendor\ImGui\.github\workflows;Vendor\ImGui\backends\vulkan;Vendor\ImGui\examples\example_allegro5;Vendor\ImGui\examples\example_android_opengl3;Vendor\ImGui\examples\example_apple_metal;Vendor\ImGui\examples\example_apple_opengl2;Vendor\ImGui\examples\example_emscripten_opengl3;Vendor\ImGui\examples\example_emscripten_wgpu;Vendor\ImGui\examples\example_glfw_metal;Vendor\ImGui\examples\example_glfw_opengl2;Vendor\ImGui\examples\example_glfw_opengl3;Vendor\ImGui\examples\example_glfw_vulkan;Vendor\ImGui\examples\example_glut_opengl2;Vendor\ImGui\examples\example_null;Vendor\ImGui\examples\example_sdl_directx11;Vendor\ImGui\examples\example_sdl_metal;Vendor\ImGui\examples\example_sdl_opengl2;Vendor\ImGui\examples\example_sdl_opengl3;Vendor\ImGui\examples\example_sdl_sdlrenderer;Vendor\ImGui\examples\example_sdl_vulkan;Vendor\ImGui\examples\example_win32_directx10;Vendor\ImGui\examples\example_win32_directx11;Vendor\ImGui\examples\example_win32_directx12;Vendor\ImGui\examples\example_win32_directx9;Vendor\ImGui\examples\libs;Vendor\ImGui\examples\example_android_opengl3\android;Vendor\ImGui\examples\example_android_opengl3\android\app;Vendor\ImGui\examples\example_android_opengl3\android\app\src;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main\java;Vendor\ImGui\examples\example_apple_metal\example_apple_metal.xcodeproj;Vendor\ImGui\examples\example_apple_metal\iOS;Vendor\ImGui\examples\example_apple_metal\macOS;Vendor\ImGui\examples\example_apple_opengl2\example_apple_opengl2.xcodeproj;Vendor\ImGui\examples\example_emscripten_wgpu\web;Vendor\ImGui\examples\libs\glfw;Vendor\ImGui\examples\libs\usynergy;Vendor\ImGui\examples\libs\glfw\include;Vendor\ImGui\examples\libs\glfw\lib-vc2010-32;Vendor\ImGui\examples\libs\glfw\lib-vc2010-64;Vendor\ImGui\examples\libs\glfw\include\GLFW;Vendor\ImGui\misc\cpp;Vendor\ImGui\misc\debuggers;Vendor\ImGui\misc\fonts;Vendor\ImGui\misc\freetype;Vendor\ImGui\misc\single_file;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/Gm- /Ob2 /Ot /GL /GT %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -87,7 +81,7 @@
       <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\Box2D;Vendor\GLFW\include;Vendor\GLM;Vendor\ImGui;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Vendor\Box2D;Vendor\ImGui;Vendor\ImGui\.github;Vendor\ImGui\backends;Vendor\ImGui\docs;Vendor\ImGui\examples;Vendor\ImGui\misc;Vendor\ImGui\.github\workflows;Vendor\ImGui\backends\vulkan;Vendor\ImGui\examples\example_allegro5;Vendor\ImGui\examples\example_android_opengl3;Vendor\ImGui\examples\example_apple_metal;Vendor\ImGui\examples\example_apple_opengl2;Vendor\ImGui\examples\example_emscripten_opengl3;Vendor\ImGui\examples\example_emscripten_wgpu;Vendor\ImGui\examples\example_glfw_metal;Vendor\ImGui\examples\example_glfw_opengl2;Vendor\ImGui\examples\example_glfw_opengl3;Vendor\ImGui\examples\example_glfw_vulkan;Vendor\ImGui\examples\example_glut_opengl2;Vendor\ImGui\examples\example_null;Vendor\ImGui\examples\example_sdl_directx11;Vendor\ImGui\examples\example_sdl_metal;Vendor\ImGui\examples\example_sdl_opengl2;Vendor\ImGui\examples\example_sdl_opengl3;Vendor\ImGui\examples\example_sdl_sdlrenderer;Vendor\ImGui\examples\example_sdl_vulkan;Vendor\ImGui\examples\example_win32_directx10;Vendor\ImGui\examples\example_win32_directx11;Vendor\ImGui\examples\example_win32_directx12;Vendor\ImGui\examples\example_win32_directx9;Vendor\ImGui\examples\libs;Vendor\ImGui\examples\example_android_opengl3\android;Vendor\ImGui\examples\example_android_opengl3\android\app;Vendor\ImGui\examples\example_android_opengl3\android\app\src;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main\java;Vendor\ImGui\examples\example_apple_metal\example_apple_metal.xcodeproj;Vendor\ImGui\examples\example_apple_metal\iOS;Vendor\ImGui\examples\example_apple_metal\macOS;Vendor\ImGui\examples\example_apple_opengl2\example_apple_opengl2.xcodeproj;Vendor\ImGui\examples\example_emscripten_wgpu\web;Vendor\ImGui\examples\libs\glfw;Vendor\ImGui\examples\libs\usynergy;Vendor\ImGui\examples\libs\glfw\include;Vendor\ImGui\examples\libs\glfw\lib-vc2010-32;Vendor\ImGui\examples\libs\glfw\lib-vc2010-64;Vendor\ImGui\examples\libs\glfw\include\GLFW;Vendor\ImGui\misc\cpp;Vendor\ImGui\misc\debuggers;Vendor\ImGui\misc\fonts;Vendor\ImGui\misc\freetype;Vendor\ImGui\misc\single_file;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -95,6 +89,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/Ox /Gm- /Ob2 /Ot /GT /Oy- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -122,6 +117,7 @@
     <ClInclude Include="Source\DirectX\CommandContext.h" />
     <ClInclude Include="Source\DirectX\CommandList.h" />
     <ClInclude Include="Source\DirectX\CommandSignature.h" />
+    <ClInclude Include="Source\DirectX\DXSample.h" />
     <ClInclude Include="Source\DirectX\DepthBuffer.h" />
     <ClInclude Include="Source\DirectX\DescriptorHeap.h" />
     <ClInclude Include="Source\DirectX\DirectXHelpers.h" />
@@ -172,6 +168,7 @@
     <ClCompile Include="Source\DirectX\CommandContext.cpp" />
     <ClCompile Include="Source\DirectX\CommandList.cpp" />
     <ClCompile Include="Source\DirectX\CommandSignature.cpp" />
+    <ClCompile Include="Source\DirectX\DXSample.cpp" />
     <ClCompile Include="Source\DirectX\DepthBuffer.cpp" />
     <ClCompile Include="Source\DirectX\DescriptorHeap.cpp" />
     <ClCompile Include="Source\DirectX\DirectXImpl.cpp" />
@@ -198,9 +195,6 @@
   <ItemGroup>
     <ProjectReference Include="Box2D.vcxproj">
       <Project>{A434E80C-1049-10BE-D9CA-B31D459E0CEF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GLFW.vcxproj">
-      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
     </ProjectReference>
     <ProjectReference Include="ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>

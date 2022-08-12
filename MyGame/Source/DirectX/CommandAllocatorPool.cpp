@@ -7,10 +7,10 @@ using namespace DirectX;
 
 namespace MyGame
 {
-	CommandAllocatorPool::CommandAllocatorPool(D3D12_COMMAND_LIST_TYPE Type) : m_cCommandListType(Type), m_Device(nullptr) {}
+	CommandAllocatorPool::CommandAllocatorPool(D3D12_COMMAND_LIST_TYPE Type) : m_cCommandListType(Type), D12Device(nullptr) {}
 	CommandAllocatorPool::~CommandAllocatorPool() { Shutdown(); }
 
-	void CommandAllocatorPool::Create(ID3D12Device* pDevice) { m_Device = pDevice; }
+	void CommandAllocatorPool::Create(ID3D12Device* pDevice) { D12Device = pDevice; }
 	void CommandAllocatorPool::Shutdown()
 	{
 		for (size_t i = 0; i < m_AllocatorPool.size(); ++i)
@@ -39,9 +39,9 @@ namespace MyGame
 
 		if (pAllocator == nullptr)
 		{
-			ThrowIfFailed(m_Device->CreateCommandAllocator(m_cCommandListType, IID_PPV_ARGS(&pAllocator)));
+			ThrowIfFailed(D12Device->CreateCommandAllocator(m_cCommandListType, IID_PPV_ARGS(&pAllocator)));
 
-			NAME_D3D12_OBJECT(pAllocator);
+			NAME_D3D12_OBJ(pAllocator);
 			m_AllocatorPool.push_back(pAllocator);
 		}
 

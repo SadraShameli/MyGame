@@ -39,7 +39,7 @@ namespace MyGame
 			HeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 			Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> HeapPtr;
 
-			ThrowIfFailed(DirectXImpl::m_device->CreateDescriptorHeap(&HeapDesc, IID_PPV_ARGS(&HeapPtr)));
+			ThrowIfFailed(DirectXImpl::D12Device->CreateDescriptorHeap(&HeapDesc, IID_PPV_ARGS(&HeapPtr)));
 			sm_DescriptorHeapPool[idx].emplace_back(HeapPtr);
 			return HeapPtr.Get();
 		}
@@ -76,7 +76,7 @@ namespace MyGame
 	{
 		m_CurrentHeapPtr = nullptr;
 		m_CurrentOffset = 0;
-		m_DescriptorSize = DirectXImpl::m_device->GetDescriptorHandleIncrementSize(HeapType);
+		m_DescriptorSize = DirectXImpl::D12Device->GetDescriptorHandleIncrementSize(HeapType);
 	}
 
 	void DynamicDescriptorHeap::CleanupUsedHeaps(uint64_t fenceValue)
@@ -185,7 +185,7 @@ namespace MyGame
 
 				if (NumSrcDescriptorRanges + DescriptorCount > kMaxDescriptorsPerCopy)
 				{
-					DirectXImpl::m_device->CopyDescriptors(
+					DirectXImpl::D12Device->CopyDescriptors(
 						NumDestDescriptorRanges, pDestDescriptorRangeStarts, pDestDescriptorRangeSizes,
 						NumSrcDescriptorRanges, pSrcDescriptorRangeStarts, pSrcDescriptorRangeSizes, Type);
 
@@ -209,7 +209,7 @@ namespace MyGame
 			}
 		}
 
-		DirectXImpl::m_device->CopyDescriptors(
+		DirectXImpl::D12Device->CopyDescriptors(
 			NumDestDescriptorRanges, pDestDescriptorRangeStarts, pDestDescriptorRangeSizes,
 			NumSrcDescriptorRanges, pSrcDescriptorRangeStarts, pSrcDescriptorRangeSizes, Type);
 	}
@@ -246,7 +246,7 @@ namespace MyGame
 		m_OwningContext.SetDescriptorHeap(m_DescriptorType, GetHeapPointer());
 		DescriptorHandle DestHandle = m_FirstDescriptor + m_CurrentOffset * m_DescriptorSize;
 		m_CurrentOffset += 1;
-		DirectXImpl::m_device->CopyDescriptorsSimple(1, DestHandle, Handle, m_DescriptorType);
+		DirectXImpl::D12Device->CopyDescriptorsSimple(1, DestHandle, Handle, m_DescriptorType);
 		return DestHandle;
 	}
 
@@ -280,11 +280,7 @@ namespace MyGame
 	void DynamicDescriptorHeap::DescriptorHandleCache::ParseRootSignature(D3D12_DESCRIPTOR_HEAP_TYPE Type, const RootSignature& RootSig)
 	{
 		UINT CurrentOffset = 0;
-		MYGAME_ASSERT(RootSig.m_NumParameters <= 16, "Maybe we need to support something greater");
-
 		m_StaleRootParamsBitMap = 0;
-		m_RootDescriptorTablesBitMap = (Type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER ?
-			RootSig.m_SamplerTableBitMap : RootSig.m_DescriptorTableBitMap);
 
 		unsigned long TableParams = m_RootDescriptorTablesBitMap;
 		unsigned long RootIndex = 0;
@@ -292,15 +288,9 @@ namespace MyGame
 		{
 			TableParams ^= (1 << RootIndex);
 
-			UINT TableSize = RootSig.m_DescriptorTableSize[RootIndex];
-			MYGAME_ASSERT(TableSize > 0);
-
 			DescriptorTableCache& RootDescriptorTable = m_RootDescriptorTable[RootIndex];
 			RootDescriptorTable.AssignedHandlesBitMap = 0;
 			RootDescriptorTable.TableStart = m_HandleCache + CurrentOffset;
-			RootDescriptorTable.TableSize = TableSize;
-
-			CurrentOffset += TableSize;
 		}
 
 		m_MaxCachedDescriptors = CurrentOffset;

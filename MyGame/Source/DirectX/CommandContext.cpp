@@ -53,19 +53,19 @@ namespace MyGame
 	{
 		LinearAllocator::DestroyAll();
 		DynamicDescriptorHeap::DestroyAll();
-		ContextManager::DestroyAllContexts();
+		D12ContextManager.DestroyAllContexts();
 	}
 
-	CommandContext& CommandContext::Begin(const std::wstring_view& ID)
+	CommandContext& CommandContext::Begin(const std::wstring& ID)
 	{
-		CommandContext* NewContext = ContextManager::AllocateContext(D3D12_COMMAND_LIST_TYPE_DIRECT);
+		CommandContext* NewContext = D12ContextManager.AllocateContext(D3D12_COMMAND_LIST_TYPE_DIRECT);
 		NewContext->SetID(ID);
 		return *NewContext;
 	}
 
-	ComputeContext& ComputeContext::Begin(const std::wstring_view& ID, bool Async)
+	ComputeContext& ComputeContext::Begin(const std::wstring& ID, bool Async)
 	{
-		ComputeContext& NewContext = ContextManager::AllocateContext(Async ? D3D12_COMMAND_LIST_TYPE_COMPUTE : D3D12_COMMAND_LIST_TYPE_DIRECT)->GetComputeContext();
+		ComputeContext& NewContext = D12ContextManager.AllocateContext(Async ? D3D12_COMMAND_LIST_TYPE_COMPUTE : D3D12_COMMAND_LIST_TYPE_DIRECT)->GetComputeContext();
 		NewContext.SetID(ID);
 		return NewContext;
 	}
@@ -115,7 +115,7 @@ namespace MyGame
 
 		if (WaitForCompletion)
 			CommandListManager::WaitForFence(FenceValue);
-		ContextManager::FreeContext(this);
+		D12ContextManager.FreeContext(this);
 		return FenceValue;
 	}
 
@@ -165,7 +165,7 @@ namespace MyGame
 	void CommandContext::BindDescriptorHeaps()
 	{
 		UINT NonNullHeaps = 0;
-		ID3D12DescriptorHeap* HeapsToBind[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+		ID3D12DescriptorHeap* HeapsToBind[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES] = {};
 		for (UINT i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
 		{
 			ID3D12DescriptorHeap* HeapIter = m_CurrentDescriptorHeaps[i];
@@ -497,7 +497,7 @@ namespace MyGame
 
 		D3D12_PLACED_SUBRESOURCE_FOOTPRINT PlacedFootprint;
 		auto desc = SrcBuffer.GetResource()->GetDesc();
-		DirectXImpl::m_device->GetCopyableFootprints(&desc, 0, 1, 0, &PlacedFootprint, nullptr, nullptr, &CopySize);
+		DirectXImpl::D12Device->GetCopyableFootprints(&desc, 0, 1, 0, &PlacedFootprint, nullptr, nullptr, &CopySize);
 
 		DstBuffer.Create(L"Readback", (uint32_t)CopySize, 1);
 		TransitionResource(SrcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE, true);

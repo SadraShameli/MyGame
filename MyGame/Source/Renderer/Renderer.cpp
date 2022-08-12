@@ -7,7 +7,7 @@
 #include "../Debugs/DebugHelpers.h"
 #include "../DirectX/DirectXImpl.h"
 
-#include <backends/imgui_impl_dx12.h>
+#include <imgui_impl_dx12.h>
 
 using namespace DirectX;
 
@@ -20,8 +20,8 @@ namespace MyGame
 
 	void Renderer::InitImGui()
 	{
-		MYGAME_ASSERT(ImGui_ImplDX12_Init(DirectXImpl::m_device.Get(), DirectXImpl::FrameCount, DXGI_FORMAT_R8G8B8A8_UNORM,
-			DirectXImpl::m_srvHeap.Get(), DirectXImpl::m_srvHeap->GetCPUDescriptorHandleForHeapStart(),
+		MYGAME_ASSERT(ImGui_ImplDX12_Init(DirectXImpl::D12Device, DirectXImpl::FrameCount, DXGI_FORMAT_R8G8B8A8_UNORM,
+			DirectXImpl::m_srvHeap, DirectXImpl::m_srvHeap->GetCPUDescriptorHandleForHeapStart(),
 			DirectXImpl::m_srvHeap->GetGPUDescriptorHandleForHeapStart()));
 	}
 
@@ -33,11 +33,11 @@ namespace MyGame
 		D3D12_RESOURCE_BARRIER barrier = {};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		barrier.Transition.pResource = DirectXImpl::m_renderTargets[backBufferIdx].Get();
+		barrier.Transition.pResource = DirectXImpl::m_renderTargets[backBufferIdx];
 		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		DirectXImpl::m_commandList->Reset(DirectXImpl::m_commandAllocator.Get(), nullptr);
+		DirectXImpl::m_commandList->Reset(DirectXImpl::m_commandAllocator, nullptr);
 		DirectXImpl::m_commandList->ResourceBarrier(1, &barrier);
 
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(DirectXImpl::m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), backBufferIdx, DirectXImpl::m_rtvDescriptorSize);
@@ -46,24 +46,20 @@ namespace MyGame
 		constexpr float clear_color_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
 		DirectXImpl::m_commandList->ClearRenderTargetView(rtvHandle, clear_color_alpha, 0, nullptr);
 		DirectXImpl::m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-		DirectXImpl::m_commandList->SetDescriptorHeaps(1, DirectXImpl::m_srvHeap.GetAddressOf());
+		DirectXImpl::m_commandList->SetDescriptorHeaps(1, &DirectXImpl::m_srvHeap);
 
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXImpl::m_commandList.Get());
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXImpl::m_commandList);
 
 		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 		DirectXImpl::m_commandList->ResourceBarrier(1, &barrier);
 		ThrowIfFailed(DirectXImpl::m_commandList->Close());
-		ID3D12CommandList* ppCommandLists[] = { DirectXImpl::m_commandList.Get() };
+		ID3D12CommandList* ppCommandLists[] = { DirectXImpl::m_commandList };
 		DirectXImpl::m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-		if (application.GetWindow().IsVSync())
-			DirectXImpl::m_swapChain->Present(1, 0);
-		else
-			DirectXImpl::m_swapChain->Present(0, 0);
+		DirectXImpl::m_swapChain->Present(1, 0);
 
 		const UINT64 fence = DirectXImpl::m_fenceValue;
-		ThrowIfFailed(DirectXImpl::m_commandQueue->Signal(DirectXImpl::m_fence.Get(), fence));
+		ThrowIfFailed(DirectXImpl::m_commandQueue->Signal(DirectXImpl::m_fence, fence));
 		++DirectXImpl::m_fenceValue;
 
 		//TODO remove

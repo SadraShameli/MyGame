@@ -1,7 +1,5 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-
 namespace MyGame
 {
 	class Timestep
@@ -15,11 +13,5 @@ namespace MyGame
 
 	private:
 		float m_Time;
-	};
-
-	class Time
-	{
-	public:
-		static float GetTime() { return (float)glfwGetTime(); }
 	};
 }

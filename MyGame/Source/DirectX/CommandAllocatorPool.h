@@ -25,7 +25,7 @@ namespace MyGame
 	private:
 		const D3D12_COMMAND_LIST_TYPE m_cCommandListType;
 
-		ID3D12Device* m_Device;
+		ID3D12Device* D12Device;
 		std::vector<ID3D12CommandAllocator*> m_AllocatorPool;
 		std::queue<std::pair<uint64_t, ID3D12CommandAllocator*>> m_ReadyAllocators;
 		std::mutex m_AllocatorMutex;

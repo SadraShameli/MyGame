@@ -24,7 +24,6 @@
 #include <vector>
 #include <array>
 
-// DirectX 12 API
 #include <d3d12.h>
 #include <D3dx12.h>
 #include <dxgi1_6.h>
@@ -32,12 +31,12 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
-// Debug
 #ifdef MYGAME_DEBUG
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 #endif
 
-// Helpers
 #include <PlatformHelpers.h>
-#include "DirectXHelpers.h"
+
+#include <Windows.h>
+#include <windowsx.h>

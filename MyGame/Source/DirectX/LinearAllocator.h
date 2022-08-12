@@ -27,7 +27,7 @@ namespace MyGame
 	public:
 		LinearAllocationPage(ID3D12Resource* pResource, D3D12_RESOURCE_STATES Usage) : GpuResource()
 		{
-			m_pResource.Attach(pResource);
+			m_pResource = pResource;
 			m_UsageState = Usage;
 			m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
 			m_pResource->Map(0, nullptr, &m_CpuVirtualAddress);

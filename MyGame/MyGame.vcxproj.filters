@@ -82,6 +82,9 @@
     <ClInclude Include="Source\DirectX\CommandSignature.h">
       <Filter>DirectX</Filter>
     </ClInclude>
+    <ClInclude Include="Source\DirectX\DXSample.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
     <ClInclude Include="Source\DirectX\DepthBuffer.h">
       <Filter>DirectX</Filter>
     </ClInclude>
@@ -218,6 +221,9 @@
       <Filter>DirectX</Filter>
     </ClCompile>
     <ClCompile Include="Source\DirectX\CommandSignature.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\DXSample.cpp">
       <Filter>DirectX</Filter>
     </ClCompile>
     <ClCompile Include="Source\DirectX\DepthBuffer.cpp">

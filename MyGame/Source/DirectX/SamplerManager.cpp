@@ -22,13 +22,13 @@ namespace MyGame
 		}
 
 		D3D12_CPU_DESCRIPTOR_HANDLE Handle = DirectXImpl::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-		DirectXImpl::m_device->CreateSampler(this, Handle);
+		DirectXImpl::D12Device->CreateSampler(this, Handle);
 		return Handle;
 	}
 
 	void SamplerDesc::CreateDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE Handle)
 	{
 		MYGAME_ASSERT(Handle.ptr != 0 && Handle.ptr != -1);
-		DirectXImpl::m_device->CreateSampler(this, Handle);
+		DirectXImpl::D12Device->CreateSampler(this, Handle);
 	}
 }

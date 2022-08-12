@@ -43,9 +43,9 @@ namespace MyGame
 		HeapProps.CreationNodeMask = 1;
 		HeapProps.VisibleNodeMask = 1;
 
-		ThrowIfFailed(DirectXImpl::m_device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &texDesc,
-			m_UsageState, nullptr, IID_PPV_ARGS(m_pResource.ReleaseAndGetAddressOf())));
-		NAME_D3D12_OBJECT_STR(m_pResource, "Texture");
+		ThrowIfFailed(DirectXImpl::D12Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &texDesc,
+			m_UsageState, nullptr, IID_PPV_ARGS(&m_pResource)));
+		NAME_D3D12_OBJ_STR(m_pResource, L"Texture");
 
 		D3D12_SUBRESOURCE_DATA texResource = {};
 		texResource.pData = InitialData;
@@ -55,7 +55,7 @@ namespace MyGame
 
 		if (m_hCpuDescriptorHandle.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 			m_hCpuDescriptorHandle = DirectXImpl::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DirectXImpl::m_device->CreateShaderResourceView(m_pResource.Get(), nullptr, m_hCpuDescriptorHandle);
+		DirectXImpl::D12Device->CreateShaderResourceView(m_pResource, nullptr, m_hCpuDescriptorHandle);
 	}
 
 	void Texture::CreateCube(size_t RowPitchBytes, size_t Width, size_t Height, DXGI_FORMAT Format, const void* InitialData)
@@ -86,9 +86,9 @@ namespace MyGame
 		HeapProps.CreationNodeMask = 1;
 		HeapProps.VisibleNodeMask = 1;
 
-		ThrowIfFailed(DirectXImpl::m_device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &texDesc,
-			m_UsageState, nullptr, IID_PPV_ARGS(m_pResource.ReleaseAndGetAddressOf())));
-		NAME_D3D12_OBJECT_STR(m_pResource, "Texture");
+		ThrowIfFailed(DirectXImpl::D12Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &texDesc,
+			m_UsageState, nullptr, IID_PPV_ARGS(&m_pResource)));
+		NAME_D3D12_OBJ_STR(m_pResource, L"Texture");
 
 		D3D12_SUBRESOURCE_DATA texResource = {};
 		texResource.pData = InitialData;
@@ -106,7 +106,7 @@ namespace MyGame
 		srvDesc.TextureCube.MipLevels = 1;
 		srvDesc.TextureCube.MostDetailedMip = 0;
 		srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
-		DirectXImpl::m_device->CreateShaderResourceView(m_pResource.Get(), &srvDesc, m_hCpuDescriptorHandle);
+		DirectXImpl::D12Device->CreateShaderResourceView(m_pResource, &srvDesc, m_hCpuDescriptorHandle);
 	}
 
 
@@ -162,9 +162,9 @@ namespace MyGame
 		if (m_hCpuDescriptorHandle.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 			m_hCpuDescriptorHandle = DirectXImpl::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-		ResourceUploadBatch resourceUpload(DirectXImpl::m_device.Get());
+		ResourceUploadBatch resourceUpload(DirectXImpl::D12Device);
 		resourceUpload.Begin();
 
-		return SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::m_device.Get(), resourceUpload, (const uint8_t*)filePtr, fileSize, &m_pResource, 0));
+		return SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::D12Device, resourceUpload, (const uint8_t*)filePtr, fileSize, &m_pResource, 0));
 	}
 }

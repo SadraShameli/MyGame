@@ -17,7 +17,7 @@ namespace MyGame
 
 	void OrthographicCameraController::OnUpdate(Timestep ts)
 	{
-		MYGAME_PROFILE_FUNCTION();
+
 
 		if (Input::IsKeyPressed(Key::A))
 		{
@@ -61,11 +61,9 @@ namespace MyGame
 
 	void OrthographicCameraController::OnEvent(Event& e)
 	{
-		MYGAME_PROFILE_FUNCTION();
-
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<MouseScrolledEvent>(MYGAME_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
-		dispatcher.Dispatch<WindowResizeEvent>(MYGAME_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
+		dispatcher.Dispatch<MouseScrolledEvent>(MYGAME_BIND_FN(OrthographicCameraController::OnMouseScrolled));
+		dispatcher.Dispatch<WindowResizeEvent>(MYGAME_BIND_FN(OrthographicCameraController::OnWindowResized));
 	}
 
 	void OrthographicCameraController::OnResize(float width, float height)
@@ -76,8 +74,6 @@ namespace MyGame
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
-		MYGAME_PROFILE_FUNCTION();
-
 		m_ZoomLevel -= e.GetYOffset() * 0.25f;
 		m_ZoomLevel = (std::max)(m_ZoomLevel, 0.25f);
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
@@ -86,8 +82,6 @@ namespace MyGame
 
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e)
 	{
-		MYGAME_PROFILE_FUNCTION();
-
 		OnResize((float)e.GetWidth(), (float)e.GetHeight());
 		return false;
 	}

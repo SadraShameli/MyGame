@@ -8,25 +8,25 @@ using namespace DirectX;
 
 namespace MyGame
 {
-	void DepthBuffer::Create(const std::wstring_view& Name, uint32_t Width, uint32_t Height, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
+	void DepthBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
 	{
 		Create(Name, Width, Height, 1, Format, VidMemPtr);
 	}
 
-	void DepthBuffer::Create(const std::wstring_view& Name, uint32_t Width, uint32_t Height, uint32_t Samples, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
+	void DepthBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t Samples, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
 	{
 		D3D12_RESOURCE_DESC ResourceDesc = DescribeTex2D(Width, Height, 1, 1, Format, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 		ResourceDesc.SampleDesc.Count = Samples;
 
 		D3D12_CLEAR_VALUE ClearValue = {};
 		ClearValue.Format = Format;
-		CreateTextureResource(DirectXImpl::m_device.Get(), Name, ResourceDesc, ClearValue, VidMemPtr);
-		CreateDerivedViews(DirectXImpl::m_device.Get(), Format);
+		CreateTextureResource(DirectXImpl::D12Device, Name, ResourceDesc, ClearValue, VidMemPtr);
+		CreateDerivedViews(DirectXImpl::D12Device, Format);
 	}
 
 	void DepthBuffer::CreateDerivedViews(ID3D12Device* Device, DXGI_FORMAT Format)
 	{
-		ID3D12Resource* Resource = m_pResource.Get();
+		ID3D12Resource* Resource = m_pResource;
 		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 		dsvDesc.Format = GetDSVFormat(Format);
 

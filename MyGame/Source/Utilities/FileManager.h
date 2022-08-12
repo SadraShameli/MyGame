@@ -19,7 +19,7 @@ namespace MyGame
 			CHAR currentDir[256] = {};
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = application.GetWin32Window();
+			ofn.hwndOwner = Application::Get().GetNativeWindow();
 			ofn.lpstrFile = szFile;
 			ofn.nMaxFile = sizeof(szFile);
 			if (GetCurrentDirectoryA(256, currentDir))
@@ -41,7 +41,7 @@ namespace MyGame
 			CHAR currentDir[256] = {};
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = application.GetWin32Window();
+			ofn.hwndOwner = Application::Get().GetNativeWindow();
 			ofn.lpstrFile = szFile;
 			ofn.nMaxFile = sizeof(szFile);
 			if (GetCurrentDirectoryA(256, currentDir))
@@ -57,10 +57,10 @@ namespace MyGame
 			return {};
 		}
 
-		inline static std::shared_ptr<std::vector<byte>> ReadFileHelper(const std::wstring& fileName)
+		inline static std::shared_ptr<std::vector<byte>> ReadFileHelper(const std::string& fileName)
 		{
 			struct _stat64 fileStat;
-			int fileExists = _wstat64(fileName.c_str(), &fileStat);
+			int fileExists = _wstat64(Utility::UTF8ToWideString(fileName).c_str(), &fileStat);
 			if (fileExists == -1)
 				return std::make_shared<std::vector<byte>>(std::vector<byte>());
 

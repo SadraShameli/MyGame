@@ -18,7 +18,7 @@ namespace MyGame
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
-		virtual void OnUpdate(Timestep) override;
+		virtual void OnUpdate() override;
 		virtual void OnEvent(Event& e) override;
 
 		void BlockEvents(bool block) { m_BlockEvents = block; }

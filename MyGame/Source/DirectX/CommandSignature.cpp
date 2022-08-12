@@ -59,8 +59,8 @@ namespace MyGame
 		else
 			pRootSig = nullptr;
 
-		ThrowIfFailed(DirectXImpl::m_device->CreateCommandSignature(&CommandSignatureDesc, pRootSig, IID_PPV_ARGS(&m_Signature)));
-		NAME_D3D12_OBJECT(m_Signature.Get());
+		ThrowIfFailed(DirectXImpl::D12Device->CreateCommandSignature(&CommandSignatureDesc, pRootSig, IID_PPV_ARGS(&m_Signature)));
+		NAME_D3D12_OBJ(m_Signature.Get());
 		m_Finalized = TRUE;
 	}
 }

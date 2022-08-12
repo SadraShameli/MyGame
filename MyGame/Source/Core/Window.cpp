@@ -1,6 +1,7 @@
 #include "CommonHeaders.h"
 
 #include "Window.h"
+#include "Application.h"
 
 #include "../Core/Log.h"
 #include "../Core/Input.h"
@@ -12,146 +13,126 @@
 #include "../Debugs/DebugHelpers.h"
 #include "../Debugs/Instrumentor.h"
 
+#include <imgui.h>
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 namespace MyGame
 {
-	static void GLFWErrorCallback(int error, const char* description) { MYGAME_ERROR("GLFW Error ({0}): {1}", error, description); }
-
-	std::unique_ptr<Window> Window::Create(WindowProps&& props)
+	static LRESULT CALLBACK WindowEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
-		return std::make_unique<Window>(std::forward<WindowProps>(props));
+		if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+			return true;
+
+		static bool inMove = false;
+		switch (message)
+		{
+		case WM_MOUSEMOVE:
+		{
+			MouseMovedEvent event((GET_X_LPARAM(lParam)), (GET_Y_LPARAM(lParam)));
+			Application::Get().OnEvent(event);
+			break;
+		}
+		case WM_LBUTTONDOWN: case WM_RBUTTONDOWN:
+		{
+			MouseButtonPressedEvent event(static_cast<UINT8>(wParam));
+			Application::Get().OnEvent(event);
+			break;
+		}
+		case WM_LBUTTONUP: case WM_RBUTTONUP:
+		{
+			MouseButtonReleasedEvent event(static_cast<UINT8>(wParam));
+			Application::Get().OnEvent(event);
+			break;
+		}
+		case WM_MOUSEWHEEL:
+		{
+			MouseScrolledEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			Application::Get().OnEvent(event);
+			break;
+		}
+		case WM_CHAR:
+		{
+			KeyTypedEvent event(static_cast<UINT8>(wParam));
+			Application::Get().OnEvent(event);
+			break;
+		}
+		case WM_KEYDOWN:
+		{
+			KeyPressedEvent event(static_cast<UINT8>(wParam), false);
+			Application::Get().OnEvent(event);
+			break;
+		}
+		case WM_KEYUP:
+		{
+			KeyReleasedEvent event(static_cast<UINT8>(wParam));
+			Application::Get().OnEvent(event);
+			break;
+		}
+		case WM_SIZE:
+		{
+			if (wParam == SIZE_MINIMIZED)
+			{
+				WindowMinimizeEvent event(true);
+				Application::Get().OnWindowMinimize(event);
+			}
+			else if (inMove)
+			{
+				WindowResizeEvent event(LOWORD(lParam), HIWORD(lParam));
+				Application::Get().OnWindowResize(event);
+			}
+			else if (wParam == SIZE_RESTORED)
+			{
+				WindowMinimizeEvent event(false);
+				Application::Get().OnWindowMinimize(event);
+			}
+			break;
+		}
+		case WM_ENTERSIZEMOVE:
+		{
+			inMove = true;
+			break;
+		}
+		case WM_EXITSIZEMOVE:
+		{
+			inMove = false;
+			break;
+		}
+		case WM_CLOSE:
+		{
+			Application::Get().OnWindowClose();
+			break;
+		}
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+		return 0;
 	}
 
-	Window::Window(const WindowProps& props)
+	Window::Window(WindowProps&& props)
 	{
-		MYGAME_PROFILE_FUNCTION();
+		m_Data = std::move(props);
 
-		m_Data.Title = props.Title;
-		m_Data.Width = props.Width;
-		m_Data.Height = props.Height;
-		m_Data.VSync = false;
+		WNDCLASSEX windowClass = {};
+		windowClass.cbSize = sizeof(WNDCLASSEX);
+		windowClass.style = CS_HREDRAW | CS_VREDRAW;
+		windowClass.lpfnWndProc = WindowEvent;
+		windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		windowClass.lpszClassName = m_Data.Title.c_str();
+		RegisterClassEx(&windowClass);
 
-		MYGAME_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
+		m_Handle = CreateWindow(windowClass.lpszClassName, m_Data.Title.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+			m_Data.Width, m_Data.Height, nullptr, nullptr, nullptr, nullptr);
 
-		MYGAME_PROFILE_SCOPE("glfwInit");
-		MYGAME_INFO("Initializing GLFW");
-		MYGAME_ASSERT(glfwInit(), "Could not initialize GLFW!");
-		glfwSetErrorCallback(GLFWErrorCallback);
-
-		MYGAME_PROFILE_SCOPE("glfwCreateWindow");
-		MYGAME_ASSERT(m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr));
-
-		glfwMakeContextCurrent(m_Window);
-		glfwSetWindowUserPointer(m_Window, &m_Data);
-
-		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-				data.Width = width;
-				data.Height = height;
-
-				WindowResizeEvent event(width, height);
-				data.EventCallback(event);
-			});
-
-		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-				WindowCloseEvent event;
-				data.EventCallback(event);
-			});
-
-		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-				MouseMovedEvent event((float)xPos, (float)yPos);
-				data.EventCallback(event); });
-
-		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-				switch (action)
-				{
-				case GLFW_PRESS:
-				{
-					MouseButtonPressedEvent event(button);
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					MouseButtonReleasedEvent event(button);
-					data.EventCallback(event);
-					break;
-				}
-				}});
-
-
-		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-				MouseScrolledEvent event((float)xOffset, (float)yOffset);
-				data.EventCallback(event); });
-
-		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-				switch (action)
-				{
-				case GLFW_PRESS:
-				{
-					KeyPressedEvent event(key, false);
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					KeyReleasedEvent event(key);
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_REPEAT:
-				{
-					KeyPressedEvent event(key, true);
-					data.EventCallback(event);
-					break;
-				}
-				}});
-
-		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-				KeyTypedEvent event(keycode);
-				data.EventCallback(event); });
+		ShowWindow(m_Handle, SW_SHOWDEFAULT);
 	}
 
-
-	Window::~Window()
-	{
-		glfwDestroyWindow(m_Window);
-		glfwTerminate();
-	}
-
+	static MSG msg = {};
 	void Window::OnUpdate()
 	{
-		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
-		//m_Context->SwapBuffers();
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 	}
-
-	void Window::SetVSync(bool enabled)
-	{
-		if (enabled)
-			glfwSwapInterval(1);
-		else
-			glfwSwapInterval(0);
-
-		m_Data.VSync = enabled;
-	}
-
-	bool Window::IsVSync() const { return m_Data.VSync; }
 }

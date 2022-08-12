@@ -20,7 +20,7 @@
 #define MYGAME_ASSERT(...) MYGAME_INTERNAL_ASSERT_GET_MACRO(__VA_ARGS__)(_, __VA_ARGS__)
 
 #define MYGAME_HRESULT_TOSTR(x) { if (FAILED(x)) { MYGAME_ERROR(_com_error(x).ErrorMessage()); } }
-#define MYGAME_VERIFY_HRESULT(x) { if (FAILED(x)) { MYGAME_HRESULT_TOSTR(x); return false; } }
+#define MYGAME_VERIFY_HRESULT(x) { if (FAILED(x)) { MYGAME_HRESULT_TOSTR(x); } }
 
 #ifdef MYGAME_ENABLE_INFO_EVENTS 
 #define MYGAME_INFO_EVENTS(x) MYGAME_INFO("{0}", x.ToString());

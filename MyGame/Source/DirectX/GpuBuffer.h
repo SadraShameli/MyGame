@@ -13,9 +13,9 @@ namespace MyGame
 	public:
 		virtual ~GpuBuffer() { Destroy(); }
 
-		void Create(const std::wstring_view& name, uint32_t NumElements, uint32_t ElementSize, const void* initialData = nullptr);
-		void Create(const std::wstring_view& name, uint32_t NumElements, uint32_t ElementSize, const UploadBuffer& srcData, uint32_t srcOffset = 0);
-		void CreatePlaced(const std::wstring_view& name, ID3D12Heap* pBackingHeap, uint32_t HeapOffset, uint32_t NumElements, uint32_t ElementSize, const void* initialData = nullptr);
+		void Create(const std::wstring& name, uint32_t NumElements, uint32_t ElementSize, const void* initialData = nullptr);
+		void Create(const std::wstring& name, uint32_t NumElements, uint32_t ElementSize, const UploadBuffer& srcData, uint32_t srcOffset = 0);
+		void CreatePlaced(const std::wstring& name, ID3D12Heap* pBackingHeap, uint32_t HeapOffset, uint32_t NumElements, uint32_t ElementSize, const void* initialData = nullptr);
 
 		const D3D12_CPU_DESCRIPTOR_HANDLE& GetUAV() const { return m_UAV; }
 		const D3D12_CPU_DESCRIPTOR_HANDLE& GetSRV() const { return m_SRV; }

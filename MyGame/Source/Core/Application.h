@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base.h"
 #include "Window.h"
 #include "LayerStack.h"
 
@@ -12,35 +11,32 @@ namespace MyGame
 	class Application
 	{
 	public:
-		void Init();
-		void Destroy();
+		Application();
 
-		void Run();
-		void Close();
-
-		void OnEvent(Event&);
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
-		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 
+		void Run();
+		void OnEvent(Event&);
+		void OnWindowResize(WindowResizeEvent& e);
+		void OnWindowMinimize(WindowMinimizeEvent e) { m_Minimized = e.GetMinimized(); }
+		void OnWindowClose() { m_Running = false; }
+		void Destroy();
+		void Close() { m_Running = false; }
+
+		inline static Application& Get() { return *s_Instance; }
 		Window& GetWindow() { return *m_Window; }
-		GLFWwindow* GetNativeWindow() const { return m_Window->GetWindow(); }
-		HWND GetWin32Window() const { return m_Window->GetNativeWindow(); }
+		HWND GetNativeWindow() { return m_Window->GetHandle(); }
 
 	private:
-		bool OnWindowClose(WindowCloseEvent&);
-		bool OnWindowResize(WindowResizeEvent&);
-
-	private:
-		std::unique_ptr<Window> m_Window;
-
-		ImGuiLayer* m_ImGuiLayer;
-		LayerStack m_LayerStack;
-
+		bool m_Running = true, m_Minimized = true;
 		float m_LastFrameTime = 0.0f;
-		bool m_Running = true;
-		bool m_Minimized = false;
-	};
 
-	extern Application application;
+		LayerStack m_LayerStack;
+		ImGuiLayer* m_ImGuiLayer;
+		TriangleLayer* m_TriangleLayer;
+
+		std::unique_ptr<Window> m_Window;
+		inline static Application* s_Instance;
+	};
 }

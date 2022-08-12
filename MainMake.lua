@@ -11,29 +11,20 @@ workspace "MyGame"
 		"Release"
 	}
 
-	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		runtime "Release"
-
-	filter { }
-
 	flags
 	{
-		"MultiProcessorCompile"		
+		"MultiProcessorCompile"
 	}	
-
-	optimize "Speed"		
 
 outputdir = "%{cfg.buildcfg}"
 
 project "MyGame"
+	kind "StaticLib"
 	location "MyGame"
-	kind "ConsoleApp"
 	language "C++"
-	
+	kind "ConsoleApp"
+	staticruntime "off"
+
 	targetdir ("%{wks.location}/Binary/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/BinaryInt/" .. outputdir .. "/%{prj.name}")
 
@@ -55,9 +46,8 @@ project "MyGame"
 	{
 		"%{prj.location}/Source",
 		"%{prj.location}/Vendor/Box2D",
-		"%{prj.location}/Vendor/GLFW/include",
-		"%{prj.location}/Vendor/GLM",
 		"%{prj.location}/Vendor/ImGui",
+		"%{prj.location}/Vendor/ImGui/**",
 		"%{prj.location}/Vendor/SpdLog/include",
 		"%{prj.location}/Vendor/DirectXTK12/Inc",
 		"%{prj.location}/Vendor/DirectXTK12/Src",
@@ -67,7 +57,6 @@ project "MyGame"
 	links
 	{
 		"Box2D",
-		"GLFW",
 		"ImGui",
 		"DirectXTK_Desktop_2022_Win10",
 		"D3D12MemoryAlloc",
@@ -78,33 +67,29 @@ project "MyGame"
 	}
 
 	filter "configurations:Debug"
+	runtime "Debug"
+		symbols "on"
 		defines 
 		{
 			"MYGAME_DEBUG"			
 		}		
 
---	filter { "files:**.hlsl" }
---   		flags "ExcludeFromBuild"
---   		shadermodel "6.5"
---
---	filter { "files:**Pixel.hlsl" }
---   		removeflags "ExcludeFromBuild"
---   		shadertype "Pixel"
---   		shaderentry "ForPixel"
---
---	filter { "files:**Vertex.hlsl" }
---   		removeflags "ExcludeFromBuild"
---   		shadertype "Vertex"
---   		shaderentry "ForVertex"			
-
-	buildoptions 
-	{ 
-		"/Gm-",
-		"/Ob2",
-		"/Ot",
-		"/GL",
-		"/GT",
-	}
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "Speed"	
+		buildoptions 
+		{ 
+			"/Ox",
+			"/Gm-",
+			"/Ob2",
+			"/Ot",
+			"/GT",
+			"/Oy-"
+		}	
+		flags
+		{
+			"LinkTimeOptimization"
+		}
 
 project "Box2D"
 	location "MyGame"
@@ -126,63 +111,7 @@ project "Box2D"
 		"%{prj.location}/Vendor/%{prj.name}/**",
 	}
 
-project "GLFW"
-	location "MyGame"
-	kind "StaticLib"
-	language "C"
-
-	targetdir ("%{wks.location}/Binary/" .. outputdir .. "/%{prj.name}")
-	objdir ("%{wks.location}/BinaryInt/" .. outputdir .. "/%{prj.name}")
-	
-	defines 
-	{ 
-		"_GLFW_WIN32",
-		"_GLFW_USE_HYBRID_HPG",
-		"_CRT_SECURE_NO_WARNINGS"
-	}
-
-	files
-	{	
-		"%{prj.location}/Vendor/%{prj.name}/include/GLFW/glfw3.h",
-    	"%{prj.location}/Vendor/%{prj.name}/include/GLFW/glfw3native.h",
-    	"%{prj.location}/Vendor/%{prj.name}/src/internal.h",
-    	"%{prj.location}/Vendor/%{prj.name}/src/platform.h",
-    	"%{prj.location}/Vendor/%{prj.name}/src/mappings.h",
-    	"%{prj.location}/Vendor/%{prj.name}/src/context.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/init.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/input.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/monitor.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/platform.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/vulkan.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/window.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/egl_context.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/osmesa_context.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/null_platform.h",
-    	"%{prj.location}/Vendor/%{prj.name}/src/null_joystick.h",
-    	"%{prj.location}/Vendor/%{prj.name}/src/null_init.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/null_monitor.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/null_window.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/null_joystick.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_init.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_module.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_joystick.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_monitor.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_time.h",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_time.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_thread.h",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_thread.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/win32_window.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/wgl_context.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/egl_context.c",
-    	"%{prj.location}/Vendor/%{prj.name}/src/osmesa_context.c"
-	}
-
-	includedirs
-	{
-		"%{prj.location}/Vendor/%{prj.name}/**",
-	}
-
-project "ImGui"
+	project "ImGui"
 	location "MyGame"
 	kind "StaticLib"
 	language "C++"

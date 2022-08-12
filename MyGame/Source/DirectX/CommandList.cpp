@@ -52,7 +52,7 @@ namespace MyGame
 		m_CommandQueue->SetName(L"CommandListManager::m_CommandQueue");
 
 		ThrowIfFailed(pDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_pFence)));
-		NAME_D3D12_OBJECT(pDevice);
+		NAME_D3D12_OBJ(pDevice);
 		m_pFence->Signal((uint64_t)m_Type << 56);
 
 		m_FenceEventHandle = CreateEvent(nullptr, false, false, nullptr);
@@ -65,7 +65,7 @@ namespace MyGame
 	void CommandListManager::Create(ID3D12Device* pDevice)
 	{
 		MYGAME_ASSERT(pDevice != nullptr);
-		m_Device = pDevice;
+		D12Device = pDevice;
 		m_GraphicsQueue.Create(pDevice);
 		m_ComputeQueue.Create(pDevice);
 		m_CopyQueue.Create(pDevice);
@@ -82,8 +82,8 @@ namespace MyGame
 		case D3D12_COMMAND_LIST_TYPE_COPY: *Allocator = m_CopyQueue.RequestAllocator(); break;
 		}
 
-		ThrowIfFailed(m_Device->CreateCommandList(1, Type, *Allocator, nullptr, IID_PPV_ARGS(List)));
-		(*List)->SetName(L"CommandList");
+		ThrowIfFailed(D12Device->CreateCommandList(1, Type, *Allocator, nullptr, IID_PPV_ARGS(List)));
+		NAME_D3D12_OBJ_STR((*List), L"CommandList");
 	}
 
 	uint64_t CommandQueue::ExecuteCommandList(ID3D12CommandList* List)

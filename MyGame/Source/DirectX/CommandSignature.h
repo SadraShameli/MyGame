@@ -11,11 +11,11 @@ namespace MyGame
 	public:
 		IndirectParameter() { m_IndirectParam.Type = (D3D12_INDIRECT_ARGUMENT_TYPE)0xFFFFFFFF; }
 
-		void Draw(void) { m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW; }
-		void DrawIndexed(void) { m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED; }
-		void Dispatch(void) { m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DISPATCH; }
+		void Draw() { m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW; }
+		void DrawIndexed() { m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED; }
+		void Dispatch() { m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DISPATCH; }
 
-		void IndexBufferView(void) { m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_INDEX_BUFFER_VIEW; }
+		void IndexBufferView() { m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_INDEX_BUFFER_VIEW; }
 		void VertexBufferView(UINT Slot)
 		{
 			m_IndirectParam.Type = D3D12_INDIRECT_ARGUMENT_TYPE_VERTEX_BUFFER_VIEW;
@@ -48,7 +48,7 @@ namespace MyGame
 			m_IndirectParam.UnorderedAccessView.RootParameterIndex = RootParameterIndex;
 		}
 
-		const D3D12_INDIRECT_ARGUMENT_DESC& GetDesc(void) const { return m_IndirectParam; }
+		const D3D12_INDIRECT_ARGUMENT_DESC& GetDesc() const { return m_IndirectParam; }
 
 	private:
 		friend class CommandSignature;
@@ -62,7 +62,7 @@ namespace MyGame
 	public:
 		CommandSignature(UINT NumParams = 0) : m_Finalized(FALSE), m_NumParameters(NumParams) { Reset(NumParams); }
 
-		void Destroy(void)
+		void Destroy()
 		{
 			m_Signature = nullptr;
 			m_ParamArray = nullptr;

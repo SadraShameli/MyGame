@@ -29,10 +29,9 @@ namespace MyGame
 
 	namespace TextureManager
 	{
-		void Initialize(const std::wstring& RootPath);
+		void Initialize(const std::string& RootPath);
 		void Shutdown();
 
-		TextureRef LoadDDSFromFile(const std::wstring& filePath, Texture::DefaultTexture fallback = Texture::kMagenta2D, bool sRGB = false);
 		TextureRef LoadDDSFromFile(const std::string& filePath, Texture::DefaultTexture fallback = Texture::kMagenta2D, bool sRGB = false);
 	}
 }

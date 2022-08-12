@@ -13,7 +13,7 @@ namespace MyGame
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate(Timestep ts) {}
+		virtual void OnUpdate() {}
 		virtual void OnEvent(Event& event) {}
 		virtual void OnImGuiRender() {}
 

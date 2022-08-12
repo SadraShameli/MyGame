@@ -18,7 +18,7 @@ namespace MyGame
 		friend class TextureRef;
 
 	public:
-		ManagedTexture(const std::wstring& FileName);
+		ManagedTexture(const std::string& FileName);
 
 		void WaitForLoad(void) const;
 		void CreateFromMemory(std::shared_ptr<std::vector<byte>> memory, Texture::DefaultTexture fallback, bool sRGB);
@@ -27,7 +27,7 @@ namespace MyGame
 		bool IsValid(void) const { return m_IsValid; }
 		void Unload();
 
-		std::wstring m_MapKey;
+		std::string m_MapKey;
 		bool m_IsValid;
 		bool m_IsLoading;
 		size_t m_ReferenceCount;
@@ -36,21 +36,21 @@ namespace MyGame
 	namespace TextureManager
 	{
 		std::mutex s_Mutex;
-		std::wstring s_RootPath = L"";
-		std::map<std::wstring, std::unique_ptr<ManagedTexture>> s_TextureCache;
+		std::string s_RootPath;
+		std::map<std::string, std::unique_ptr<ManagedTexture>> s_TextureCache;
 
-		void Initialize(const std::wstring& TextureLibRoot) { s_RootPath = TextureLibRoot; }
+		void Initialize(const std::string& TextureLibRoot) { s_RootPath = TextureLibRoot; }
 		void Shutdown() { s_TextureCache.clear(); }
 
-		ManagedTexture* FindOrLoadTexture(const std::wstring& fileName, Texture::DefaultTexture fallback, bool forceSRGB)
+		ManagedTexture* FindOrLoadTexture(const std::string& fileName, Texture::DefaultTexture fallback, bool forceSRGB)
 		{
 			ManagedTexture* tex = nullptr;
 			{
 				std::lock_guard<std::mutex> Guard(s_Mutex);
 
-				std::wstring key = fileName;
+				std::string key = fileName;
 				if (forceSRGB)
-					key += L"_sRGB";
+					key += "_sRGB";
 
 				auto iter = s_TextureCache.find(key);
 				if (iter != s_TextureCache.end())
@@ -72,7 +72,7 @@ namespace MyGame
 			return tex;
 		}
 
-		void DestroyTexture(const std::wstring& key)
+		void DestroyTexture(const std::string& key)
 		{
 			std::lock_guard<std::mutex> Guard(s_Mutex);
 
@@ -82,7 +82,7 @@ namespace MyGame
 		}
 	}
 
-	ManagedTexture::ManagedTexture(const std::wstring& FileName) : m_MapKey(FileName), m_IsValid(false), m_IsLoading(true), m_ReferenceCount(0)
+	ManagedTexture::ManagedTexture(const std::string& FileName) : m_MapKey(FileName), m_IsValid(false), m_IsLoading(true), m_ReferenceCount(0)
 	{
 		m_hCpuDescriptorHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
 	}
@@ -95,7 +95,7 @@ namespace MyGame
 		{
 			m_hCpuDescriptorHandle = DirectXImpl::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-			/*if (SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::m_device.Get(), (const uint8_t*)memory->data(), memory->size(),
+			/*if (SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::D12Device.Get(), (const uint8_t*)memory->data(), memory->size(),
 				0, forceSRGB, m_pResource.GetAddressOf(), m_hCpuDescriptorHandle)))
 			{
 				m_IsValid = true;
@@ -106,7 +106,7 @@ namespace MyGame
 			}
 			else
 			{
-				DirectXImpl::m_device->CopyDescriptorsSimple(1, m_hCpuDescriptorHandle, GetDefaultTexture(fallback),
+				DirectXImpl::D12Device->CopyDescriptorsSimple(1, m_hCpuDescriptorHandle, GetDefaultTexture(fallback),
 					D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 			}*/
 		}
@@ -177,13 +177,8 @@ namespace MyGame
 			return GetDefaultTexture(Texture::kMagenta2D);
 	}
 
-	TextureRef TextureManager::LoadDDSFromFile(const std::wstring& filePath, Texture::DefaultTexture fallback, bool forceSRGB)
-	{
-		return TextureManager::FindOrLoadTexture(filePath, fallback, forceSRGB);
-	}
-
 	TextureRef TextureManager::LoadDDSFromFile(const std::string& filePath, Texture::DefaultTexture fallback, bool forceSRGB)
 	{
-		return TextureManager::FindOrLoadTexture(Utility::UTF8ToWideString(filePath), fallback, forceSRGB);
+		return TextureManager::FindOrLoadTexture(filePath, fallback, forceSRGB);
 	}
 }

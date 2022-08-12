@@ -79,7 +79,7 @@ namespace MyGame
 		}
 
 	private:
-		inline static ID3D12Device* m_Device = nullptr;
+		inline static ID3D12Device* D12Device = nullptr;
 
 		inline static CommandQueue m_GraphicsQueue = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		inline static CommandQueue m_ComputeQueue = D3D12_COMMAND_LIST_TYPE_COMPUTE;

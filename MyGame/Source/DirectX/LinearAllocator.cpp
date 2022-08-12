@@ -108,8 +108,8 @@ namespace MyGame
 		}
 
 		ID3D12Resource* pBuffer = nullptr;
-		ThrowIfFailed(DirectXImpl::m_device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, DefaultUsage, nullptr, IID_PPV_ARGS(&pBuffer)));
-		NAME_D3D12_OBJECT_STR(pBuffer, "LinearAllocator Page");
+		ThrowIfFailed(DirectXImpl::D12Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, DefaultUsage, nullptr, IID_PPV_ARGS(&pBuffer)));
+		NAME_D3D12_OBJ_STR(pBuffer, L"LinearAllocatorPage");
 
 		return new LinearAllocationPage(pBuffer, DefaultUsage);
 	}

@@ -7,7 +7,7 @@ using namespace DirectX;
 
 namespace MyGame
 {
-	void UploadBuffer::Create(const std::wstring_view& name, size_t BufferSize)
+	void UploadBuffer::Create(const std::wstring& name, size_t BufferSize)
 	{
 		Destroy();
 		m_BufferSize = BufferSize;
@@ -31,11 +31,11 @@ namespace MyGame
 		ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		ResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		ThrowIfFailed(DirectXImpl::m_device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
+		ThrowIfFailed(DirectXImpl::D12Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_pResource)));
 
 		m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
-		NAME_D3D12_OBJECT_STR(m_pResource.Get(), name.data());
+		NAME_D3D12_OBJ_STR(m_pResource, name);
 	}
 
 	void* UploadBuffer::Map(void)

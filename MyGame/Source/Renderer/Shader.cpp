@@ -12,80 +12,75 @@ using namespace Microsoft::WRL;
 
 namespace MyGame
 {
-	bool Shader::CompileVertexShader(ComPtr<IDxcBlob>& blob, const std::string& filePath)
+	IDxcBlob* Shader::CompileVertexShader(const std::wstring& filePath)
 	{
-		return CompileFromFile(blob, filePath, "vs_6_6");
+		return CompileFromFile(filePath, L"vs_6_6");
 	}
 
-	bool Shader::CompilePixelShader(ComPtr<IDxcBlob>& blob, const std::string& filePath)
+	IDxcBlob* Shader::CompilePixelShader(const std::wstring& filePath)
 	{
-		return CompileFromFile(blob, filePath, "ps_6_6");
+		return CompileFromFile(filePath, L"ps_6_6");
 	}
 
-	bool Shader::CompileFromFile(ComPtr<IDxcBlob>& blob, const std::string& filePath, const std::string& shaderProfile)
+	ID3DBlob* Shader::D3CompileVertexShader(const std::wstring& filePath)
 	{
-		MYGAME_INFO("Loading shader: {0} - {1}", filePath, shaderProfile);
+		return D3CompileFromFile(filePath, "vs_5_1");
+	}
 
-		if (!std::filesystem::exists(filePath)) { MYGAME_ERROR("Can't locate shader: " + filePath); return false; }
+	ID3DBlob* Shader::D3CompilePixelShader(const std::wstring& filePath)
+	{
+		return D3CompileFromFile(filePath, "ps_5_1");
+	}
 
-		ComPtr<IDxcLibrary> library;
+	IDxcBlob* Shader::CompileFromFile(const std::wstring& filePath, const std::wstring& shaderProfile)
+	{
+		MYGAME_INFO(L"Loading shader: {0} - {1}", filePath, shaderProfile);
+		if (!std::filesystem::exists(filePath)) { MYGAME_ERROR(L"Can't locate shader: {0}", filePath); return nullptr; }
+
+		IDxcLibrary* library = nullptr;
 		MYGAME_VERIFY_HRESULT(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&library)));
 
-		ComPtr<IDxcCompiler> compiler;
+		IDxcCompiler* compiler = nullptr;
 		MYGAME_VERIFY_HRESULT(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler)));
 
 		uint32_t codePage = CP_UTF8;
-		std::wstring wfilePath = Utility::UTF8ToWideString(filePath);
-
-		ComPtr<IDxcBlobEncoding> sourceBlob;
-		MYGAME_VERIFY_HRESULT(library->CreateBlobFromFile(wfilePath.c_str(), &codePage, &sourceBlob));
+		IDxcBlobEncoding* sourceBlob = nullptr;
+		MYGAME_VERIFY_HRESULT(library->CreateBlobFromFile(filePath.c_str(), &codePage, &sourceBlob));
 
 		HRESULT hr = S_FALSE;
-		std::wstring wshaderProFile = Utility::UTF8ToWideString(shaderProfile);
-
-		ComPtr<IDxcOperationResult> result;
-		if (SUCCEEDED(compiler->Compile(sourceBlob.Get(), nullptr, L"main", wshaderProFile.c_str(), NULL, 0, NULL, 0, NULL, &result)))
+		IDxcOperationResult* result = nullptr;
+		if (SUCCEEDED(compiler->Compile(sourceBlob, nullptr, L"main", shaderProfile.c_str(), NULL, 0, NULL, 0, NULL, &result)))
 			result->GetStatus(&hr);
 		if (FAILED(hr))
 		{
-			ComPtr<IDxcBlobEncoding> errorsBlob;
+			IDxcBlobEncoding* errorsBlob = nullptr;
 			hr = result->GetErrorBuffer(&errorsBlob);
 			if (SUCCEEDED(hr) && errorsBlob)
 				MYGAME_ERROR("Shader compilation failed: {0}", (const char*)errorsBlob->GetBufferPointer());
-			return false;
+			return nullptr;
 		}
-		result->GetResult(blob.GetAddressOf());
-		return true;
+		IDxcBlob* blob = nullptr;
+		result->GetResult(&blob);
+		return blob;
 	}
 
-	bool Shader::D3CompileVertexShader(ComPtr<ID3DBlob>& blob, const std::string& filePath)
+	ID3DBlob* Shader::D3CompileFromFile(const std::wstring& filePath, const std::string& shaderProfile)
 	{
-		return D3CompileFromFile(blob, filePath, "vs_5_1");
-	}
-
-	bool Shader::D3CompilePixelShader(ComPtr<ID3DBlob>& blob, const std::string& filePath)
-	{
-		return D3CompileFromFile(blob, filePath, "ps_5_1");
-	}
-
-	bool Shader::D3CompileFromFile(ComPtr<ID3DBlob>& blob, const std::string& filePath, const std::string& shaderProfile)
-	{
-		MYGAME_INFO("Loading shader: {0} - {1}", filePath, shaderProfile);
-
+		MYGAME_INFO("Loading shader: {0} - {1}", Utility::WideStringToUTF8(filePath), shaderProfile);
+		if (!std::filesystem::exists(filePath)) { MYGAME_ERROR(L"Can't locate shader: {0}", filePath); return nullptr; }
 #ifdef MYGAME_DEBUG
 		UINT compileFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
 		UINT compileFlags = 0;
 #endif
-		std::wstring wfilePath = Utility::UTF8ToWideString(filePath);
 
-		ComPtr<ID3DBlob> errorMsg;
-		if (FAILED(D3DCompileFromFile(reinterpret_cast<LPCWSTR>(wfilePath.c_str()), nullptr, nullptr, "main", shaderProfile.c_str(), compileFlags, 0, blob.GetAddressOf(), errorMsg.GetAddressOf())))
+		ID3DBlob* errorMsg = nullptr;
+		ID3DBlob* blob = nullptr;
+		if (FAILED(D3DCompileFromFile(filePath.c_str(), nullptr, nullptr, "main", shaderProfile.c_str(), compileFlags, 0, &blob, &errorMsg)))
 		{
 			if (errorMsg)
 				MYGAME_ERROR("Shader compilation failed: {0}", (const char*)errorMsg->GetBufferPointer());
-			return false;
 		}
-		return true;
+		return blob;
 	}
 }

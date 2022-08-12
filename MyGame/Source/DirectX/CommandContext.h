@@ -44,14 +44,14 @@ namespace MyGame
 	class ContextManager
 	{
 	public:
-		static CommandContext* AllocateContext(D3D12_COMMAND_LIST_TYPE Type);
-		static void FreeContext(CommandContext*);
-		static void DestroyAllContexts();
+		CommandContext* AllocateContext(D3D12_COMMAND_LIST_TYPE Type);
+		void FreeContext(CommandContext*);
+		void DestroyAllContexts();
 
 	private:
-		inline static std::vector<std::unique_ptr<CommandContext> > sm_ContextPool[4];
-		inline static std::queue<CommandContext*> sm_AvailableContexts[4];
-		inline static std::mutex sm_ContextAllocationMutex;
+		std::vector<std::unique_ptr<CommandContext> > sm_ContextPool[4];
+		std::queue<CommandContext*> sm_AvailableContexts[4];
+		std::mutex sm_ContextAllocationMutex;
 	};
 
 	struct NonCopyable
@@ -66,7 +66,7 @@ namespace MyGame
 	public:
 		~CommandContext();
 
-		static CommandContext& Begin(const std::wstring_view& ID = L"");
+		static CommandContext& Begin(const std::wstring& ID = L"CommandContext");
 
 		void Initialize();
 		static void DestroyAllContexts();
@@ -128,6 +128,7 @@ namespace MyGame
 
 		CommandListManager* m_OwningManager;
 		ID3D12GraphicsCommandList* m_CommandList;
+	public:
 		ID3D12CommandAllocator* m_CurrentAllocator;
 
 		ID3D12RootSignature* m_CurGraphicsRootSignature;
@@ -146,12 +147,7 @@ namespace MyGame
 		LinearAllocator m_GpuLinearAllocator;
 
 		std::wstring m_ID;
-		void SetID(const std::wstring_view& ID)
-		{
-#ifdef MYGAME_DEBUG
-			m_ID = ID;
-#endif
-		}
+		void SetID(const std::wstring& ID) { m_ID = ID; }
 
 		D3D12_COMMAND_LIST_TYPE m_Type;
 	};
@@ -159,7 +155,7 @@ namespace MyGame
 	class GraphicsContext : public CommandContext
 	{
 	public:
-		static GraphicsContext& Begin(const std::wstring_view& ID = L"") { return CommandContext::Begin(ID).GetGraphicsContext(); }
+		static GraphicsContext& Begin(const std::wstring& ID = L"GraphicsContext") { return CommandContext::Begin(ID).GetGraphicsContext(); }
 
 		void ClearUAV(GpuBuffer& Target);
 		void ClearUAV(ColorBuffer& Target);
@@ -226,7 +222,7 @@ namespace MyGame
 	class ComputeContext : public CommandContext
 	{
 	public:
-		static ComputeContext& Begin(const std::wstring_view& ID = L"", bool Async = false);
+		static ComputeContext& Begin(const std::wstring& ID = L"ComputeContext", bool Async = false);
 
 		void ClearUAV(GpuBuffer& Target);
 		void ClearUAV(ColorBuffer& Target);
@@ -703,4 +699,6 @@ namespace MyGame
 	{
 		m_CommandList->ResolveQueryData(pQueryHeap, D3D12_QUERY_TYPE_TIMESTAMP, 0, NumQueries, pReadbackHeap, 0);
 	}
+
+	inline static ContextManager D12ContextManager;
 }

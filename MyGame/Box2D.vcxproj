@@ -20,7 +20,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
@@ -56,23 +56,15 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <AdditionalIncludeDirectories>Vendor\Box2D\.github;Vendor\Box2D\docs;Vendor\Box2D\extern;Vendor\Box2D\include;Vendor\Box2D\src;Vendor\Box2D\testbed;Vendor\Box2D\unit-test;Vendor\Box2D\.github\workflows;Vendor\Box2D\docs\images;Vendor\Box2D\extern\glad;Vendor\Box2D\extern\glfw;Vendor\Box2D\extern\imgui;Vendor\Box2D\extern\sajson;Vendor\Box2D\extern\glad\include;Vendor\Box2D\extern\glad\src;Vendor\Box2D\extern\glad\include\glad;Vendor\Box2D\extern\glad\include\KHR;Vendor\Box2D\extern\glfw\include;Vendor\Box2D\extern\glfw\src;Vendor\Box2D\extern\glfw\include\GLFW;Vendor\Box2D\include\box2d;Vendor\Box2D\src\collision;Vendor\Box2D\src\common;Vendor\Box2D\src\dynamics;Vendor\Box2D\src\rope;Vendor\Box2D\testbed\data;Vendor\Box2D\testbed\tests;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -80,19 +72,14 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>Vendor\Box2D\.github;Vendor\Box2D\docs;Vendor\Box2D\extern;Vendor\Box2D\include;Vendor\Box2D\src;Vendor\Box2D\testbed;Vendor\Box2D\unit-test;Vendor\Box2D\.github\workflows;Vendor\Box2D\docs\images;Vendor\Box2D\extern\glad;Vendor\Box2D\extern\glfw;Vendor\Box2D\extern\imgui;Vendor\Box2D\extern\sajson;Vendor\Box2D\extern\glad\include;Vendor\Box2D\extern\glad\src;Vendor\Box2D\extern\glad\include\glad;Vendor\Box2D\extern\glad\include\KHR;Vendor\Box2D\extern\glfw\include;Vendor\Box2D\extern\glfw\src;Vendor\Box2D\extern\glfw\include\GLFW;Vendor\Box2D\include\box2d;Vendor\Box2D\src\collision;Vendor\Box2D\src\common;Vendor\Box2D\src\dynamics;Vendor\Box2D\src\rope;Vendor\Box2D\testbed\data;Vendor\Box2D\testbed\tests;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

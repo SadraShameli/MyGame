@@ -25,10 +25,5 @@ namespace MyGame
 
 		void SetLightMode();
 		void SetDarkMode();
-
-		void BlockEvents(bool block) { m_BlockEvents = block; }
-
-	private:
-		bool m_BlockEvents = true;
 	};
 }

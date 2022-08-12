@@ -2,7 +2,6 @@
 
 #include "ImGuiLayer.h"
 
-#include "../../Core/Window.h" 
 #include "../../Core/Application.h"
 #include "../../Core/Log.h"
 #include "../../Renderer/Renderer.h"
@@ -10,16 +9,12 @@
 #include "../../Debugs/Instrumentor.h"
 #include "../../Debugs/DebugHelpers.h"
 
-// Graphics Framework
-#include <GLFW/glfw3.h>
-
-// ImGui
 #include <imgui.h>
 #include <imgui_tables.cpp>
-#include <backends/imgui_impl_glfw.cpp>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_dx12.cpp>
-#include <backends/imgui_impl_dx12.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_win32.cpp>
+#include <imgui_impl_dx12.h>
+#include <imgui_impl_dx12.cpp>
 
 namespace MyGame
 {
@@ -27,57 +22,27 @@ namespace MyGame
 
 	void ImGuiLayer::OnAttach()
 	{
-		MYGAME_PROFILE_FUNCTION();
-
-		//if (!std::filesystem::exists("imgui.ini") && std::filesystem::exists("imgui_default.ini")) { std::filesystem::copy_file("imgui_default.ini", "imgui.ini"); }
-
-		GLFWwindow* window = application.GetNativeWindow();
-
-		// Setup Dear ImGui UI
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
 		ImGui::StyleColorsClassic();
 		SetDarkMode();
-
-		// Initialize IO Events
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
 		float fontSize = 18.0f;
 		io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Light.ttf", fontSize);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
-		// Initialize Graphics API
-		MYGAME_ASSERT(ImGui_ImplGlfw_InitForOther(window, true));
+		ImGui_ImplWin32_Init(Application::Get().GetNativeWindow());
 		Renderer::InitImGui();
-	}
-
-	void ImGuiLayer::OnDetach()
-	{
-		MYGAME_PROFILE_FUNCTION();
-
-		ImGui_ImplGlfw_Shutdown();
-		ImGui_ImplDX12_Shutdown();
-		ImGui::DestroyContext();
-	}
-
-	void ImGuiLayer::OnEvent(Event& e)
-	{
-		if (m_BlockEvents)
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
-			e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
-		}
 	}
 
 	void ImGuiLayer::Begin()
 	{
-		MYGAME_PROFILE_FUNCTION();
-
 		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 	}
 
@@ -86,6 +51,7 @@ namespace MyGame
 
 	void ImGuiLayer::OnImGuiRender()
 	{
+		Begin();
 		ImGui::GetStyle().FrameRounding = 7.0f;
 		ImGui::PushItemWidth(200);
 
@@ -108,18 +74,27 @@ namespace MyGame
 		// MSAA
 		ImGui::Text("MSAA Quality");
 		ImGui::SliderInt(" ", &temp1, 0, 8);
+		End();
 	}
 
 	void ImGuiLayer::End()
 	{
-		MYGAME_PROFILE_FUNCTION();
-
-		// Rendering ImGui
-		ImGui::GetIO().DisplaySize = ImVec2((float)application.GetWindow().GetWidth(), (float)application.GetWindow().GetHeight());
 		ImGui::Render();
-
-		// Rendering DirectX
 		Renderer::RenderImGui();
+	}
+
+	void ImGuiLayer::OnEvent(Event& e)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+		e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+	}
+
+	void ImGuiLayer::OnDetach()
+	{
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 	void ImGuiLayer::SetDarkMode()
