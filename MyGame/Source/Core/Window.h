@@ -18,6 +18,7 @@ namespace MyGame
 	public:
 		Window(WindowProps&&);
 
+		void Show();
 		void OnUpdate();
 
 		HWND GetHandle() { return m_Handle; }

@@ -10,7 +10,7 @@ namespace MyGame
 		friend class CommandContext;
 
 	public:
-		CommandQueue(D3D12_COMMAND_LIST_TYPE Type);
+		CommandQueue(D3D12_COMMAND_LIST_TYPE Type = D3D12_COMMAND_LIST_TYPE_DIRECT);
 		~CommandQueue();
 
 		void Create(ID3D12Device* pDevice);
@@ -27,13 +27,13 @@ namespace MyGame
 		inline bool IsReady() { return m_CommandQueue != nullptr; }
 		ID3D12CommandQueue* GetCommandQueue() { return m_CommandQueue; }
 
-	private:
 		uint64_t ExecuteCommandList(ID3D12CommandList* List);
 		ID3D12CommandAllocator* RequestAllocator();
 		void DiscardAllocator(uint64_t FenceValueForReset, ID3D12CommandAllocator* Allocator);
 
+	private:
 		ID3D12CommandQueue* m_CommandQueue;
-		const D3D12_COMMAND_LIST_TYPE m_Type;
+		D3D12_COMMAND_LIST_TYPE m_Type;
 
 		CommandAllocatorPool m_AllocatorPool;
 		std::mutex m_FenceMutex;
@@ -67,7 +67,7 @@ namespace MyGame
 		}
 
 		static ID3D12CommandQueue* GetCommandQueue() { return m_GraphicsQueue.GetCommandQueue(); }
-		static void CreateNewCommandList(D3D12_COMMAND_LIST_TYPE Type, ID3D12GraphicsCommandList** List, ID3D12CommandAllocator** Allocator);
+		static void CreateNewCommandList(ID3D12GraphicsCommandList** List, ID3D12CommandAllocator** Allocator, D3D12_COMMAND_LIST_TYPE Type = D3D12_COMMAND_LIST_TYPE_DIRECT);
 
 		static bool IsFenceComplete(uint64_t FenceValue) { return GetQueue(D3D12_COMMAND_LIST_TYPE(FenceValue >> 56)).IsFenceComplete(FenceValue); }
 		static void WaitForFence(uint64_t FenceValue);
@@ -79,10 +79,10 @@ namespace MyGame
 		}
 
 	private:
-		inline static ID3D12Device* D12Device = nullptr;
+		static inline ID3D12Device* D12Device = nullptr;
 
-		inline static CommandQueue m_GraphicsQueue = D3D12_COMMAND_LIST_TYPE_DIRECT;
-		inline static CommandQueue m_ComputeQueue = D3D12_COMMAND_LIST_TYPE_COMPUTE;
-		inline static CommandQueue m_CopyQueue = D3D12_COMMAND_LIST_TYPE_COPY;
+		static inline CommandQueue m_GraphicsQueue = D3D12_COMMAND_LIST_TYPE_DIRECT;
+		static inline CommandQueue m_ComputeQueue = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+		static inline CommandQueue m_CopyQueue = D3D12_COMMAND_LIST_TYPE_COPY;
 	};
 }

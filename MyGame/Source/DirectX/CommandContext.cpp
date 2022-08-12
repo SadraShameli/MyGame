@@ -145,7 +145,7 @@ namespace MyGame
 
 	void CommandContext::Initialize()
 	{
-		CommandListManager::CreateNewCommandList(m_Type, &m_CommandList, &m_CurrentAllocator);
+		CommandListManager::CreateNewCommandList(&m_CommandList, &m_CurrentAllocator, m_Type);
 	}
 
 	void CommandContext::Reset()

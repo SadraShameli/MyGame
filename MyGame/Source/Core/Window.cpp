@@ -122,9 +122,9 @@ namespace MyGame
 
 		m_Handle = CreateWindow(windowClass.lpszClassName, m_Data.Title.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 			m_Data.Width, m_Data.Height, nullptr, nullptr, nullptr, nullptr);
-
-		ShowWindow(m_Handle, SW_SHOWDEFAULT);
 	}
+
+	void Window::Show() { ShowWindow(m_Handle, SW_SHOWDEFAULT); }
 
 	static MSG msg = {};
 	void Window::OnUpdate()

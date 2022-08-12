@@ -14,12 +14,16 @@ namespace MyGame
 	Application::Application()
 	{
 		s_Instance = this;
-		m_Window = std::make_unique<Window>(std::forward<WindowProps>(WindowProps()));
+		Log::Init();
+		MYGAME_INFO("Welcome to MyGame!");
 
+		m_Window = std::make_unique<Window>(std::forward<WindowProps>(WindowProps()));
 		Renderer::Init();
 
 		PushLayer(new TriangleLayer());
 		PushOverlay(new ImGuiLayer());
+
+		m_Window->Show();
 	}
 
 	void Application::Destroy()
@@ -72,9 +76,6 @@ namespace MyGame
 
 int main()
 {
-	MyGame::Log::Init();
-	MYGAME_INFO("Welcome to MyGame!");
-
 	std::unique_ptr<MyGame::Application> app = std::make_unique<MyGame::Application>();
 	app->Run();
 	app->Destroy();

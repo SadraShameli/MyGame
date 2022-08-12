@@ -74,11 +74,11 @@ namespace MyGame
 		}
 
 #ifdef MYGAME_DEBUG
-		ID3D12InfoQueue* pInfoQueue;
-		D12Device->QueryInterface(IID_PPV_ARGS(&pInfoQueue));
-		pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-		pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-		pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+		//ID3D12InfoQueue* pInfoQueue;
+		//D12Device->QueryInterface(IID_PPV_ARGS(&pInfoQueue));
+		//pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+		//pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+		//pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 #endif
 
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};

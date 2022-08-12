@@ -12,17 +12,17 @@ namespace MyGame
 	{
 	public:
 		Application();
+		void Run();
+		void Destroy();
+		void Close() { m_Running = false; }
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
-		void Run();
 		void OnEvent(Event&);
 		void OnWindowResize(WindowResizeEvent& e);
 		void OnWindowMinimize(WindowMinimizeEvent e) { m_Minimized = e.GetMinimized(); }
 		void OnWindowClose() { m_Running = false; }
-		void Destroy();
-		void Close() { m_Running = false; }
 
 		inline static Application& Get() { return *s_Instance; }
 		Window& GetWindow() { return *m_Window; }

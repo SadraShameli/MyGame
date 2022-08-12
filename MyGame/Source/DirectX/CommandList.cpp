@@ -14,6 +14,7 @@ namespace MyGame
 		m_Type(Type),
 		m_CommandQueue(nullptr),
 		m_pFence(nullptr),
+		m_FenceEventHandle(nullptr),
 		m_NextFenceValue((uint64_t)Type << 56 | 1),
 		m_LastCompletedFenceValue((uint64_t)Type << 56),
 		m_AllocatorPool(Type) {}
@@ -49,7 +50,7 @@ namespace MyGame
 		D3D12_COMMAND_QUEUE_DESC QueueDesc = {};
 		QueueDesc.Type = m_Type;
 		pDevice->CreateCommandQueue(&QueueDesc, IID_PPV_ARGS(&m_CommandQueue));
-		m_CommandQueue->SetName(L"CommandListManager::m_CommandQueue");
+		NAME_D3D12_OBJ_STR(m_CommandQueue, L"CommandQueue::Create");
 
 		ThrowIfFailed(pDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_pFence)));
 		NAME_D3D12_OBJ(pDevice);
@@ -71,35 +72,31 @@ namespace MyGame
 		m_CopyQueue.Create(pDevice);
 	}
 
-	void CommandListManager::CreateNewCommandList(D3D12_COMMAND_LIST_TYPE Type, ID3D12GraphicsCommandList** List, ID3D12CommandAllocator** Allocator)
+	void CommandListManager::CreateNewCommandList(ID3D12GraphicsCommandList** List, ID3D12CommandAllocator** Allocator, D3D12_COMMAND_LIST_TYPE Type)
 	{
 		MYGAME_ASSERT(Type != D3D12_COMMAND_LIST_TYPE_BUNDLE, "Bundles are not yet supported");
 		switch (Type)
 		{
 		case D3D12_COMMAND_LIST_TYPE_DIRECT: *Allocator = m_GraphicsQueue.RequestAllocator(); break;
-		case D3D12_COMMAND_LIST_TYPE_BUNDLE: break;
 		case D3D12_COMMAND_LIST_TYPE_COMPUTE: *Allocator = m_ComputeQueue.RequestAllocator(); break;
 		case D3D12_COMMAND_LIST_TYPE_COPY: *Allocator = m_CopyQueue.RequestAllocator(); break;
 		}
-
 		ThrowIfFailed(D12Device->CreateCommandList(1, Type, *Allocator, nullptr, IID_PPV_ARGS(List)));
-		NAME_D3D12_OBJ_STR((*List), L"CommandList");
+		NAME_D3D12_OBJ_STR((*List), L"CommandListManager::CreateNewCommandList");
 	}
 
 	uint64_t CommandQueue::ExecuteCommandList(ID3D12CommandList* List)
 	{
 		std::lock_guard<std::mutex> LockGuard(m_FenceMutex);
-
 		ThrowIfFailed(((ID3D12GraphicsCommandList*)List)->Close());
 		m_CommandQueue->ExecuteCommandLists(1, &List);
 		m_CommandQueue->Signal(m_pFence, m_NextFenceValue);
 		return m_NextFenceValue++;
 	}
 
-	uint64_t CommandQueue::IncrementFence(void)
+	uint64_t CommandQueue::IncrementFence()
 	{
 		std::lock_guard<std::mutex> LockGuard(m_FenceMutex);
-
 		m_CommandQueue->Signal(m_pFence, m_NextFenceValue);
 		return m_NextFenceValue++;
 	}
@@ -129,7 +126,6 @@ namespace MyGame
 			return;
 
 		std::lock_guard<std::mutex> LockGuard(m_EventMutex);
-
 		m_pFence->SetEventOnCompletion(FenceValue, m_FenceEventHandle);
 		WaitForSingleObject(m_FenceEventHandle, INFINITE);
 		m_LastCompletedFenceValue = FenceValue;

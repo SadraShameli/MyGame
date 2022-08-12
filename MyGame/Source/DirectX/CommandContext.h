@@ -54,14 +54,7 @@ namespace MyGame
 		std::mutex sm_ContextAllocationMutex;
 	};
 
-	struct NonCopyable
-	{
-		NonCopyable() = default;
-		NonCopyable(const NonCopyable&) = delete;
-		NonCopyable& operator=(const NonCopyable&) = delete;
-	};
-
-	class CommandContext : NonCopyable
+	class CommandContext
 	{
 	public:
 		~CommandContext();
@@ -128,6 +121,7 @@ namespace MyGame
 
 		CommandListManager* m_OwningManager;
 		ID3D12GraphicsCommandList* m_CommandList;
+
 	public:
 		ID3D12CommandAllocator* m_CurrentAllocator;
 
@@ -296,17 +290,8 @@ namespace MyGame
 		m_CurPipelineState = PipelineState;
 	}
 
-	inline void GraphicsContext::SetViewportAndScissor(UINT x, UINT y, UINT w, UINT h)
-	{
-		SetViewport((float)x, (float)y, (float)w, (float)h);
-		SetScissor(x, y, x + w, y + h);
-	}
-
-	inline void GraphicsContext::SetScissor(UINT left, UINT top, UINT right, UINT bottom)
-	{
-		SetScissor(CD3DX12_RECT(left, top, right, bottom));
-	}
-
+	inline void GraphicsContext::SetViewportAndScissor(UINT x, UINT y, UINT w, UINT h) { SetViewport((float)x, (float)y, (float)w, (float)h); SetScissor(x, y, x + w, y + h); }
+	inline void GraphicsContext::SetScissor(UINT left, UINT top, UINT right, UINT bottom) { SetScissor(CD3DX12_RECT(left, top, right, bottom)); }
 	inline void GraphicsContext::SetStencilRef(UINT ref) { m_CommandList->OMSetStencilRef(ref); }
 	inline void GraphicsContext::SetBlendFactor(Color BlendFactor) { m_CommandList->OMSetBlendFactor(BlendFactor.GetPtr()); }
 	inline void GraphicsContext::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY Topology) { m_CommandList->IASetPrimitiveTopology(Topology); }
@@ -390,7 +375,7 @@ namespace MyGame
 
 		memcpy(vb.DataPtr, VertexData, BufferSize >> 4);
 
-		D3D12_VERTEX_BUFFER_VIEW VBView;
+		D3D12_VERTEX_BUFFER_VIEW VBView = {};
 		VBView.BufferLocation = vb.GpuAddress;
 		VBView.SizeInBytes = (UINT)BufferSize;
 		VBView.StrideInBytes = (UINT)VertexStride;
@@ -407,7 +392,7 @@ namespace MyGame
 
 		memcpy(ib.DataPtr, IndexData, BufferSize >> 4);
 
-		D3D12_INDEX_BUFFER_VIEW IBView;
+		D3D12_INDEX_BUFFER_VIEW IBView = {};
 		IBView.BufferLocation = ib.GpuAddress;
 		IBView.SizeInBytes = (UINT)(IndexCount * sizeof(uint16_t));
 		IBView.Format = DXGI_FORMAT_R16_UINT;
