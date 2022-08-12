@@ -1,18 +1,9 @@
 [submodule "MyGame/Vendor/SpdLog"]
 	path = MyGame/Vendor/SpdLog
 	url = https://github.com/gabime/spdlog
-[submodule "MyGame/Vendor/GLM"]
-	path = MyGame/Vendor/GLM
-	url = https://github.com/g-truc/glm
-[submodule "MyGame/Vendor/GLFW"]
-	path = MyGame/Vendor/GLFW
-	url = https://github.com/glfw/glfw
 [submodule "MyGame/Vendor/ImGui"]
 	path = MyGame/Vendor/ImGui
 	url = https://github.com/ocornut/imgui
-[submodule "MyGame/Vendor/ImGuizmo/"]
-	path = MyGame/Vendor/ImGuizmo/
-	url = https://github.com/CedricGuillemet/ImGuizmo
 [submodule "MyGame/Vendor/Box2D"]
 	path = MyGame/Vendor/Box2D
 	url = https://github.com/erincatto/box2d
@@ -22,6 +13,3 @@
 [submodule "MyGame/Vendor/D3D12MemoryAlloc"]
 	path = MyGame/Vendor/D3D12MemoryAlloc
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator
-[submodule "MyGame/Vendor/DirectXShaderCompiler"]
-	path = MyGame/Vendor/DirectXShaderCompiler
-	url = https://github.com/Microsoft/DirectXShaderCompiler
