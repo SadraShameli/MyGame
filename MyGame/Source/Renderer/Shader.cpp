@@ -34,42 +34,45 @@ namespace MyGame
 
 	HRESULT Shader::CompileFromFile(IDxcBlob** Blob, const std::wstring& FilePath, const std::wstring& ShaderProfile, const std::wstring& MainEntry)
 	{
-		MYGAME_INFO(L"Shader: Loading Source at: {0} - Entry: {1} - Profile: {2}", FilePath, MainEntry, ShaderProfile);
+		Timer compileTime;
 
-		if (!std::filesystem::exists(FilePath)) { MYGAME_ERROR(L"Shader: Failed to Locate Sourcefile at: {0}", FilePath); return S_FALSE; }
+		if (!std::filesystem::exists(FilePath)) { MYGAME_ERROR(L"Shader: Can't find sourcefile: {0}", FilePath); return S_FALSE; }
+		MYGAME_INFO(L"Shader: Loading sourcefile: {0} / Entry: {1} / Profile: {2}", FilePath, MainEntry, ShaderProfile);
 
-		IDxcLibrary* library = nullptr;
+		ComPtr<IDxcLibrary> library = nullptr;
 		MYGAME_HRESULT_VERIFY(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&library)));
 
-		IDxcCompiler* compiler = nullptr;
+		ComPtr<IDxcCompiler> compiler = nullptr;
 		MYGAME_HRESULT_VERIFY(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler)));
 
 		uint32_t codePage = CP_UTF8;
-		IDxcBlobEncoding* sourceBlob;
+		ComPtr<IDxcBlobEncoding> sourceBlob;
 		MYGAME_HRESULT_VERIFY(library->CreateBlobFromFile(FilePath.c_str(), &codePage, &sourceBlob));
 
 		HRESULT hr = S_FALSE;
-		IDxcOperationResult* result;
+		ComPtr<IDxcOperationResult> result;
 
-		if (SUCCEEDED(compiler->Compile(sourceBlob, nullptr, MainEntry.c_str(), ShaderProfile.c_str(), nullptr, 0, nullptr, 0, nullptr, &result)))
+		if (SUCCEEDED(compiler->Compile(sourceBlob.Get(), nullptr, MainEntry.c_str(), ShaderProfile.c_str(), nullptr, 0, nullptr, 0, nullptr, &result)))
 			result->GetStatus(&hr);
 		if (FAILED(hr))
 		{
-			IDxcBlobEncoding* errorsBlob;
+			ComPtr<IDxcBlobEncoding> errorsBlob;
 			if (SUCCEEDED(result->GetErrorBuffer(&errorsBlob)) && errorsBlob)
-				MYGAME_ERROR("Shader: Failed to Compile: {0}", (const char*)errorsBlob->GetBufferPointer());
+				MYGAME_ERROR("Shader: Failed to Compile : {0}", (const char*)errorsBlob->GetBufferPointer());
 			return hr;
 		}
-
 		result->GetResult(Blob);
+
+		MYGAME_INFO("Shader: Compiling done in {0} milliseconds", compileTime.ElapsedMillis());
 		return hr;
 	}
 
 	HRESULT Shader::D3CompileFromFile(ID3DBlob** Blob, const std::wstring& FilePath, const std::string& ShaderProfile, const std::string& MainEntry)
 	{
-		MYGAME_INFO("Shader: Loading Source at: {0} - Entry: {1} - Profile: {2}", Utility::WideStringToUTF8(FilePath), MainEntry, ShaderProfile);
+		Timer compileTime;
 
-		if (!std::filesystem::exists(FilePath)) { MYGAME_ERROR(L"Shader: Failed to Locate Sourcefile at: {0}", FilePath); return S_FALSE; }
+		if (!std::filesystem::exists(FilePath)) { MYGAME_ERROR(L"Shader: Can't find sourcefile: {0}", FilePath); return S_FALSE; }
+		MYGAME_INFO("Shader: Loading sourcefile: {0} / Entry: {1} / Profile: {2}", Utility::WideStringToUTF8(FilePath), MainEntry, ShaderProfile);
 
 #ifdef MYGAME_DEBUG
 		UINT compileFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
@@ -83,8 +86,10 @@ namespace MyGame
 		if (FAILED(hr = D3DCompileFromFile(FilePath.c_str(), nullptr, nullptr, MainEntry.c_str(), ShaderProfile.c_str(), compileFlags, 0, Blob, &errorMsg)))
 		{
 			if (errorMsg)
-				MYGAME_ERROR("Shader: Failed to Compile {0}", (const char*)errorMsg->GetBufferPointer());
+				MYGAME_ERROR("Shader: Failed to Compile : {0}", (const char*)errorMsg->GetBufferPointer());
 		}
+
+		MYGAME_INFO("Shader: Compiling done in {0} milliseconds", compileTime.ElapsedMillis());
 		return hr;
 	}
 }

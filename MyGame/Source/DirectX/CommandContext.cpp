@@ -6,10 +6,34 @@
 
 namespace MyGame
 {
+	CommandContext::CommandContext(D3D12_COMMAND_LIST_TYPE Type) :
+		m_Type(Type),
+		m_DynamicViewDescriptorHeap(*this, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
+		m_DynamicSamplerDescriptorHeap(*this, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER),
+		m_CpuLinearAllocator(LinearAllocatorType::kCpuWritable),
+		m_GpuLinearAllocator(LinearAllocatorType::kGpuExclusive)
+	{
+		m_OwningManager = nullptr;
+		m_CommandList = nullptr;
+		m_CurrentAllocator = nullptr;
+		ZeroMemory(m_CurrentDescriptorHeaps, sizeof(m_CurrentDescriptorHeaps));
+
+		m_CurGraphicsRootSignature = nullptr;
+		m_CurComputeRootSignature = nullptr;
+		m_CurPipelineState = nullptr;
+		m_NumBarriersToFlush = 0;
+	}
+
+	CommandContext::~CommandContext()
+	{
+		if (m_CommandList)
+			m_CommandList->Release();
+	}
+
 	void ContextManager::DestroyAllContexts()
 	{
-		for (uint32_t i = 0; i < 4; ++i)
-			sm_ContextPool[i].clear();
+		for (auto& ctxPool : sm_ContextPool)
+			ctxPool.clear();
 	}
 
 	CommandContext* ContextManager::AllocateContext(D3D12_COMMAND_LIST_TYPE Type)
@@ -32,7 +56,6 @@ namespace MyGame
 
 		MYGAME_ASSERT(ret);
 		MYGAME_ASSERT(ret->m_Type == Type);
-
 		return ret;
 	}
 
@@ -42,23 +65,23 @@ namespace MyGame
 		sm_AvailableContexts[UsedContext->m_Type].push(UsedContext);
 	}
 
-	void CommandContext::DestroyAllContexts(void)
+	void CommandContext::DestroyAllContexts()
 	{
 		LinearAllocator::DestroyAll();
 		DynamicDescriptorHeap::DestroyAll();
-		D12ContextManager.DestroyAllContexts();
+		D3D12ContextManager.DestroyAllContexts();
 	}
 
 	CommandContext& CommandContext::Begin(const std::wstring& ID)
 	{
-		CommandContext* NewContext = D12ContextManager.AllocateContext(D3D12_COMMAND_LIST_TYPE_DIRECT);
+		CommandContext* NewContext = D3D12ContextManager.AllocateContext(D3D12_COMMAND_LIST_TYPE_DIRECT);
 		NewContext->SetID(ID);
 		return *NewContext;
 	}
 
 	ComputeContext& ComputeContext::Begin(const std::wstring& ID, bool Async)
 	{
-		ComputeContext& NewContext = D12ContextManager.AllocateContext(Async ? D3D12_COMMAND_LIST_TYPE_COMPUTE : D3D12_COMMAND_LIST_TYPE_DIRECT)->GetComputeContext();
+		ComputeContext& NewContext = D3D12ContextManager.AllocateContext(Async ? D3D12_COMMAND_LIST_TYPE_COMPUTE : D3D12_COMMAND_LIST_TYPE_DIRECT)->GetComputeContext();
 		NewContext.SetID(ID);
 		return NewContext;
 	}
@@ -98,7 +121,7 @@ namespace MyGame
 
 		CommandQueue& Queue = CommandListManager::GetQueue(m_Type);
 		uint64_t FenceValue = Queue.ExecuteCommandList(m_CommandList);
-		Queue.DiscardAllocator(FenceValue, m_CurrentAllocator);
+		Queue.DiscardAllocator(m_CurrentAllocator, FenceValue);
 		m_CurrentAllocator = nullptr;
 
 		m_CpuLinearAllocator.CleanupUsedPages(FenceValue);
@@ -108,32 +131,9 @@ namespace MyGame
 
 		if (WaitForCompletion)
 			CommandListManager::WaitForFence(FenceValue);
-		D12ContextManager.FreeContext(this);
+
+		D3D12ContextManager.FreeContext(this);
 		return FenceValue;
-	}
-
-	CommandContext::CommandContext(D3D12_COMMAND_LIST_TYPE Type) :
-		m_Type(Type),
-		m_DynamicViewDescriptorHeap(*this, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV),
-		m_DynamicSamplerDescriptorHeap(*this, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER),
-		m_CpuLinearAllocator(LinearAllocatorType::kCpuWritable),
-		m_GpuLinearAllocator(LinearAllocatorType::kGpuExclusive)
-	{
-		m_OwningManager = nullptr;
-		m_CommandList = nullptr;
-		m_CurrentAllocator = nullptr;
-		ZeroMemory(m_CurrentDescriptorHeaps, sizeof(m_CurrentDescriptorHeaps));
-
-		m_CurGraphicsRootSignature = nullptr;
-		m_CurComputeRootSignature = nullptr;
-		m_CurPipelineState = nullptr;
-		m_NumBarriersToFlush = 0;
-	}
-
-	CommandContext::~CommandContext()
-	{
-		if (m_CommandList != nullptr)
-			m_CommandList->Release();
 	}
 
 	void CommandContext::Initialize()
@@ -159,7 +159,7 @@ namespace MyGame
 	{
 		UINT NonNullHeaps = 0;
 		ID3D12DescriptorHeap* HeapsToBind[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES] = {};
-		for (UINT i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+		for (UINT i = 0; i < _countof(HeapsToBind); ++i)
 		{
 			ID3D12DescriptorHeap* HeapIter = m_CurrentDescriptorHeaps[i];
 			if (HeapIter != nullptr)

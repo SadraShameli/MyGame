@@ -28,14 +28,20 @@ namespace MyGame
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 
+	ComPtr<ID3D12CommandAllocator> m_CommandAllocator;
+	ComPtr<ID3D12CommandList> m_CommandList;
+
 	void TriangleLayer::OnAttach()
 	{
+		//GraphicsContext& ctx = GraphicsContext::Begin(L"Triangle");
+		//RootSignature sig;
+
 		// Define the geometry for a triangle.
 		Vertex triangleVertices[] =
 		{
-			{ { 0.0f, 0.25f * 1.7777778, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-			{ { 0.25f, -0.25f * 1.7777778, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-			{ { -0.25f, -0.25f * 1.7777778, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+			{ { 0.0f, 0.25f * 1.78f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+			{ { 0.25f, -0.25f * 1.78f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+			{ { -0.25f, -0.25f * 1.78f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
 		};
 
 		const UINT vertexBufferSize = sizeof(triangleVertices);
@@ -56,7 +62,7 @@ namespace MyGame
 			IID_PPV_ARGS(&m_vertexBuffer)));
 
 		// Copy the triangle data to the vertex buffer.
-		UINT8* pVertexDataBegin;
+		UINT8* pVertexDataBegin = nullptr;
 		CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
 		ThrowIfFailed(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
 		memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));

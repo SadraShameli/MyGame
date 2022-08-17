@@ -2,13 +2,15 @@
 
 #include "DirectXImpl.h"
 #include "DirectXHelpers.h"
-#include "../Core/Application.h"
-#include "../Debugs/DebugHelpers.h"
 
-#include <imgui_impl_dx12.h>
+#include "../Core/Application.h"
+#include "../Core/Timer.h"
+#include "../Debugs/DebugHelpers.h"
 
 // TOOO remove
 #include "../Renderer/Shader.h"
+#include "RootSignature.h"
+#include "PipelineState.h"
 
 #define MYGAME_USE_DXCOMPILER
 
@@ -41,6 +43,9 @@ namespace MyGame
 
 	void DirectXImpl::LoadPipeline()
 	{
+		MYGAME_INFO("DirectX: Initializing DirectX 12 API");
+		Timer initTime;
+
 		UINT dxgiFactoryFlags = 0;
 		m_viewport.Width = (float)Application::Get().GetWindow().GetWidth();
 		m_viewport.Height = (float)Application::Get().GetWindow().GetHeight();
@@ -54,6 +59,8 @@ namespace MyGame
 
 			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
 			{
+				MYGAME_INFO("DirectX: Enabling debug Layer");
+
 				debugController->EnableDebugLayer();
 				debugController->QueryInterface(IID_PPV_ARGS(&debugController1));
 				debugController1->SetEnableGPUBasedValidation(TRUE);
@@ -65,6 +72,7 @@ namespace MyGame
 			MYGAME_HRESULT_TOSTR(D3D12EnableExperimentalFeatures(1, experimentalFeatures, nullptr, nullptr));
 		}
 #endif	
+		MYGAME_INFO("DirectX: Creating Dxgi Factory");
 
 		ComPtr<IDXGIFactory4> factory;
 		ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
@@ -97,10 +105,12 @@ namespace MyGame
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count = 1;
 
+		MYGAME_INFO("DirectX: Creating Swap Chain");
 		ComPtr<IDXGISwapChain1> swapChain;
 		ThrowIfFailed(factory->CreateSwapChainForHwnd(D3D12_CmdQueue, Application::Get().GetNativeWindow(), &swapChainDesc, nullptr, nullptr, &swapChain));
 		ThrowIfFailed(swapChain->QueryInterface(&m_swapChain));
 
+		MYGAME_INFO("DirectX: Creating RTV Heap");
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.NumDescriptors = FrameCount;
@@ -109,6 +119,7 @@ namespace MyGame
 		NAME_D3D12_OBJ(D3D12_RtvHeap);
 		m_rtvDescriptorSize = D3D12_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
+		MYGAME_INFO("DirectX: Creating DSV Heap");
 		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
 		dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		dsvHeapDesc.NumDescriptors = 1 + FrameCount;
@@ -117,6 +128,7 @@ namespace MyGame
 		NAME_D3D12_OBJ(D3D12_DsvHeap);
 		m_dsvDescriptorSize = D3D12_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
+		MYGAME_INFO("DirectX: Creating SRV Heap");
 		D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		srvHeapDesc.NumDescriptors = 1;
@@ -124,6 +136,7 @@ namespace MyGame
 		ThrowIfFailed(D3D12_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&D3D12_SrvHeap)));
 		NAME_D3D12_OBJ(D3D12_SrvHeap);
 
+		MYGAME_INFO("DirectX: Creating Sampler Heap");
 		D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
 		samplerHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
 		samplerHeapDesc.NumDescriptors = 2;
@@ -131,35 +144,34 @@ namespace MyGame
 		ThrowIfFailed(D3D12_Device->CreateDescriptorHeap(&samplerHeapDesc, IID_PPV_ARGS(&D3D12_SamplerHeap)));
 		NAME_D3D12_OBJ(D3D12_SamplerHeap);
 
+		MYGAME_INFO("DirectX: Creating Render Targets");
 		CreateRenderTargets();
+
+		MYGAME_INFO("DirectX: Initialization done in {0} milliseconds", initTime.ElapsedMillis());
 	}
 
 	void DirectXImpl::LoadAssets()
 	{
-		{
-			CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc = {};
-			rootSigDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+		D3D12_ROOT_SIGNATURE_FLAGS rootSigFlags =
+			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
 
-			ComPtr<ID3DBlob> signature;
-			ComPtr<ID3DBlob> error;
-			ThrowIfFailed(D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &signature, &error));
-			ThrowIfFailed(D3D12_Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&D312_RootSig)));
-			NAME_D3D12_OBJ(D312_RootSig);
-		}
+		RootSignature sig;
+		sig.Reset(4, 0);
+		sig[0].InitAsConstants(0, 4);
+		sig[1].InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 10);
+		sig[2].InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0, 10);
+		sig[3].InitAsConstantBuffer(1);
+		sig.Finalize(L"Triangle", rootSigFlags);
 
-#ifdef MYGAME_USE_DXCOMPILER	
 		ComPtr<IDxcBlob> vertexShader;
 		ComPtr<IDxcBlob> pixelShader;
 
 		MYGAME_HRESULT_VALIDATE(Shader::CompileVertexShader(&vertexShader, L"Assets/Shaders/ShaderVertex.hlsl"));
 		MYGAME_HRESULT_VALIDATE(Shader::CompilePixelShader(&pixelShader, L"Assets/Shaders/ShaderPixel.hlsl"));
-#else
-		ComPtr<ID3DBlob> vertexShader;
-		ComPtr<ID3DBlob> pixelShader;
-
-		MYGAME_HRESULT_VALIDATE(Shader::D3CompileVertexShader(&vertexShader, L"Assets/Shaders/ShaderVertex.hlsl"));
-		MYGAME_HRESULT_VALIDATE(Shader::D3CompilePixelShader(&pixelShader, L"Assets/Shaders/ShaderPixel.hlsl"));
-#endif
 
 		D3D12_INPUT_ELEMENT_DESC inputLayoutDesc[] =
 		{
@@ -167,21 +179,20 @@ namespace MyGame
 			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 		};
 
-		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-		psoDesc.InputLayout = { inputLayoutDesc, _countof(inputLayoutDesc) };
-		psoDesc.pRootSignature = D312_RootSig;
-		psoDesc.VS = { reinterpret_cast<UINT8*>(vertexShader->GetBufferPointer()), vertexShader->GetBufferSize() };
-		psoDesc.PS = { reinterpret_cast<UINT8*>(pixelShader->GetBufferPointer()), pixelShader->GetBufferSize() };
-		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-		psoDesc.SampleMask = UINT_MAX;
-		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-		psoDesc.NumRenderTargets = 1;
-		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-		psoDesc.SampleDesc.Count = 1;
+		D312_RootSig = sig.GetSignature();
 
-		ThrowIfFailed(D3D12_Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&D312_PSO)));
-		NAME_D3D12_OBJ(D312_PSO);
+		GraphicsPSO pso(L"Triangle");
+		pso.SetRootSignature(sig);
+		pso.SetRasterizerState(CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT));
+		pso.SetBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT));
+		pso.SetInputLayout(inputLayoutDesc, _countof(inputLayoutDesc));
+		pso.SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+		pso.SetVertexShader(vertexShader.Get());
+		pso.SetPixelShader(pixelShader.Get());
+		pso.SetRenderTargetFormat(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN);
+		pso.Finalize();
+
+		D312_PSO = pso.GetPipelineStateObject();
 
 		ThrowIfFailed(D3D12_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&D3D12_CmdAlloc)));
 		NAME_D3D12_OBJ(D3D12_CmdAlloc);

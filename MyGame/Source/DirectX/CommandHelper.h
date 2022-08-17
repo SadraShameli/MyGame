@@ -59,15 +59,15 @@ namespace MyGame
 		void StallForProducer(CommandQueue& Producer);
 		void WaitForFence(uint64_t FenceValue);
 
-		inline bool IsReady() { return D3D12_CmdQueue != nullptr; }
-		ID3D12CommandQueue* GetCommandQueue() { return D3D12_CmdQueue; }
+		inline bool IsReady() { return m_CommandQueue != nullptr; }
+		ID3D12CommandQueue* GetCommandQueue() { return m_CommandQueue; }
 
 		ID3D12CommandAllocator* RequestAllocator();
-		void DiscardAllocator(uint64_t FenceValueForReset, ID3D12CommandAllocator* Allocator);
+		void DiscardAllocator(ID3D12CommandAllocator* Allocator, uint64_t FenceValueForReset);
 		uint64_t ExecuteCommandList(ID3D12CommandList* List);
 
 	private:
-		ID3D12CommandQueue* D3D12_CmdQueue;
+		ID3D12CommandQueue* m_CommandQueue;
 		D3D12_COMMAND_LIST_TYPE m_Type;
 		ID3D12Fence* m_pFence;
 		uint64_t m_NextFenceValue;

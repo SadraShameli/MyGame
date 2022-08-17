@@ -679,5 +679,5 @@ namespace MyGame
 		m_CommandList->ResolveQueryData(pQueryHeap, D3D12_QUERY_TYPE_TIMESTAMP, 0, NumQueries, pReadbackHeap, 0);
 	}
 
-	inline static ContextManager D12ContextManager;
+	inline static ContextManager D3D12ContextManager;
 }

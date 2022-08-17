@@ -2,7 +2,7 @@
 
 #include "OrthographicCamera.h"
 
-#include "../Core/Time.h"
+#include "../Core/Timer.h"
 
 #include "../Events/AppEvent.h"
 #include "../Events/MouseEvent.h"

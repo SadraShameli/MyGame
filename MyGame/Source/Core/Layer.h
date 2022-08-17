@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core/Time.h"
+#include "../Core/Timer.h"
 #include "../Events/Event.h"
 #include "../DirectX/DirectXImpl.h"
 

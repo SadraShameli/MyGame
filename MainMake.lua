@@ -39,7 +39,7 @@ project "MyGame"
 
 	defines
 	{
-		"_CRT_SECURE_NO_WARNINGS",		
+		"_CRT_SECURE_NO_WARNINGS",
 	}
 
 	includedirs
@@ -111,7 +111,7 @@ project "Box2D"
 		"%{prj.location}/Vendor/%{prj.name}/**",
 	}
 
-	project "ImGui"
+project "ImGui"
 	location "MyGame"
 	kind "StaticLib"
 	language "C++"

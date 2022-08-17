@@ -76,7 +76,7 @@ namespace MyGame
 			range->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 		}
 
-		const D3D12_ROOT_PARAMETER& operator() (void) const { return m_RootParam; }
+		const D3D12_ROOT_PARAMETER& operator() () const { return m_RootParam; }
 
 	protected:
 		D3D12_ROOT_PARAMETER m_RootParam;
@@ -104,13 +104,13 @@ namespace MyGame
 			m_NumInitializedStaticSamplers = 0;
 		}
 
-		RootParameter& operator[] (size_t EntryIndex)
+		RootParameter& operator[] (UINT EntryIndex)
 		{
 			DirectX::ThrowIfFailed(EntryIndex < m_NumParameters);
 			return m_ParamArray.get()[EntryIndex];
 		}
 
-		const RootParameter& operator[] (size_t EntryIndex) const
+		const RootParameter& operator[] (UINT EntryIndex) const
 		{
 			DirectX::ThrowIfFailed(EntryIndex < m_NumParameters);
 			return m_ParamArray.get()[EntryIndex];

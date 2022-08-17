@@ -52,19 +52,15 @@ namespace MyGame
 		if (m_Finalized)
 			return;
 
-		//CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-		//rootSignatureDesc.Init(m_NumParameters, nullptr, m_NumSamplers, nullptr, Flags);
+		MYGAME_ASSERT(m_NumInitializedStaticSamplers == m_NumSamplers);
 
-		CD3DX12_ROOT_PARAMETER1 rootParameters[1] = {};
-		rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+		CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc = {};
+		rootSigDesc.Init(m_NumParameters, (const D3D12_ROOT_PARAMETER*)m_ParamArray.get(), m_NumSamplers, m_SamplerArray.get(), Flags);
 
-		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription = {};
-		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, Flags);
-
-		ID3DBlob* signature = nullptr;
-		ID3DBlob* error = nullptr;
-		ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDescription, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-		ThrowIfFailed(D3D12_Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_Signature)));
+		ComPtr<ID3DBlob> sig;
+		ComPtr<ID3DBlob> error;
+		ThrowIfFailed(D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &sig, &error));
+		ThrowIfFailed(D3D12_Device->CreateRootSignature(0, sig->GetBufferPointer(), sig->GetBufferSize(), IID_PPV_ARGS(&m_Signature)));
 		NAME_D3D12_OBJ_STR(m_Signature, name);
 		m_Finalized = true;
 	}

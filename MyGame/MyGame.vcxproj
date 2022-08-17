@@ -107,14 +107,13 @@
     <ClInclude Include="Source\Core\Layer.h" />
     <ClInclude Include="Source\Core\LayerStack.h" />
     <ClInclude Include="Source\Core\Log.h" />
-    <ClInclude Include="Source\Core\Time.h" />
     <ClInclude Include="Source\Core\Timer.h" />
     <ClInclude Include="Source\Core\Window.h" />
     <ClInclude Include="Source\Debugs\DebugHelpers.h" />
     <ClInclude Include="Source\Debugs\Instrumentor.h" />
+    <ClInclude Include="Source\DirectX\BufferHelper.h" />
     <ClInclude Include="Source\DirectX\CommandContext.h" />
     <ClInclude Include="Source\DirectX\CommandHelper.h" />
-    <ClInclude Include="Source\DirectX\BufferHelper.h" />
     <ClInclude Include="Source\DirectX\CommonIncludes.h" />
     <ClInclude Include="Source\DirectX\DescriptorHeap.h" />
     <ClInclude Include="Source\DirectX\DirectXHelpers.h" />
@@ -154,9 +153,9 @@
     <ClCompile Include="Source\Core\LayerStack.cpp" />
     <ClCompile Include="Source\Core\Log.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
+    <ClCompile Include="Source\DirectX\BufferHelper.cpp" />
     <ClCompile Include="Source\DirectX\CommandContext.cpp" />
     <ClCompile Include="Source\DirectX\CommandHelper.cpp" />
-    <ClCompile Include="Source\DirectX\BufferHelper.cpp" />
     <ClCompile Include="Source\DirectX\DescriptorHeap.cpp" />
     <ClCompile Include="Source\DirectX\DirectXImpl.cpp" />
     <ClCompile Include="Source\DirectX\GpuBuffer.cpp" />

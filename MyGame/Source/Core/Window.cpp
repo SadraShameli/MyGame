@@ -124,7 +124,7 @@ namespace MyGame
 			m_Data.Width, m_Data.Height, nullptr, nullptr, nullptr, nullptr);
 	}
 
-	void Window::Show() { ShowWindow(m_Handle, SW_SHOWDEFAULT); }
+	void Window::Visibility(bool State) { ShowWindow(m_Handle, State); }
 
 	static MSG msg = {};
 	void Window::OnUpdate()

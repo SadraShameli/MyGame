@@ -22,9 +22,9 @@ namespace MyGame
 		Renderer::Init();
 
 		PushLayer(new TriangleLayer());
-		PushOverlay(new ImGuiLayer());
+		//PushOverlay(new ImGuiLayer());
 
-		m_Window->Show();
+		m_Window->Visibility(true);
 	}
 
 	void Application::Destroy()

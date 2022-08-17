@@ -18,7 +18,7 @@ namespace MyGame
 	public:
 		Window(const WindowProps&);
 
-		void Show();
+		void Visibility(bool State);
 		void OnUpdate();
 
 		HWND GetHandle() { return m_Handle; }

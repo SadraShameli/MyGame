@@ -16,16 +16,14 @@ namespace MyGame
 	void CommandAllocatorPool::Create(ID3D12Device* pDevice) { m_Device = pDevice; }
 	void CommandAllocatorPool::Shutdown()
 	{
-		MYGAME_INFO("Releasing and Cleaning all Command Allocator");
-
 		for (auto& pool : m_AllocatorPool)
-			pool->Release();
+			if (pool) pool->Release();
 		m_AllocatorPool.clear();
 	}
 
 	ID3D12CommandAllocator* CommandAllocatorPool::RequestAllocator(uint64_t CompletedFenceValue)
 	{
-		MYGAME_INFO("Requesting Command Allocator");
+		MYGAME_INFO("DirectX: Requesting an Command Allocator");
 
 		ID3D12CommandAllocator* pAllocator = nullptr;
 		if (!m_ReadyAllocators.empty())
@@ -41,11 +39,11 @@ namespace MyGame
 
 		if (pAllocator == nullptr)
 		{
-			MYGAME_INFO("Creating Command Allocator");
+			MYGAME_INFO("DirectX: Creating a new Command Allocator");
 
 			ThrowIfFailed(m_Device->CreateCommandAllocator(m_cCommandListType, IID_PPV_ARGS(&pAllocator)));
 			m_AllocatorPool.emplace_back(pAllocator);
-			NAME_D3D12_OBJ_INDEXED_STR(pAllocator, L"CommandAllocatorPool", m_AllocatorPool.size());
+			NAME_D3D12_OBJ_INDEXED_STR(pAllocator, L"CommandAllocatorPool", (UINT)m_AllocatorPool.size());
 		}
 
 		return pAllocator;
@@ -57,7 +55,7 @@ namespace MyGame
 
 	CommandQueue::CommandQueue(D3D12_COMMAND_LIST_TYPE Type) :
 		m_Type(Type),
-		D3D12_CmdQueue(nullptr),
+		m_CommandQueue(nullptr),
 		m_pFence(nullptr),
 		m_FenceEventHandle(nullptr),
 		m_NextFenceValue((uint64_t)Type << 56 | 1),
@@ -68,14 +66,14 @@ namespace MyGame
 
 	void CommandQueue::Create(ID3D12Device* pDevice)
 	{
-		MYGAME_ASSERT(pDevice != nullptr);
+		MYGAME_INFO("DirectX: Creating a new Command Queue");
 		MYGAME_ASSERT(!IsReady());
 		MYGAME_ASSERT(m_AllocatorPool.Size() == 0);
 
 		D3D12_COMMAND_QUEUE_DESC QueueDesc = {};
 		QueueDesc.Type = m_Type;
-		pDevice->CreateCommandQueue(&QueueDesc, IID_PPV_ARGS(&D3D12_CmdQueue));
-		NAME_D3D12_OBJ_STR(D3D12_CmdQueue, L"CommandQueue::Create");
+		pDevice->CreateCommandQueue(&QueueDesc, IID_PPV_ARGS(&m_CommandQueue));
+		NAME_D3D12_OBJ_STR(m_CommandQueue, L"CommandQueue");
 
 		ThrowIfFailed(pDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_pFence)));
 		m_pFence->Signal((uint64_t)m_Type << 56);
@@ -89,16 +87,16 @@ namespace MyGame
 
 	void CommandQueue::Shutdown()
 	{
-		if (D3D12_CmdQueue == nullptr)
+		if (!m_CommandQueue)
 			return;
+
+		MYGAME_INFO("DirectX: Releasing Command Queues");
 
 		m_AllocatorPool.Shutdown();
 		CloseHandle(m_FenceEventHandle);
 
 		m_pFence->Release();
-		m_pFence = nullptr;
-		D3D12_CmdQueue->Release();
-		D3D12_CmdQueue = nullptr;
+		m_CommandQueue->Release();
 	}
 
 	ID3D12CommandAllocator* CommandQueue::RequestAllocator()
@@ -107,19 +105,19 @@ namespace MyGame
 		return m_AllocatorPool.RequestAllocator(CompletedFence);
 	}
 
-	void CommandQueue::DiscardAllocator(uint64_t FenceValue, ID3D12CommandAllocator* Allocator) { m_AllocatorPool.DiscardAllocator(FenceValue, Allocator); }
+	void CommandQueue::DiscardAllocator(ID3D12CommandAllocator* Allocator, uint64_t FenceValue) { m_AllocatorPool.DiscardAllocator(Allocator, FenceValue); }
 
 	uint64_t CommandQueue::ExecuteCommandList(ID3D12CommandList* List)
 	{
 		ThrowIfFailed(((ID3D12GraphicsCommandList*)List)->Close());
-		D3D12_CmdQueue->ExecuteCommandLists(1, &List);
-		D3D12_CmdQueue->Signal(m_pFence, m_NextFenceValue);
+		m_CommandQueue->ExecuteCommandLists(1, &List);
+		m_CommandQueue->Signal(m_pFence, m_NextFenceValue);
 		return m_NextFenceValue++;
 	}
 
 	uint64_t CommandQueue::IncrementFence()
 	{
-		D3D12_CmdQueue->Signal(m_pFence, m_NextFenceValue);
+		m_CommandQueue->Signal(m_pFence, m_NextFenceValue);
 		return m_NextFenceValue++;
 	}
 
@@ -133,13 +131,13 @@ namespace MyGame
 	void CommandQueue::StallForFence(uint64_t FenceValue)
 	{
 		CommandQueue& Producer = CommandListManager::GetQueue((D3D12_COMMAND_LIST_TYPE)(FenceValue >> 56));
-		D3D12_CmdQueue->Wait(Producer.m_pFence, FenceValue);
+		m_CommandQueue->Wait(Producer.m_pFence, FenceValue);
 	}
 
 	void CommandQueue::StallForProducer(CommandQueue& Producer)
 	{
 		MYGAME_ASSERT(Producer.m_NextFenceValue > 0);
-		D3D12_CmdQueue->Wait(Producer.m_pFence, Producer.m_NextFenceValue - 1);
+		m_CommandQueue->Wait(Producer.m_pFence, Producer.m_NextFenceValue - 1);
 	}
 
 	void CommandQueue::WaitForFence(uint64_t FenceValue)
@@ -156,21 +154,23 @@ namespace MyGame
 
 	void CommandListManager::Create(ID3D12Device* pDevice)
 	{
-		MYGAME_INFO("Creating Command Queues");
-
-		MYGAME_ASSERT(pDevice != nullptr);
 		m_Device = pDevice;
+
+		MYGAME_INFO("CommandListManager: Creating Graphics Queue");
 		m_GraphicsQueue.Create(pDevice);
+		MYGAME_INFO("CommandListManager: Creating Compute Queue");
 		m_ComputeQueue.Create(pDevice);
+		MYGAME_INFO("CommandListManager: Creating Copy Queue");
 		m_CopyQueue.Create(pDevice);
 	}
 
 	void CommandListManager::Shutdown()
 	{
-		MYGAME_INFO("Destroying Command Queues");
-
+		MYGAME_INFO("CommandListManager: Releasing Graphics Command Queue and Allocator Pool");
 		m_GraphicsQueue.Shutdown();
+		MYGAME_INFO("CommandListManager: Releasing Graphics Compute Queue and Allocator Pool");
 		m_ComputeQueue.Shutdown();
+		MYGAME_INFO("CommandListManager: Releasing Graphics Copy Queue and Allocator Pool");
 		m_CopyQueue.Shutdown();
 	}
 

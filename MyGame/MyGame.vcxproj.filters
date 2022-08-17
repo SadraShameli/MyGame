@@ -52,9 +52,6 @@
     <ClInclude Include="Source\Core\Log.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Time.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\Timer.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -67,13 +64,19 @@
     <ClInclude Include="Source\Debugs\Instrumentor.h">
       <Filter>Debugs</Filter>
     </ClInclude>
+    <ClInclude Include="Source\DirectX\BufferHelper.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
     <ClInclude Include="Source\DirectX\CommandContext.h">
       <Filter>DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Source\DirectX\CommandHelper.h">
       <Filter>DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DirectX\BufferHelper.h">
+    <ClInclude Include="Source\DirectX\CommonIncludes.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DirectX\DescriptorHeap.h">
       <Filter>DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Source\DirectX\DirectXHelpers.h">
@@ -157,10 +160,6 @@
     <ClInclude Include="Source\Utilities\Utility.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DirectX\CommonIncludes.h">
-      <Filter>DirectX</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DirectX\DescriptorHeap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CommonHeaders.cpp" />
@@ -179,13 +178,16 @@
     <ClCompile Include="Source\Core\Window.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DirectX\BufferHelper.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
     <ClCompile Include="Source\DirectX\CommandContext.cpp">
       <Filter>DirectX</Filter>
     </ClCompile>
     <ClCompile Include="Source\DirectX\CommandHelper.cpp">
       <Filter>DirectX</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DirectX\BufferHelper.cpp">
+    <ClCompile Include="Source\DirectX\DescriptorHeap.cpp">
       <Filter>DirectX</Filter>
     </ClCompile>
     <ClCompile Include="Source\DirectX\DirectXImpl.cpp">
@@ -233,6 +235,5 @@
     <ClCompile Include="Source\Renderer\TextureManager.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DirectX\DescriptorHeap.cpp" />
   </ItemGroup>
 </Project>
