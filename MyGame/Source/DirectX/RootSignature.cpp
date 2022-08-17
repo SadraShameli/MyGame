@@ -52,28 +52,19 @@ namespace MyGame
 		if (m_Finalized)
 			return;
 
-		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-		if (FAILED(DirectXImpl::D12Device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-
-		D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
-			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+		//CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+		//rootSignatureDesc.Init(m_NumParameters, nullptr, m_NumSamplers, nullptr, Flags);
 
 		CD3DX12_ROOT_PARAMETER1 rootParameters[1] = {};
 		rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription = {};
-		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, Flags);
 
-		ComPtr<ID3DBlob> rootSignatureBlob;
-		ComPtr<ID3DBlob> errorBlob;
-		ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDescription, featureData.HighestVersion, &rootSignatureBlob, &errorBlob));
-		ThrowIfFailed(DirectXImpl::D12Device->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(), rootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&m_Signature)));
+		ID3DBlob* signature = nullptr;
+		ID3DBlob* error = nullptr;
+		ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDescription, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
+		ThrowIfFailed(D3D12_Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_Signature)));
 		NAME_D3D12_OBJ_STR(m_Signature, name);
 		m_Finalized = true;
 	}

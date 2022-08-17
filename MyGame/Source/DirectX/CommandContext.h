@@ -1,16 +1,12 @@
 #pragma once
 
-#include "CommandList.h"
+#include "CommandHelper.h"
+#include "BufferHelper.h"
 #include "RootSignature.h"
 #include "GpuBuffer.h"
-#include "PixelBuffer.h"
 #include "PipelineState.h"
 #include "LinearAllocator.h"
-#include "CommandSignature.h"
-#include "ColorBuffer.h"
-#include "DepthBuffer.h"
-#include "ReadBackBuffer.h"
-#include "DynamicDescriptorHeap.h"
+#include "DescriptorHeap.h"
 
 #include "../Renderer/Texture.h"
 #include "../Utilities/CommonMath.h"
@@ -51,10 +47,9 @@ namespace MyGame
 	private:
 		std::vector<std::unique_ptr<CommandContext> > sm_ContextPool[4];
 		std::queue<CommandContext*> sm_AvailableContexts[4];
-		std::mutex sm_ContextAllocationMutex;
 	};
 
-	class CommandContext
+	class CommandContext : public DirectXImpl
 	{
 	public:
 		~CommandContext();
@@ -122,7 +117,6 @@ namespace MyGame
 		CommandListManager* m_OwningManager;
 		ID3D12GraphicsCommandList* m_CommandList;
 
-	public:
 		ID3D12CommandAllocator* m_CurrentAllocator;
 
 		ID3D12RootSignature* m_CurGraphicsRootSignature;

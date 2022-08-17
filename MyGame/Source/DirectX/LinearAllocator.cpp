@@ -1,7 +1,7 @@
 #include "CommonHeaders.h"
 
 #include "LinearAllocator.h"
-#include "CommandList.h"
+#include "CommandHelper.h"
 #include "DirectXImpl.h"
 
 #include "../Utilities/CommonMath.h"
@@ -22,7 +22,6 @@ namespace MyGame
 
 	LinearAllocationPage* LinearAllocatorPageManager::RequestPage()
 	{
-		std::lock_guard<std::mutex> LockGuard(m_Mutex);
 
 		while (!m_RetiredPages.empty() && CommandListManager::IsFenceComplete(m_RetiredPages.front().first))
 		{
@@ -48,16 +47,12 @@ namespace MyGame
 
 	void LinearAllocatorPageManager::DiscardPages(uint64_t FenceValue, const std::vector<LinearAllocationPage*>& UsedPages)
 	{
-		std::lock_guard<std::mutex> LockGuard(m_Mutex);
-
 		for (auto iter = UsedPages.begin(); iter != UsedPages.end(); ++iter)
 			m_RetiredPages.push(std::make_pair(FenceValue, *iter));
 	}
 
 	void LinearAllocatorPageManager::FreeLargePages(uint64_t FenceValue, const std::vector<LinearAllocationPage*>& LargePages)
 	{
-		std::lock_guard<std::mutex> LockGuard(m_Mutex);
-
 		while (!m_DeletionQueue.empty() && CommandListManager::IsFenceComplete(m_DeletionQueue.front().first))
 		{
 			delete m_DeletionQueue.front().second;
@@ -108,7 +103,7 @@ namespace MyGame
 		}
 
 		ID3D12Resource* pBuffer = nullptr;
-		ThrowIfFailed(DirectXImpl::D12Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, DefaultUsage, nullptr, IID_PPV_ARGS(&pBuffer)));
+		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, DefaultUsage, nullptr, IID_PPV_ARGS(&pBuffer)));
 		NAME_D3D12_OBJ_STR(pBuffer, L"LinearAllocatorPage");
 
 		return new LinearAllocationPage(pBuffer, DefaultUsage);

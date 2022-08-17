@@ -1,12 +1,11 @@
 #pragma once
 
 #include "DirectXImpl.h"
-
-#include "../Debugs/DebugHelpers.h"
+#include "RootSignature.h"
 
 namespace MyGame
 {
-	class PipelineState
+	class PipelineState : public DirectXImpl
 	{
 	public:
 		PipelineState(const std::wstring& Name) : m_Name(Name) {}
@@ -36,22 +35,22 @@ namespace MyGame
 		void SetRenderTargetFormat(DXGI_FORMAT RTVFormat, DXGI_FORMAT DSVFormat, UINT MsaaCount = 1, UINT MsaaQuality = 0);
 		void SetRenderTargetFormats(UINT NumRTVs, const D3D12_RT_FORMAT_ARRAY* RTVFormats, DXGI_FORMAT DSVFormat, UINT MsaaCount = 1, UINT MsaaQuality = 0);
 
-		void SetVertexShader(ID3DBlob* Binary) { m_PSODesc.VS = CD3DX12_SHADER_BYTECODE(Binary); }
-		void SetPixelShader(ID3DBlob* Binary) { m_PSODesc.PS = CD3DX12_SHADER_BYTECODE(Binary); }
-		void SetGeometryShader(ID3DBlob* Binary) { m_PSODesc.GS = CD3DX12_SHADER_BYTECODE(Binary); }
-		void SetHullShader(ID3DBlob* Binary) { m_PSODesc.HS = CD3DX12_SHADER_BYTECODE(Binary); }
-		void SetDomainShader(ID3DBlob* Binary) { m_PSODesc.DS = CD3DX12_SHADER_BYTECODE(Binary); }
-
-		void SetVertexShader(IDxcBlob* Binary) { m_PSODesc.VS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
-		void SetPixelShader(IDxcBlob* Binary) { m_PSODesc.PS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
-		void SetGeometryShader(IDxcBlob* Binary) { m_PSODesc.GS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
-		void SetHullShader(IDxcBlob* Binary) { m_PSODesc.HS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
-		void SetDomainShader(IDxcBlob* Binary) { m_PSODesc.DS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		template<typename Blob>
+		void SetVertexShader(Blob* Binary) { m_PSODesc.VS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		template<typename Blob>
+		void SetPixelShader(Blob* Binary) { m_PSODesc.PS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		template<typename Blob>
+		void SetGeometryShader(Blob* Binary) { m_PSODesc.GS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		template<typename Blob>
+		void SetHullShader(Blob* Binary) { m_PSODesc.HS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		template<typename Blob>
+		void SetDomainShader(Blob* Binary) { m_PSODesc.DS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
 
 		virtual void Finalize();
 
 	private:
 		friend class CommandContext;
+
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC m_PSODesc = {};
 	};
 

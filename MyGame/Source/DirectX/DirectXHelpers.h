@@ -2,8 +2,6 @@
 
 #include "../Utilities/Utility.h"
 
-#include <d3dx12.h>
-
 namespace MyGame
 {
 	template <typename Object>

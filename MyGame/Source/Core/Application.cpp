@@ -14,6 +14,7 @@ namespace MyGame
 	Application::Application()
 	{
 		s_Instance = this;
+
 		Log::Init();
 		MYGAME_INFO("Welcome to MyGame!");
 

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "DirectXHelpers.h"
-
-#include <d3dx12.h>
+#include "DirectXImpl.h"
 
 namespace MyGame
 {
@@ -84,7 +82,8 @@ namespace MyGame
 		D3D12_ROOT_PARAMETER m_RootParam;
 	};
 
-	class RootSignature
+
+	class RootSignature : public DirectXImpl
 	{
 	public:
 		RootSignature(UINT NumRootParams = 0, UINT NumStaticSamplers = 0) : m_Finalized(FALSE), m_NumParameters(NumRootParams) { Reset(NumRootParams, NumStaticSamplers); }

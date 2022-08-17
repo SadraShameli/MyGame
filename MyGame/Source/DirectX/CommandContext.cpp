@@ -1,11 +1,7 @@
 #include "CommonHeaders.h"
 
 #include "CommandContext.h"
-#include "ColorBuffer.h"
-#include "DepthBuffer.h"
 #include "DescriptorHeap.h"
-#include "UploadBuffer.h"
-#include "ReadbackBuffer.h"
 #include "DirectXImpl.h"
 
 namespace MyGame
@@ -18,8 +14,6 @@ namespace MyGame
 
 	CommandContext* ContextManager::AllocateContext(D3D12_COMMAND_LIST_TYPE Type)
 	{
-		std::lock_guard<std::mutex> LockGuard(sm_ContextAllocationMutex);
-
 		auto& AvailableContexts = sm_AvailableContexts[Type];
 
 		CommandContext* ret = nullptr;
@@ -45,7 +39,6 @@ namespace MyGame
 	void ContextManager::FreeContext(CommandContext* UsedContext)
 	{
 		MYGAME_ASSERT(UsedContext);
-		std::lock_guard<std::mutex> LockGuard(sm_ContextAllocationMutex);
 		sm_AvailableContexts[UsedContext->m_Type].push(UsedContext);
 	}
 
@@ -325,7 +318,6 @@ namespace MyGame
 			BarrierDesc.Transition.StateBefore = OldState;
 			BarrierDesc.Transition.StateAfter = NewState;
 
-			// Check to see if we already started the transition
 			if (NewState == Resource.m_TransitioningState)
 			{
 				BarrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_END_ONLY;
@@ -345,7 +337,6 @@ namespace MyGame
 
 	void CommandContext::BeginResourceTransition(GpuResource& Resource, D3D12_RESOURCE_STATES NewState, bool FlushImmediate)
 	{
-		// If it's already transitioning, finish that transition
 		if (Resource.m_TransitioningState != (D3D12_RESOURCE_STATES)-1)
 			TransitionResource(Resource, Resource.m_TransitioningState);
 
@@ -497,7 +488,7 @@ namespace MyGame
 
 		D3D12_PLACED_SUBRESOURCE_FOOTPRINT PlacedFootprint;
 		auto desc = SrcBuffer.GetResource()->GetDesc();
-		DirectXImpl::D12Device->GetCopyableFootprints(&desc, 0, 1, 0, &PlacedFootprint, nullptr, nullptr, &CopySize);
+		DirectXImpl::D3D12_Device->GetCopyableFootprints(&desc, 0, 1, 0, &PlacedFootprint, nullptr, nullptr, &CopySize);
 
 		DstBuffer.Create(L"Readback", (uint32_t)CopySize, 1);
 		TransitionResource(SrcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE, true);

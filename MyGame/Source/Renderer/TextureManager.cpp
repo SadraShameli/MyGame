@@ -35,7 +35,6 @@ namespace MyGame
 
 	namespace TextureManager
 	{
-		std::mutex s_Mutex;
 		std::string s_RootPath;
 		std::map<std::string, std::unique_ptr<ManagedTexture>> s_TextureCache;
 
@@ -46,8 +45,6 @@ namespace MyGame
 		{
 			ManagedTexture* tex = nullptr;
 			{
-				std::lock_guard<std::mutex> Guard(s_Mutex);
-
 				std::string key = fileName;
 				if (forceSRGB)
 					key += "_sRGB";
@@ -74,8 +71,6 @@ namespace MyGame
 
 		void DestroyTexture(const std::string& key)
 		{
-			std::lock_guard<std::mutex> Guard(s_Mutex);
-
 			auto iter = s_TextureCache.find(key);
 			if (iter != s_TextureCache.end())
 				s_TextureCache.erase(iter);
@@ -93,9 +88,9 @@ namespace MyGame
 			m_hCpuDescriptorHandle = GetDefaultTexture(fallback);
 		else
 		{
-			m_hCpuDescriptorHandle = DirectXImpl::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			m_hCpuDescriptorHandle = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-			/*if (SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::D12Device.Get(), (const uint8_t*)memory->data(), memory->size(),
+			/*if (SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::D3D12_Device.Get(), (const uint8_t*)memory->data(), memory->size(),
 				0, forceSRGB, m_pResource.GetAddressOf(), m_hCpuDescriptorHandle)))
 			{
 				m_IsValid = true;
@@ -106,7 +101,7 @@ namespace MyGame
 			}
 			else
 			{
-				DirectXImpl::D12Device->CopyDescriptorsSimple(1, m_hCpuDescriptorHandle, GetDefaultTexture(fallback),
+				DirectXImpl::D3D12_Device->CopyDescriptorsSimple(1, m_hCpuDescriptorHandle, GetDefaultTexture(fallback),
 					D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 			}*/
 		}

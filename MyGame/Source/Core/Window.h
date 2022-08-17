@@ -16,7 +16,7 @@ namespace MyGame
 	class Window
 	{
 	public:
-		Window(WindowProps&&);
+		Window(const WindowProps&);
 
 		void Show();
 		void OnUpdate();

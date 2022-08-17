@@ -1,13 +1,10 @@
 #pragma once
 
-#include "GpuResource.h"
+#include "BufferHelper.h"
 #include "DirectXHelpers.h"
 
 namespace MyGame
 {
-	class CommandContext;
-	class UploadBuffer;
-
 	class GpuBuffer : public GpuResource
 	{
 	public:
@@ -119,5 +116,19 @@ namespace MyGame
 
 	protected:
 		DXGI_FORMAT m_DataFormat;
+	};
+
+	class ReadbackBuffer : public GpuBuffer
+	{
+	public:
+		virtual ~ReadbackBuffer() { Destroy(); }
+
+		void Create(std::wstring&& name, uint32_t NumElements, uint32_t ElementSize);
+
+		void* Map();
+		void Unmap();
+
+	protected:
+		void CreateDerivedViews() {}
 	};
 }

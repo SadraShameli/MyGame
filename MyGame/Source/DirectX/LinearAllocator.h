@@ -1,11 +1,11 @@
 #pragma once
 
-#include "GpuResource.h"
+#include "GpuBuffer.h"
+#include "DirectXImpl.h"
 #include "../Debugs/DebugHelpers.h"
 
 #include <vector>
 #include <queue>
-#include <mutex>
 
 #define DEFAULT_ALIGN 256
 
@@ -68,7 +68,7 @@ namespace MyGame
 		kCpuAllocatorPageSize = 0x200000
 	};
 
-	class LinearAllocatorPageManager
+	class LinearAllocatorPageManager : public DirectXImpl
 	{
 	public:
 		LinearAllocatorPageManager();
@@ -86,7 +86,6 @@ namespace MyGame
 		std::queue<std::pair<uint64_t, LinearAllocationPage*> > m_RetiredPages;
 		std::queue<std::pair<uint64_t, LinearAllocationPage*> > m_DeletionQueue;
 		std::queue<LinearAllocationPage*> m_AvailablePages;
-		std::mutex m_Mutex;
 	};
 
 	class LinearAllocator

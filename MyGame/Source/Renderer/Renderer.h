@@ -1,8 +1,10 @@
 #pragma once
 
+#include "../DirectX/DirectXImpl.h"
+
 namespace MyGame
 {
-	class Renderer
+	class Renderer : public DirectXImpl
 	{
 	public:
 		static void Init();

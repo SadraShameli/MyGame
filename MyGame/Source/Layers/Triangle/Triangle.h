@@ -21,6 +21,8 @@ namespace MyGame
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Event& e) override;
 
+		void PopulateCommandList();
+
 		void BlockEvents(bool block) { m_BlockEvents = block; }
 
 	private:

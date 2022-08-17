@@ -7,14 +7,12 @@ namespace MyGame
 	class Shader
 	{
 	public:
-		static IDxcBlob* CompileVertexShader(const std::wstring&);
-		static IDxcBlob* CompilePixelShader(const std::wstring&);
+		static HRESULT CompileVertexShader(IDxcBlob** Blob, const std::wstring& FilePath);
+		static HRESULT CompilePixelShader(IDxcBlob** Blob, const std::wstring& FilePath);
+		static HRESULT D3CompileVertexShader(ID3DBlob** Blob, const std::wstring& FilePath);
+		static HRESULT D3CompilePixelShader(ID3DBlob** Blob, const std::wstring& FilePath);
 
-		static IDxcBlob* CompileFromFile(const std::wstring&, const std::wstring&);
-
-		static ID3DBlob* D3CompileVertexShader(const std::wstring&);
-		static ID3DBlob* D3CompilePixelShader(const std::wstring&);
-
-		static ID3DBlob* D3CompileFromFile(const std::wstring&, const std::string&);
+		static HRESULT CompileFromFile(IDxcBlob** Blob, const std::wstring& FilePath, const std::wstring& ShaderProfile, const std::wstring& MainEntry = L"main");
+		static HRESULT D3CompileFromFile(ID3DBlob** Blob, const std::wstring& FilePath, const std::string& ShaderProfile, const std::string& MainEntry = "main");
 	};
 }

@@ -20,53 +20,53 @@ namespace MyGame
 
 	void Renderer::InitImGui()
 	{
-		MYGAME_ASSERT(ImGui_ImplDX12_Init(DirectXImpl::D12Device, DirectXImpl::FrameCount, DXGI_FORMAT_R8G8B8A8_UNORM,
-			DirectXImpl::m_srvHeap, DirectXImpl::m_srvHeap->GetCPUDescriptorHandleForHeapStart(),
-			DirectXImpl::m_srvHeap->GetGPUDescriptorHandleForHeapStart()));
+		MYGAME_ASSERT(ImGui_ImplDX12_Init(DirectXImpl::D3D12_Device, DirectXImpl::FrameCount, DXGI_FORMAT_R8G8B8A8_UNORM,
+			DirectXImpl::D3D12_SrvHeap, DirectXImpl::D3D12_SrvHeap->GetCPUDescriptorHandleForHeapStart(),
+			DirectXImpl::D3D12_SrvHeap->GetGPUDescriptorHandleForHeapStart()));
 	}
 
 	void Renderer::RenderImGui()
 	{
 		UINT backBufferIdx = DirectXImpl::m_swapChain->GetCurrentBackBufferIndex();
-		DirectXImpl::m_commandAllocator->Reset();
+		DirectXImpl::D3D12_CmdAlloc->Reset();
 
 		D3D12_RESOURCE_BARRIER barrier = {};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		barrier.Transition.pResource = DirectXImpl::m_renderTargets[backBufferIdx];
+		barrier.Transition.pResource = DirectXImpl::D3D12_RenderTargets[backBufferIdx];
 		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		DirectXImpl::m_commandList->Reset(DirectXImpl::m_commandAllocator, nullptr);
-		DirectXImpl::m_commandList->ResourceBarrier(1, &barrier);
+		D3D12_CmdList->Reset(DirectXImpl::D3D12_CmdAlloc, nullptr);
+		D3D12_CmdList->ResourceBarrier(1, &barrier);
 
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(DirectXImpl::m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), backBufferIdx, DirectXImpl::m_rtvDescriptorSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(DirectXImpl::D3D12_RtvHeap->GetCPUDescriptorHandleForHeapStart(), backBufferIdx, DirectXImpl::m_rtvDescriptorSize);
 
 		constexpr XMFLOAT4 clear_color = { 0.2f, 0.2f, 0.2f, 1.00f };
 		constexpr float clear_color_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-		DirectXImpl::m_commandList->ClearRenderTargetView(rtvHandle, clear_color_alpha, 0, nullptr);
-		DirectXImpl::m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-		DirectXImpl::m_commandList->SetDescriptorHeaps(1, &DirectXImpl::m_srvHeap);
+		D3D12_CmdList->ClearRenderTargetView(rtvHandle, clear_color_alpha, 0, nullptr);
+		D3D12_CmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+		D3D12_CmdList->SetDescriptorHeaps(1, &DirectXImpl::D3D12_SrvHeap);
 
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXImpl::m_commandList);
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), D3D12_CmdList);
 
 		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-		DirectXImpl::m_commandList->ResourceBarrier(1, &barrier);
-		ThrowIfFailed(DirectXImpl::m_commandList->Close());
-		ID3D12CommandList* ppCommandLists[] = { DirectXImpl::m_commandList };
-		DirectXImpl::m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+		D3D12_CmdList->ResourceBarrier(1, &barrier);
+		ThrowIfFailed(D3D12_CmdList->Close());
+		ID3D12CommandList* ppCommandLists[] = { D3D12_CmdList };
+		DirectXImpl::D3D12_CmdQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 		DirectXImpl::m_swapChain->Present(1, 0);
 
-		const UINT64 fence = DirectXImpl::m_fenceValue;
-		ThrowIfFailed(DirectXImpl::m_commandQueue->Signal(DirectXImpl::m_fence, fence));
-		++DirectXImpl::m_fenceValue;
+		const UINT64 fence = DirectXImpl::D3D12_FenceValue;
+		ThrowIfFailed(DirectXImpl::D3D12_CmdQueue->Signal(DirectXImpl::D3D12_Fence, fence));
+		++DirectXImpl::D3D12_FenceValue;
 
 		//TODO remove
-		if (DirectXImpl::m_fence->GetCompletedValue() < fence)
+		if (DirectXImpl::D3D12_Fence->GetCompletedValue() < fence)
 		{
-			ThrowIfFailed(DirectXImpl::m_fence->SetEventOnCompletion(fence, DirectXImpl::m_fenceEvent));
-			WaitForSingleObject(DirectXImpl::m_fenceEvent, INFINITE);
+			ThrowIfFailed(DirectXImpl::D3D12_Fence->SetEventOnCompletion(fence, DirectXImpl::D312_FenceEvent));
+			WaitForSingleObject(DirectXImpl::D312_FenceEvent, INFINITE);
 		}
 	}
 

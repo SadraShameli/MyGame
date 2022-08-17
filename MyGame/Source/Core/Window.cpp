@@ -108,9 +108,9 @@ namespace MyGame
 		return 0;
 	}
 
-	Window::Window(WindowProps&& props)
+	Window::Window(const WindowProps& props)
 	{
-		m_Data = std::move(props);
+		m_Data = props;
 
 		WNDCLASSEX windowClass = {};
 		windowClass.cbSize = sizeof(WNDCLASSEX);

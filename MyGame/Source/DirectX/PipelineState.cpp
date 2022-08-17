@@ -1,8 +1,8 @@
 #include "CommonHeaders.h"
 
 #include "PipelineState.h"
-#include "RootSignature.h"
-#include "../Utilities/Hash.h"
+
+#include "../Debugs/DebugHelpers.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -25,6 +25,7 @@ namespace MyGame
 		RTVArray.RTFormats[0] = RTVFormat;
 		SetRenderTargetFormats(RTVArray.NumRenderTargets, &RTVArray, DSVFormat, MsaaCount, MsaaQuality);
 	}
+
 	void GraphicsPSO::SetRenderTargetFormats(UINT NumRTVs, const D3D12_RT_FORMAT_ARRAY* RTVFormats, DXGI_FORMAT DSVFormat, UINT MsaaCount, UINT MsaaQuality)
 	{
 		for (UINT i = 0; i < NumRTVs; ++i)
@@ -47,10 +48,10 @@ namespace MyGame
 		MYGAME_ASSERT(m_PSODesc.pRootSignature != nullptr);
 		MYGAME_ASSERT(m_PSODesc.DepthStencilState.DepthEnable != (m_PSODesc.DSVFormat == DXGI_FORMAT_UNKNOWN));
 
-		ThrowIfFailed(DirectXImpl::D12Device->CreateGraphicsPipelineState(&m_PSODesc, IID_PPV_ARGS(&m_PSO)));
+		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateGraphicsPipelineState(&m_PSODesc, IID_PPV_ARGS(&m_PSO)));
 		NAME_D3D12_OBJ_STR(m_PSO, m_Name);
 
-		while (m_PSO == nullptr)
+		while (!m_PSO)
 			std::this_thread::yield();
 	}
 }

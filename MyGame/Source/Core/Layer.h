@@ -2,10 +2,11 @@
 
 #include "../Core/Time.h"
 #include "../Events/Event.h"
+#include "../DirectX/DirectXImpl.h"
 
 namespace MyGame
 {
-	class Layer
+	class Layer : public DirectXImpl
 	{
 	public:
 		Layer(const std::string& name = "Layer") { m_DebugName = name; };

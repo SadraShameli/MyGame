@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../DirectX/GpuResource.h"
-#include "../DirectX/DirectXHelpers.h"
+#include "../DirectX/BufferHelper.h"
 
 namespace MyGame
 {
