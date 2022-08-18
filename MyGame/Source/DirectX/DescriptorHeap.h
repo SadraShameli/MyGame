@@ -12,19 +12,19 @@ namespace MyGame
 {
 	// Descriptor Heap
 
-	class DescriptorAllocator : public DirectXImpl
+	class DescriptorAllocator
 	{
 	public:
 		DescriptorAllocator(D3D12_DESCRIPTOR_HEAP_TYPE Type) : m_Type(Type), m_CurrentHeap(nullptr), m_DescriptorSize(0) { m_CurrentHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN; }
 
 		D3D12_CPU_DESCRIPTOR_HANDLE Allocate(uint32_t Count);
+		static ID3D12DescriptorHeap* RequestNewHeap(D3D12_DESCRIPTOR_HEAP_TYPE Type);
 		static void DestroyAll(void);
 
 	protected:
 		static const uint32_t sm_NumDescriptorsPerHeap = 256;
 		static std::mutex sm_AllocationMutex;
 		static std::vector<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> sm_DescriptorHeapPool;
-		static ID3D12DescriptorHeap* RequestNewHeap(D3D12_DESCRIPTOR_HEAP_TYPE Type);
 
 		D3D12_DESCRIPTOR_HEAP_TYPE m_Type;
 		ID3D12DescriptorHeap* m_CurrentHeap;
@@ -35,7 +35,7 @@ namespace MyGame
 
 	// Descriptor Handle
 
-	class DescriptorHandle : public DirectXImpl
+	class DescriptorHandle
 	{
 	public:
 		DescriptorHandle()
@@ -76,7 +76,7 @@ namespace MyGame
 		D3D12_GPU_DESCRIPTOR_HANDLE m_GpuHandle;
 	};
 
-	class DescriptorHeap : public DirectXImpl
+	class DescriptorHeap
 	{
 	public:
 		DescriptorHeap() {}
@@ -119,7 +119,7 @@ namespace MyGame
 
 	class CommandContext;
 	class RootSignature;
-	class DynamicDescriptorHeap : public DirectXImpl
+	class DynamicDescriptorHeap
 	{
 	public:
 		DynamicDescriptorHeap(CommandContext& OwningContext, D3D12_DESCRIPTOR_HEAP_TYPE HeapType);

@@ -31,13 +31,16 @@ namespace MyGame
 	class Timestep
 	{
 	public:
-		Timestep(float time = 0.0f) : m_Time(time) {}
-		float GetSeconds() const { return m_Time; }
-		float GetMilliseconds() const { return m_Time * 1000.0f; }
+		Timestep() { m_StartTime = std::chrono::steady_clock::now(); }
 
-		operator float() const { return m_Time; }
+		void Update() { m_Time = std::chrono::steady_clock::now(); }
+		float GetSeconds() const { return (float)std::chrono::duration_cast<std::chrono::seconds>(m_Time - m_StartTime).count(); }
+		float GetMilliseconds() const { return GetSeconds() * 1000; }
+
+		operator float() const { return GetSeconds(); }
 
 	private:
-		float m_Time;
+		std::chrono::steady_clock::time_point m_Time;
+		std::chrono::steady_clock::time_point m_StartTime;
 	};
 }

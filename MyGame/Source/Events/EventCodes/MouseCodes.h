@@ -6,19 +6,19 @@ namespace MyGame
 	{
 		enum
 		{
-			Button0 = 0,
-			Button1 = 1,
-			Button2 = 2,
-			Button3 = 3,
-			Button4 = 4,
+			Button0 = VK_LBUTTON,
+			Button1 = VK_RBUTTON,
+			Button2 = VK_MBUTTON,
+			ButtonX1 = VK_XBUTTON1,
+			ButtonX2 = VK_XBUTTON2,
 			Button5 = 5,
 			Button6 = 6,
 			Button7 = 7,
 
 			ButtonLast = Button7,
-			ButtonLeft = Button0,
-			ButtonRight = Button1,
-			ButtonMiddle = Button2
+			ButtonLeft = VK_LBUTTON,
+			ButtonRight = VK_RBUTTON,
+			ButtonMiddle = VK_MBUTTON
 		};
 	}
 }

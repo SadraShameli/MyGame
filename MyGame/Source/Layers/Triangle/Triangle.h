@@ -16,12 +16,10 @@ namespace MyGame
 		TriangleLayer();
 		~TriangleLayer() = default;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
-		virtual void OnUpdate() override;
-		virtual void OnEvent(Event& e) override;
-
-		void PopulateCommandList();
+		virtual void OnAttach();
+		virtual void OnDetach();
+		virtual void OnUpdate(Timestep ts);
+		virtual void OnEvent(Event& e);
 
 		void BlockEvents(bool block) { m_BlockEvents = block; }
 

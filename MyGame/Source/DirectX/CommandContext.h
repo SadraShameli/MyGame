@@ -8,6 +8,7 @@
 #include "LinearAllocator.h"
 #include "DescriptorHeap.h"
 
+#include "../Debugs/DebugHelpers.h"
 #include "../Renderer/Texture.h"
 #include "../Utilities/CommonMath.h"
 
@@ -49,7 +50,7 @@ namespace MyGame
 		std::queue<CommandContext*> sm_AvailableContexts[4];
 	};
 
-	class CommandContext : public DirectXImpl
+	class CommandContext
 	{
 	public:
 		~CommandContext();
@@ -126,7 +127,7 @@ namespace MyGame
 		DynamicDescriptorHeap m_DynamicViewDescriptorHeap;
 		DynamicDescriptorHeap m_DynamicSamplerDescriptorHeap;
 
-		D3D12_RESOURCE_BARRIER m_ResourceBarrierBuffer[16];
+		D3D12_RESOURCE_BARRIER m_ResourceBarrierBuffer[16] = {};
 		UINT m_NumBarriersToFlush;
 
 		ID3D12DescriptorHeap* m_CurrentDescriptorHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
@@ -314,9 +315,20 @@ namespace MyGame
 		m_CommandList->SetComputeRoot32BitConstant(RootEntry, W.Uint, 3);
 	}
 
-	inline void GraphicsContext::SetConstantArray(UINT RootIndex, UINT NumConstants, const void* pConstants) { m_CommandList->SetGraphicsRoot32BitConstants(RootIndex, NumConstants, pConstants, 0); }
-	inline void GraphicsContext::SetConstant(UINT RootEntry, UINT Offset, DWParam Val) { m_CommandList->SetGraphicsRoot32BitConstant(RootEntry, Val.Uint, Offset); }
-	inline void GraphicsContext::SetConstants(UINT RootIndex, DWParam X) { m_CommandList->SetGraphicsRoot32BitConstant(RootIndex, X.Uint, 0); }
+	inline void GraphicsContext::SetConstantArray(UINT RootIndex, UINT NumConstants, const void* pConstants)
+	{
+		m_CommandList->SetGraphicsRoot32BitConstants(RootIndex, NumConstants, pConstants, 0);
+	}
+
+	inline void GraphicsContext::SetConstant(UINT RootEntry, UINT Offset, DWParam Val)
+	{
+		m_CommandList->SetGraphicsRoot32BitConstant(RootEntry, Val.Uint, Offset);
+	}
+
+	inline void GraphicsContext::SetConstants(UINT RootIndex, DWParam X)
+	{
+		m_CommandList->SetGraphicsRoot32BitConstant(RootIndex, X.Uint, 0);
+	}
 
 	inline void GraphicsContext::SetConstants(UINT RootIndex, DWParam X, DWParam Y)
 	{

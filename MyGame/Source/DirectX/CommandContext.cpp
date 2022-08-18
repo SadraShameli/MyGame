@@ -143,7 +143,6 @@ namespace MyGame
 
 	void CommandContext::Reset()
 	{
-		MYGAME_ASSERT(m_CommandList != nullptr && m_CurrentAllocator == nullptr);
 		m_CurrentAllocator = CommandListManager::GetQueue(m_Type).RequestAllocator();
 		m_CommandList->Reset(m_CurrentAllocator, nullptr);
 
@@ -252,7 +251,7 @@ namespace MyGame
 	void GraphicsContext::ClearDepth(DepthBuffer& Target)
 	{
 		FlushResourceBarriers();
-		m_CommandList->ClearDepthStencilView(Target.GetDSV(), D3D12_CLEAR_FLAG_DEPTH, Target.GetClearDepth(), Target.GetClearStencil(), 0, nullptr);
+		m_CommandList->ClearDepthStencilView(Target.GetDSV(), D3D12_CLEAR_FLAG_DEPTH, Target.GetClearDepth(), 0, 0, nullptr);
 	}
 
 	void GraphicsContext::ClearStencil(DepthBuffer& Target)
@@ -299,7 +298,7 @@ namespace MyGame
 
 	void CommandContext::TransitionResource(GpuResource& Resource, D3D12_RESOURCE_STATES NewState, bool FlushImmediate)
 	{
-		D3D12_RESOURCE_STATES OldState = Resource.m_UsageState;
+		D3D12_RESOURCE_STATES& OldState = Resource.m_UsageState;
 
 		if (m_Type == D3D12_COMMAND_LIST_TYPE_COMPUTE)
 		{
@@ -352,7 +351,6 @@ namespace MyGame
 			BarrierDesc.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 			BarrierDesc.Transition.StateBefore = OldState;
 			BarrierDesc.Transition.StateAfter = NewState;
-
 			BarrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_BEGIN_ONLY;
 
 			Resource.m_TransitioningState = NewState;
@@ -488,7 +486,7 @@ namespace MyGame
 
 		D3D12_PLACED_SUBRESOURCE_FOOTPRINT PlacedFootprint;
 		auto desc = SrcBuffer.GetResource()->GetDesc();
-		DirectXImpl::D3D12_Device->GetCopyableFootprints(&desc, 0, 1, 0, &PlacedFootprint, nullptr, nullptr, &CopySize);
+		DirectXImpl::Device->GetCopyableFootprints(&desc, 0, 1, 0, &PlacedFootprint, nullptr, nullptr, &CopySize);
 
 		DstBuffer.Create(L"Readback", (uint32_t)CopySize, 1);
 		TransitionResource(SrcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE, true);

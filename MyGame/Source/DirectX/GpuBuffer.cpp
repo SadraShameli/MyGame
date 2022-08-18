@@ -27,7 +27,7 @@ namespace MyGame
 		HeapProps.CreationNodeMask = 1;
 		HeapProps.VisibleNodeMask = 1;
 		m_UsageState = D3D12_RESOURCE_STATE_COMMON;
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, m_UsageState, nullptr, IID_PPV_ARGS(&m_pResource)));
+		ThrowIfFailed(DirectXImpl::Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, m_UsageState, nullptr, IID_PPV_ARGS(&m_pResource)));
 
 		m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
 		NAME_D3D12_OBJ_STR(m_pResource, name.data());
@@ -53,7 +53,7 @@ namespace MyGame
 		HeapProps.CreationNodeMask = 1;
 		HeapProps.VisibleNodeMask = 1;
 		m_UsageState = D3D12_RESOURCE_STATE_COMMON;
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, m_UsageState, nullptr, IID_PPV_ARGS(&m_pResource)));
+		ThrowIfFailed(DirectXImpl::Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, m_UsageState, nullptr, IID_PPV_ARGS(&m_pResource)));
 
 		m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
 		NAME_D3D12_OBJ_STR(m_pResource, name.data());
@@ -71,7 +71,7 @@ namespace MyGame
 
 		m_UsageState = D3D12_RESOURCE_STATE_COMMON;
 		D3D12_RESOURCE_DESC ResourceDesc = DescribeBuffer();
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreatePlacedResource(pBackingHeap, HeapOffset, &ResourceDesc, m_UsageState, nullptr, IID_PPV_ARGS(&m_pResource)));
+		ThrowIfFailed(DirectXImpl::Device->CreatePlacedResource(pBackingHeap, HeapOffset, &ResourceDesc, m_UsageState, nullptr, IID_PPV_ARGS(&m_pResource)));
 
 		m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
 		NAME_D3D12_OBJ_STR(m_pResource, name.data());
@@ -91,7 +91,7 @@ namespace MyGame
 		CBVDesc.SizeInBytes = Size;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE hCBV = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DirectXImpl::D3D12_Device->CreateConstantBufferView(&CBVDesc, hCBV);
+		DirectXImpl::Device->CreateConstantBufferView(&CBVDesc, hCBV);
 		return hCBV;
 	}
 
@@ -125,7 +125,7 @@ namespace MyGame
 
 		if (m_SRV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 			m_SRV = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DirectXImpl::D3D12_Device->CreateShaderResourceView(m_pResource, &SRVDesc, m_SRV);
+		DirectXImpl::Device->CreateShaderResourceView(m_pResource, &SRVDesc, m_SRV);
 
 		D3D12_UNORDERED_ACCESS_VIEW_DESC UAVDesc = {};
 		UAVDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
@@ -135,7 +135,7 @@ namespace MyGame
 
 		if (m_UAV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 			m_UAV = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DirectXImpl::D3D12_Device->CreateUnorderedAccessView(m_pResource, nullptr, &UAVDesc, m_UAV);
+		DirectXImpl::Device->CreateUnorderedAccessView(m_pResource, nullptr, &UAVDesc, m_UAV);
 	}
 
 	void StructuredBuffer::CreateDerivedViews()
@@ -150,7 +150,7 @@ namespace MyGame
 
 		if (m_SRV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 			m_SRV = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DirectXImpl::D3D12_Device->CreateShaderResourceView(m_pResource, &SRVDesc, m_SRV);
+		DirectXImpl::Device->CreateShaderResourceView(m_pResource, &SRVDesc, m_SRV);
 
 		D3D12_UNORDERED_ACCESS_VIEW_DESC UAVDesc = {};
 		UAVDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
@@ -163,7 +163,7 @@ namespace MyGame
 
 		if (m_UAV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 			m_UAV = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DirectXImpl::D3D12_Device->CreateUnorderedAccessView(m_pResource, m_CounterBuffer.GetResource(), &UAVDesc, m_UAV);
+		DirectXImpl::Device->CreateUnorderedAccessView(m_pResource, m_CounterBuffer.GetResource(), &UAVDesc, m_UAV);
 	}
 
 	void TypedBuffer::CreateDerivedViews()
@@ -177,7 +177,7 @@ namespace MyGame
 
 		if (m_SRV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 			m_SRV = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DirectXImpl::D3D12_Device->CreateShaderResourceView(m_pResource, &SRVDesc, m_SRV);
+		DirectXImpl::Device->CreateShaderResourceView(m_pResource, &SRVDesc, m_SRV);
 
 		D3D12_UNORDERED_ACCESS_VIEW_DESC UAVDesc = {};
 		UAVDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
@@ -187,7 +187,7 @@ namespace MyGame
 
 		if (m_UAV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 			m_UAV = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DirectXImpl::D3D12_Device->CreateUnorderedAccessView(m_pResource, nullptr, &UAVDesc, m_UAV);
+		DirectXImpl::Device->CreateUnorderedAccessView(m_pResource, nullptr, &UAVDesc, m_UAV);
 	}
 
 	const D3D12_CPU_DESCRIPTOR_HANDLE& StructuredBuffer::GetCounterSRV(CommandContext& Context)
@@ -230,7 +230,7 @@ namespace MyGame
 		ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		ResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
+		ThrowIfFailed(DirectXImpl::Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
 			D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&m_pResource)));
 
 		m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();

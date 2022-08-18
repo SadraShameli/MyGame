@@ -121,19 +121,10 @@
     <ClInclude Include="Source\Layers\Triangle\Triangle.h">
       <Filter>Layers\Triangle</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\Camera.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Renderer\Color.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\EditorCamera.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Renderer\OrthographicCamera.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Renderer\OrthographicCameraController.h">
+    <ClInclude Include="Source\Renderer\Camera.h">
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Source\Renderer\Renderer.h">
@@ -214,13 +205,7 @@
     <ClCompile Include="Source\Renderer\Color.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\EditorCamera.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Renderer\OrthographicCamera.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Renderer\OrthographicCameraController.cpp">
+    <ClCompile Include="Source\Renderer\Camera.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\Renderer.cpp">

@@ -25,6 +25,3 @@
 #include <memory>
 #include <vector>
 #include <array>
-
-#include <Windows.h>
-#include <windowsx.h>

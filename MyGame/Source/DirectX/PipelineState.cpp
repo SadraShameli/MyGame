@@ -48,7 +48,7 @@ namespace MyGame
 		MYGAME_ASSERT(m_PSODesc.pRootSignature != nullptr);
 		MYGAME_ASSERT(m_PSODesc.DepthStencilState.DepthEnable != (m_PSODesc.DSVFormat == DXGI_FORMAT_UNKNOWN));
 
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateGraphicsPipelineState(&m_PSODesc, IID_PPV_ARGS(&m_PSO)));
+		ThrowIfFailed(DirectXImpl::Device->CreateGraphicsPipelineState(&m_PSODesc, IID_PPV_ARGS(&m_PSO)));
 		NAME_D3D12_OBJ_STR(m_PSO, m_Name);
 
 		while (!m_PSO)

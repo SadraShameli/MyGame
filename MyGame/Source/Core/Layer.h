@@ -6,7 +6,7 @@
 
 namespace MyGame
 {
-	class Layer : public DirectXImpl
+	class Layer
 	{
 	public:
 		Layer(const std::string& name = "Layer") { m_DebugName = name; };
@@ -14,7 +14,7 @@ namespace MyGame
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(Timestep ts) {}
 		virtual void OnEvent(Event& event) {}
 		virtual void OnImGuiRender() {}
 

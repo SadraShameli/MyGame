@@ -4,13 +4,14 @@
 
 namespace MyGame
 {
-	class Renderer : public DirectXImpl
+	class Renderer
 	{
 	public:
-		static void Init();
+		static void OnInit();
+		static void OnUpdate();
+		static void OnWindowResize(int, int);
+
 		static void InitImGui();
 		static void RenderImGui();
-
-		static void OnWindowResize(const int, const int);
 	};
 }

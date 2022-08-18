@@ -23,8 +23,6 @@ namespace MyGame
 
 	ID3D12CommandAllocator* CommandAllocatorPool::RequestAllocator(uint64_t CompletedFenceValue)
 	{
-		MYGAME_INFO("DirectX: Requesting an Command Allocator");
-
 		ID3D12CommandAllocator* pAllocator = nullptr;
 		if (!m_ReadyAllocators.empty())
 		{
@@ -66,7 +64,6 @@ namespace MyGame
 
 	void CommandQueue::Create(ID3D12Device* pDevice)
 	{
-		MYGAME_INFO("DirectX: Creating a new Command Queue");
 		MYGAME_ASSERT(!IsReady());
 		MYGAME_ASSERT(m_AllocatorPool.Size() == 0);
 
@@ -156,11 +153,11 @@ namespace MyGame
 	{
 		m_Device = pDevice;
 
-		MYGAME_INFO("CommandListManager: Creating Graphics Queue");
+		MYGAME_INFO("CommandListManager: Creating Graphics Command Queue");
 		m_GraphicsQueue.Create(pDevice);
-		MYGAME_INFO("CommandListManager: Creating Compute Queue");
+		MYGAME_INFO("CommandListManager: Creating Compute Command Queue");
 		m_ComputeQueue.Create(pDevice);
-		MYGAME_INFO("CommandListManager: Creating Copy Queue");
+		MYGAME_INFO("CommandListManager: Creating Copy Command Queue");
 		m_CopyQueue.Create(pDevice);
 	}
 
@@ -176,7 +173,7 @@ namespace MyGame
 
 	void CommandListManager::CreateNewCommandList(ID3D12GraphicsCommandList** List, ID3D12CommandAllocator** Allocator, D3D12_COMMAND_LIST_TYPE Type)
 	{
-		MYGAME_ASSERT(Type != D3D12_COMMAND_LIST_TYPE_BUNDLE, "Bundles are not yet supported");
+		MYGAME_ASSERT(Type != D3D12_COMMAND_LIST_TYPE_BUNDLE, "CommandListManager: Bundles are not yet supported");
 		switch (Type)
 		{
 		case D3D12_COMMAND_LIST_TYPE_DIRECT: *Allocator = m_GraphicsQueue.RequestAllocator(); break;
@@ -184,7 +181,6 @@ namespace MyGame
 		case D3D12_COMMAND_LIST_TYPE_COPY: *Allocator = m_CopyQueue.RequestAllocator(); break;
 		}
 		ThrowIfFailed(m_Device->CreateCommandList(1, Type, *Allocator, nullptr, IID_PPV_ARGS(List)));
-		NAME_D3D12_OBJ_STR((*List), L"CommandListManager::CreateNewCommandList");
 	}
 
 	void CommandListManager::WaitForFence(uint64_t FenceValue)
@@ -248,7 +244,7 @@ namespace MyGame
 		else
 			pRootSig = nullptr;
 
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateCommandSignature(&CommandSignatureDesc, pRootSig, IID_PPV_ARGS(&m_Signature)));
+		ThrowIfFailed(DirectXImpl::Device->CreateCommandSignature(&CommandSignatureDesc, pRootSig, IID_PPV_ARGS(&m_Signature)));
 		NAME_D3D12_OBJ(m_Signature.Get());
 		m_Finalized = TRUE;
 	}

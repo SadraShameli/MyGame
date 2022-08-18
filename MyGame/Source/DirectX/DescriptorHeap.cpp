@@ -26,7 +26,7 @@ namespace MyGame
 		Desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
 		ComPtr<ID3D12DescriptorHeap> pHeap;
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateDescriptorHeap(&Desc, IID_PPV_ARGS(&pHeap)));
+		ThrowIfFailed(DirectXImpl::Device->CreateDescriptorHeap(&Desc, IID_PPV_ARGS(&pHeap)));
 		sm_DescriptorHeapPool.emplace_back(pHeap);
 		return pHeap.Get();
 	}
@@ -40,7 +40,7 @@ namespace MyGame
 			m_RemainingFreeHandles = sm_NumDescriptorsPerHeap;
 
 			if (m_DescriptorSize == 0)
-				m_DescriptorSize = DirectXImpl::D3D12_Device->GetDescriptorHandleIncrementSize(m_Type);
+				m_DescriptorSize = DirectXImpl::Device->GetDescriptorHandleIncrementSize(m_Type);
 		}
 
 		D3D12_CPU_DESCRIPTOR_HANDLE ret = m_CurrentHandle;
@@ -54,10 +54,10 @@ namespace MyGame
 		m_HeapDesc.Type = Type;
 		m_HeapDesc.NumDescriptors = MaxCount;
 		m_HeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateDescriptorHeap(&m_HeapDesc, IID_PPV_ARGS(m_Heap.ReleaseAndGetAddressOf())));
+		ThrowIfFailed(DirectXImpl::Device->CreateDescriptorHeap(&m_HeapDesc, IID_PPV_ARGS(m_Heap.ReleaseAndGetAddressOf())));
 		NAME_D3D12_OBJ_STR(m_Heap, Name);
 
-		m_DescriptorSize = DirectXImpl::D3D12_Device->GetDescriptorHandleIncrementSize(m_HeapDesc.Type);
+		m_DescriptorSize = DirectXImpl::Device->GetDescriptorHandleIncrementSize(m_HeapDesc.Type);
 		m_NumFreeDescriptors = m_HeapDesc.NumDescriptors;
 		m_FirstHandle = DescriptorHandle(m_Heap->GetCPUDescriptorHandleForHeapStart(), m_Heap->GetGPUDescriptorHandleForHeapStart());
 		m_NextFreeHandle = m_FirstHandle;
@@ -111,7 +111,7 @@ namespace MyGame
 			HeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 			Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> HeapPtr;
 
-			ThrowIfFailed(DirectXImpl::D3D12_Device->CreateDescriptorHeap(&HeapDesc, IID_PPV_ARGS(&HeapPtr)));
+			ThrowIfFailed(DirectXImpl::Device->CreateDescriptorHeap(&HeapDesc, IID_PPV_ARGS(&HeapPtr)));
 			sm_DescriptorHeapPool[idx].emplace_back(HeapPtr);
 			return HeapPtr.Get();
 		}
@@ -148,7 +148,7 @@ namespace MyGame
 	{
 		m_CurrentHeapPtr = nullptr;
 		m_CurrentOffset = 0;
-		m_DescriptorSize = DirectXImpl::D3D12_Device->GetDescriptorHandleIncrementSize(HeapType);
+		m_DescriptorSize = DirectXImpl::Device->GetDescriptorHandleIncrementSize(HeapType);
 	}
 
 	void DynamicDescriptorHeap::CleanupUsedHeaps(uint64_t fenceValue)
@@ -257,7 +257,7 @@ namespace MyGame
 
 				if (NumSrcDescriptorRanges + DescriptorCount > kMaxDescriptorsPerCopy)
 				{
-					DirectXImpl::D3D12_Device->CopyDescriptors(
+					DirectXImpl::Device->CopyDescriptors(
 						NumDestDescriptorRanges, pDestDescriptorRangeStarts, pDestDescriptorRangeSizes,
 						NumSrcDescriptorRanges, pSrcDescriptorRangeStarts, pSrcDescriptorRangeSizes, Type);
 
@@ -281,7 +281,7 @@ namespace MyGame
 			}
 		}
 
-		DirectXImpl::D3D12_Device->CopyDescriptors(
+		DirectXImpl::Device->CopyDescriptors(
 			NumDestDescriptorRanges, pDestDescriptorRangeStarts, pDestDescriptorRangeSizes,
 			NumSrcDescriptorRanges, pSrcDescriptorRangeStarts, pSrcDescriptorRangeSizes, Type);
 	}
@@ -318,7 +318,7 @@ namespace MyGame
 		m_OwningContext.SetDescriptorHeap(m_DescriptorType, GetHeapPointer());
 		DescriptorHandle DestHandle = m_FirstDescriptor + m_CurrentOffset * m_DescriptorSize;
 		m_CurrentOffset += 1;
-		DirectXImpl::D3D12_Device->CopyDescriptorsSimple(1, DestHandle, Handle, m_DescriptorType);
+		DirectXImpl::Device->CopyDescriptorsSimple(1, DestHandle, Handle, m_DescriptorType);
 		return DestHandle;
 	}
 

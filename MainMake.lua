@@ -71,7 +71,8 @@ project "MyGame"
 		symbols "on"
 		defines 
 		{
-			"MYGAME_DEBUG"			
+			"MYGAME_DEBUG",
+			"MYGAME_USE_DXCOMPILER"
 		}		
 
 	filter "configurations:Release"

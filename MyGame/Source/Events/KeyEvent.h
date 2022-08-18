@@ -20,11 +20,9 @@ namespace MyGame
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(int keycode, bool isRepeat = false) : KeyEvent(keycode), m_IsRepeat(isRepeat) {}
+		KeyPressedEvent(int keycode) : KeyEvent(keycode) {}
 
-		inline bool IsRepeat() { return m_IsRepeat; }
-
-		inline std::string ToString() override { return "KeyPressedEvent: " + std::to_string(m_KeyCode) + " - repeat = " + std::to_string(m_IsRepeat); }
+		inline std::string ToString() override { return "KeyPressedEvent: " + std::to_string(m_KeyCode); }
 
 		EVENT_CLASS_TYPE(KeyPressed)
 

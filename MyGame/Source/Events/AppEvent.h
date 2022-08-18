@@ -7,17 +7,17 @@ namespace MyGame
 	class WindowResizeEvent : public Event
 	{
 	public:
-		WindowResizeEvent(unsigned int width, unsigned int height) : m_Width(width), m_Height(height) {}
+		WindowResizeEvent(int width, int height) : m_Width(width), m_Height(height) {}
 
-		inline unsigned int GetWidth() { return m_Width; }
-		inline unsigned int GetHeight() { return m_Height; }
+		inline int GetWidth() { return m_Width; }
+		inline int GetHeight() { return m_Height; }
 
 		inline std::string ToString() override { return  "WindowResizeEvent: " + std::to_string(m_Width) + ", " + std::to_string(m_Height); }
 
 		EVENT_CLASS_TYPE(WindowResize) EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
 	private:
-		unsigned int m_Width, m_Height;
+		int m_Width, m_Height;
 	};
 
 	class WindowMinimizeEvent : public Event

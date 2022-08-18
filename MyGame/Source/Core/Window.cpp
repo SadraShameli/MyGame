@@ -13,6 +13,8 @@
 #include "../Debugs/DebugHelpers.h"
 #include "../Debugs/Instrumentor.h"
 
+#include <Windows.h>
+#include <windowsx.h>
 #include <imgui.h>
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -46,7 +48,7 @@ namespace MyGame
 		}
 		case WM_MOUSEWHEEL:
 		{
-			MouseScrolledEvent event(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			MouseScrolledEvent event(GET_WHEEL_DELTA_WPARAM(wParam));
 			Application::Get().OnEvent(event);
 			break;
 		}
@@ -54,11 +56,14 @@ namespace MyGame
 		{
 			KeyTypedEvent event(static_cast<UINT8>(wParam));
 			Application::Get().OnEvent(event);
+
+			if (wParam == VK_ESCAPE)
+				Application::Get().Close();
 			break;
 		}
 		case WM_KEYDOWN:
 		{
-			KeyPressedEvent event(static_cast<UINT8>(wParam), false);
+			KeyPressedEvent event(static_cast<UINT8>(wParam));
 			Application::Get().OnEvent(event);
 			break;
 		}
@@ -124,7 +129,10 @@ namespace MyGame
 			m_Data.Width, m_Data.Height, nullptr, nullptr, nullptr, nullptr);
 	}
 
-	void Window::Visibility(bool State) { ShowWindow(m_Handle, State); }
+	void Window::OnDestroy()
+	{
+		DestroyWindow(m_Handle);
+	}
 
 	static MSG msg = {};
 	void Window::OnUpdate()
@@ -135,4 +143,6 @@ namespace MyGame
 			DispatchMessage(&msg);
 		}
 	}
+
+	void Window::Visibility(bool State) { ShowWindow(m_Handle, State); }
 }

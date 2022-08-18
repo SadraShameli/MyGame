@@ -5,6 +5,7 @@
 #include "../../Core/Application.h"
 #include "../../Core/Log.h"
 #include "../../Renderer/Renderer.h"
+#include "../../DirectX/CommandContext.h"
 
 #include "../../Debugs/Instrumentor.h"
 #include "../../Debugs/DebugHelpers.h"
@@ -36,14 +37,9 @@ namespace MyGame
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
 		ImGui_ImplWin32_Init(Application::Get().GetNativeWindow());
-		Renderer::InitImGui();
-	}
-
-	void ImGuiLayer::Begin()
-	{
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
+		MYGAME_ASSERT(ImGui_ImplDX12_Init(DirectXImpl::Device, DirectXImpl::FrameCount, DXGI_FORMAT_R8G8B8A8_UNORM,
+			DirectXImpl::SrvHeap, DirectXImpl::SrvHeap->GetCPUDescriptorHandleForHeapStart(),
+			DirectXImpl::SrvHeap->GetGPUDescriptorHandleForHeapStart()));
 	}
 
 	int temp1 = 0;
@@ -51,7 +47,10 @@ namespace MyGame
 
 	void ImGuiLayer::OnImGuiRender()
 	{
-		Begin();
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
 		ImGui::GetStyle().FrameRounding = 7.0f;
 		ImGui::PushItemWidth(200);
 
@@ -74,13 +73,24 @@ namespace MyGame
 		// MSAA
 		ImGui::Text("MSAA Quality");
 		ImGui::SliderInt(" ", &temp1, 0, 8);
-		End();
+
+		ImGui::Render();
+		Render();
 	}
 
-	void ImGuiLayer::End()
+	void ImGuiLayer::Render()
 	{
-		ImGui::Render();
-		Renderer::RenderImGui();
+		GraphicsContext& ctx = GraphicsContext::Begin(L"ImGui Layer");
+		auto& rtv = DirectXImpl::RenderTargets[DirectXImpl::FrameIndex];
+
+		ctx.TransitionResource(rtv, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		ctx.SetRenderTarget(rtv.GetRTV());
+		ctx.SetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, DirectXImpl::SrvHeap);
+
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), ctx.GetCommandList());
+
+		ctx.TransitionResource(rtv, D3D12_RESOURCE_STATE_PRESENT);
+		ctx.Finish();
 	}
 
 	void ImGuiLayer::OnEvent(Event& e)

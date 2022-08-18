@@ -19,7 +19,7 @@ namespace MyGame
 			m_RootParam.ParameterType = (D3D12_ROOT_PARAMETER_TYPE)0xFFFFFFFF;
 		}
 
-		void InitAsConstants(UINT Register, UINT NumDwords, D3D12_SHADER_VISIBILITY Visibility = D3D12_SHADER_VISIBILITY_ALL, UINT Space = 0)
+		void InitAsConstants(UINT NumDwords, UINT Register, D3D12_SHADER_VISIBILITY Visibility = D3D12_SHADER_VISIBILITY_ALL, UINT Space = 0)
 		{
 			m_RootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 			m_RootParam.ShaderVisibility = Visibility;
@@ -83,7 +83,7 @@ namespace MyGame
 	};
 
 
-	class RootSignature : public DirectXImpl
+	class RootSignature
 	{
 	public:
 		RootSignature(UINT NumRootParams = 0, UINT NumStaticSamplers = 0) : m_Finalized(FALSE), m_NumParameters(NumRootParams) { Reset(NumRootParams, NumStaticSamplers); }

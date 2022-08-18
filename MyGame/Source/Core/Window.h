@@ -18,12 +18,13 @@ namespace MyGame
 	public:
 		Window(const WindowProps&);
 
-		void Visibility(bool State);
+		void OnDestroy();
 		void OnUpdate();
 
 		HWND GetHandle() { return m_Handle; }
 		int GetWidth() { return m_Data.Width; }
 		int GetHeight() { return m_Data.Height; }
+		void Visibility(bool State);
 
 	private:
 		HWND m_Handle;

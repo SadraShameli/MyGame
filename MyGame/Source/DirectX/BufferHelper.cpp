@@ -6,12 +6,15 @@
 #include "DescriptorHeap.h"
 #include "DirectXImpl.h"
 
+#include "../Utilities/Hash.h"
 #include "../Debugs/DebugHelpers.h"
 
 using namespace DirectX;
 
 namespace MyGame
 {
+	// Upload Buffer Helper
+
 	void UploadBuffer::Create(const std::wstring& name, size_t BufferSize)
 	{
 		Destroy();
@@ -36,7 +39,7 @@ namespace MyGame
 		ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		ResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		ThrowIfFailed(DirectXImpl::D3D12_Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
+		ThrowIfFailed(DirectXImpl::Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_pResource)));
 
 		m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
@@ -52,6 +55,8 @@ namespace MyGame
 	}
 
 	void UploadBuffer::Unmap(size_t begin, size_t end) { auto range = CD3DX12_RANGE(begin, min(end, m_BufferSize)); m_pResource->Unmap(0, &range); }
+
+	// Pixel Buffer Helper
 
 	DXGI_FORMAT PixelBuffer::GetBaseFormat(DXGI_FORMAT defaultFormat)
 	{
@@ -322,12 +327,12 @@ namespace MyGame
 		}
 	}
 
-	void PixelBuffer::AssociateWithResource(ID3D12Device* Device, const std::wstring& Name, ID3D12Resource* Resource, D3D12_RESOURCE_STATES CurrentState)
+	void PixelBuffer::AssociateWithResource(const std::wstring& Name, ID3D12Resource* Resource, D3D12_RESOURCE_STATES CurrentState)
 	{
 		MYGAME_ASSERT(Resource != nullptr);
 		D3D12_RESOURCE_DESC ResourceDesc = Resource->GetDesc();
 
-		m_pResource->QueryInterface(&Resource);
+		m_pResource = Resource;
 		m_UsageState = CurrentState;
 
 		m_Width = (uint32_t)ResourceDesc.Width;
@@ -361,7 +366,7 @@ namespace MyGame
 		return Desc;
 	}
 
-	void PixelBuffer::CreateTextureResource(ID3D12Device* Device, const std::wstring& Name, const D3D12_RESOURCE_DESC& ResourceDesc, D3D12_CLEAR_VALUE ClearValue, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
+	void PixelBuffer::CreateTextureResource(ID3D12Device* Device, const std::wstring& Name, const D3D12_RESOURCE_DESC& ResourceDesc, D3D12_CLEAR_VALUE ClearValue)
 	{
 		Destroy();
 
@@ -394,9 +399,13 @@ namespace MyGame
 		TempBuffer.Unmap();
 	}
 
+	// Color Buffer Helper
+
 	void ColorBuffer::CreateDerivedViews(ID3D12Device* Device, DXGI_FORMAT Format, uint32_t ArraySize, uint32_t NumMips)
 	{
+		MYGAME_INFO("ColorBuffer: Creating Heap for all Derived Views");
 		MYGAME_ASSERT(ArraySize == 1 || NumMips == 1, "We don't support auto-mips on texture arrays");
+
 		m_NumMipMaps = NumMips - 1;
 
 		D3D12_RENDER_TARGET_VIEW_DESC RTVDesc = {};
@@ -457,24 +466,26 @@ namespace MyGame
 		if (m_FragmentCount > 1)
 			return;
 
-		for (auto& handle : m_UAVHandle)
+		for (UINT i = 0; i < NumMips; ++i)
 		{
-			if (handle.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
-				handle = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			Device->CreateUnorderedAccessView(Resource, nullptr, &UAVDesc, handle);
+			if (m_UAVHandle[i].ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
+				m_UAVHandle[i] = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			Device->CreateUnorderedAccessView(Resource, nullptr, &UAVDesc, m_UAVHandle[i]);
 			UAVDesc.Texture2D.MipSlice++;
 		}
 	}
 
 	void ColorBuffer::CreateFromSwapChain(const std::wstring& Name, ID3D12Resource* BaseResource)
 	{
-		AssociateWithResource(DirectXImpl::D3D12_Device, Name, BaseResource, D3D12_RESOURCE_STATE_PRESENT);
+		MYGAME_INFO("ColorBuffer: Creating RTV Heap");
+
+		AssociateWithResource(Name, BaseResource, D3D12_RESOURCE_STATE_PRESENT);
 
 		m_RTVHandle = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		DirectXImpl::D3D12_Device->CreateRenderTargetView(m_pResource, nullptr, m_RTVHandle);
+		DirectXImpl::Device->CreateRenderTargetView(m_pResource, nullptr, m_RTVHandle);
 	}
 
-	void ColorBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t NumMips, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMem)
+	void ColorBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t NumMips, DXGI_FORMAT Format)
 	{
 		NumMips = (NumMips == 0 ? ComputeNumMips(Width, Height) : NumMips);
 		D3D12_RESOURCE_FLAGS Flags = CombineResourceFlags();
@@ -490,11 +501,11 @@ namespace MyGame
 		ClearValue.Color[2] = m_ClearColor.B();
 		ClearValue.Color[3] = m_ClearColor.A();
 
-		CreateTextureResource(DirectXImpl::D3D12_Device, Name, ResourceDesc, ClearValue, VidMem);
-		CreateDerivedViews(DirectXImpl::D3D12_Device, Format, 1, NumMips);
+		CreateTextureResource(DirectXImpl::Device, Name, ResourceDesc, ClearValue);
+		CreateDerivedViews(DirectXImpl::Device, Format, 1, NumMips);
 	}
 
-	void ColorBuffer::CreateArray(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t ArrayCount, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMem)
+	void ColorBuffer::CreateArray(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t ArrayCount, DXGI_FORMAT Format)
 	{
 		D3D12_RESOURCE_FLAGS Flags = CombineResourceFlags();
 		D3D12_RESOURCE_DESC ResourceDesc = DescribeTex2D(Width, Height, ArrayCount, 1, Format, Flags);
@@ -506,8 +517,8 @@ namespace MyGame
 		ClearValue.Color[2] = m_ClearColor.B();
 		ClearValue.Color[3] = m_ClearColor.A();
 
-		CreateTextureResource(DirectXImpl::D3D12_Device, Name, ResourceDesc, ClearValue, VidMem);
-		CreateDerivedViews(DirectXImpl::D3D12_Device, Format, ArrayCount, 1);
+		CreateTextureResource(DirectXImpl::Device, Name, ResourceDesc, ClearValue);
+		CreateDerivedViews(DirectXImpl::Device, Format, ArrayCount, 1);
 	}
 
 	void ColorBuffer::GenerateMipMaps(CommandContext& BaseContext)
@@ -549,24 +560,29 @@ namespace MyGame
 			D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 	}
 
-	void DepthBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
+	// Depth Buffer Helper
+
+	void DepthBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, DXGI_FORMAT Format)
 	{
-		Create(Name, Width, Height, 1, Format, VidMemPtr);
+		Create(Name, Width, Height, 1, Format);
 	}
 
-	void DepthBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t Samples, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr)
+	void DepthBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t Samples, DXGI_FORMAT Format)
 	{
 		D3D12_RESOURCE_DESC ResourceDesc = DescribeTex2D(Width, Height, 1, 1, Format, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 		ResourceDesc.SampleDesc.Count = Samples;
 
 		D3D12_CLEAR_VALUE ClearValue = {};
 		ClearValue.Format = Format;
-		CreateTextureResource(DirectXImpl::D3D12_Device, Name, ResourceDesc, ClearValue, VidMemPtr);
-		CreateDerivedViews(DirectXImpl::D3D12_Device, Format);
+		ClearValue.DepthStencil.Depth = m_ClearDepth;
+		CreateTextureResource(DirectXImpl::Device, Name, ResourceDesc, ClearValue);
+		CreateDerivedViews(DirectXImpl::Device, Format);
 	}
 
 	void DepthBuffer::CreateDerivedViews(ID3D12Device* Device, DXGI_FORMAT Format)
 	{
+		MYGAME_INFO("DepthBuffer: Creating DSV Heap");
+
 		ID3D12Resource* Resource = m_pResource;
 		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 		dsvDesc.Format = GetDSVFormat(Format);
@@ -637,5 +653,27 @@ namespace MyGame
 			SRVDesc.Format = stencilReadFormat;
 			Device->CreateShaderResourceView(Resource, &SRVDesc, m_hStencilSRV);
 		}
+	}
+
+	// Sampler Helper
+
+	static std::map<size_t, D3D12_CPU_DESCRIPTOR_HANDLE> s_SamplerCache;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE SamplerDesc::CreateDescriptor()
+	{
+		size_t hashValue = Utility::HashState(this);
+		auto iter = s_SamplerCache.find(hashValue);
+		if (iter != s_SamplerCache.end()) { return iter->second; }
+
+		D3D12_CPU_DESCRIPTOR_HANDLE Handle = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+		DirectXImpl::Device->CreateSampler(this, Handle);
+		return Handle;
+	}
+
+	void SamplerDesc::CreateDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE Handle)
+	{
+		MYGAME_INFO("SamplerDesc: Creating Sampler Heap");
+		MYGAME_ASSERT(Handle.ptr != 0 && Handle.ptr != -1);
+		DirectXImpl::Device->CreateSampler(this, Handle);
 	}
 }

@@ -1,13 +1,14 @@
 #pragma once
 
-#include "DirectXImpl.h"
+#include <d3d12.h>
+
 #include "DirectXHelpers.h"
 
 #include "../Renderer/Color.h"
 
 namespace MyGame
 {
-	class GpuResource : public DirectXImpl
+	class GpuResource
 	{
 		friend class CommandContext;
 		friend class GraphicsContext;
@@ -15,6 +16,7 @@ namespace MyGame
 
 	public:
 		GpuResource() :
+			m_pResource(nullptr),
 			m_GpuVirtualAddress(D3D12_GPU_VIRTUAL_ADDRESS_NULL),
 			m_UsageState(D3D12_RESOURCE_STATE_COMMON),
 			m_TransitioningState((D3D12_RESOURCE_STATES)-1) {}
@@ -28,7 +30,8 @@ namespace MyGame
 		~GpuResource() { Destroy(); }
 		virtual void Destroy()
 		{
-			m_pResource = nullptr;
+			if (m_pResource)
+				m_pResource->Release();
 			m_GpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
 			++m_VersionID;
 		}
@@ -83,9 +86,8 @@ namespace MyGame
 	protected:
 		D3D12_RESOURCE_DESC DescribeTex2D(uint32_t Width, uint32_t Height, uint32_t DepthOrArraySize, uint32_t NumMips, DXGI_FORMAT Format, UINT Flags);
 
-		void AssociateWithResource(ID3D12Device* Device, const std::wstring& Name, ID3D12Resource* Resource, D3D12_RESOURCE_STATES CurrentState);
-		void CreateTextureResource(ID3D12Device* Device, const std::wstring& Name, const D3D12_RESOURCE_DESC& ResourceDesc,
-			D3D12_CLEAR_VALUE ClearValue, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN);
+		void AssociateWithResource(const std::wstring& Name, ID3D12Resource* Resource, D3D12_RESOURCE_STATES CurrentState);
+		void CreateTextureResource(ID3D12Device* Device, const std::wstring& Name, const D3D12_RESOURCE_DESC& ResourceDesc, D3D12_CLEAR_VALUE ClearValue);
 
 		static DXGI_FORMAT GetBaseFormat(DXGI_FORMAT Format);
 		static DXGI_FORMAT GetUAVFormat(DXGI_FORMAT Format);
@@ -113,8 +115,8 @@ namespace MyGame
 		}
 
 		void CreateFromSwapChain(const std::wstring& Name, ID3D12Resource* BaseResource);
-		void Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t NumMips, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN);
-		void CreateArray(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t ArrayCount, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN);
+		void Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t NumMips, DXGI_FORMAT Format);
+		void CreateArray(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t ArrayCount, DXGI_FORMAT Format);
 
 		const D3D12_CPU_DESCRIPTOR_HANDLE& GetSRV() const { return m_SRVHandle; }
 		const D3D12_CPU_DESCRIPTOR_HANDLE& GetRTV() const { return m_RTVHandle; }
@@ -172,8 +174,8 @@ namespace MyGame
 			m_hStencilSRV.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
 		}
 
-		void Create(const std::wstring& Name, uint32_t Width, uint32_t Height, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN);
-		void Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t NumSamples, DXGI_FORMAT Format, D3D12_GPU_VIRTUAL_ADDRESS VidMemPtr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN);
+		void Create(const std::wstring& Name, uint32_t Width, uint32_t Height, DXGI_FORMAT Format);
+		void Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t NumSamples, DXGI_FORMAT Format);
 
 		const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV() { return m_hDSV[0]; }
 		const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_DepthReadOnly() { return m_hDSV[1]; }
@@ -193,5 +195,45 @@ namespace MyGame
 		D3D12_CPU_DESCRIPTOR_HANDLE m_hDSV[4];
 		D3D12_CPU_DESCRIPTOR_HANDLE m_hDepthSRV;
 		D3D12_CPU_DESCRIPTOR_HANDLE m_hStencilSRV;
+	};
+
+
+	class SamplerDesc : public D3D12_SAMPLER_DESC
+	{
+	public:
+		SamplerDesc()
+		{
+			Filter = D3D12_FILTER_ANISOTROPIC;
+			AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+			MipLODBias = 0.0f;
+			MaxAnisotropy = 16;
+			ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+			BorderColor[0] = 1.0f;
+			BorderColor[1] = 1.0f;
+			BorderColor[2] = 1.0f;
+			BorderColor[3] = 1.0f;
+			MinLOD = 0.0f;
+			MaxLOD = D3D12_FLOAT32_MAX;
+		}
+
+		void SetTextureAddressMode(D3D12_TEXTURE_ADDRESS_MODE AddressMode)
+		{
+			AddressU = AddressMode;
+			AddressV = AddressMode;
+			AddressW = AddressMode;
+		}
+
+		void SetBorderColor(Color Border)
+		{
+			BorderColor[0] = Border.R();
+			BorderColor[1] = Border.G();
+			BorderColor[2] = Border.B();
+			BorderColor[3] = Border.A();
+		}
+
+		D3D12_CPU_DESCRIPTOR_HANDLE CreateDescriptor(void);
+		void CreateDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE Handle);
 	};
 }

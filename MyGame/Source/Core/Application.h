@@ -30,7 +30,7 @@ namespace MyGame
 
 	private:
 		bool m_Running = true, m_Minimized = true;
-		float m_LastFrameTime = 0.0f;
+		Timestep m_TimeStep;
 
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;

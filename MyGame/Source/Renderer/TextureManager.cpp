@@ -90,7 +90,7 @@ namespace MyGame
 		{
 			m_hCpuDescriptorHandle = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-			/*if (SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::D3D12_Device.Get(), (const uint8_t*)memory->data(), memory->size(),
+			/*if (SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::Device.Get(), (const uint8_t*)memory->data(), memory->size(),
 				0, forceSRGB, m_pResource.GetAddressOf(), m_hCpuDescriptorHandle)))
 			{
 				m_IsValid = true;
@@ -101,7 +101,7 @@ namespace MyGame
 			}
 			else
 			{
-				DirectXImpl::D3D12_Device->CopyDescriptorsSimple(1, m_hCpuDescriptorHandle, GetDefaultTexture(fallback),
+				DirectXImpl::Device->CopyDescriptorsSimple(1, m_hCpuDescriptorHandle, GetDefaultTexture(fallback),
 					D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 			}*/
 		}

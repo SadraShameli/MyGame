@@ -1,53 +1,31 @@
 #pragma once
 
 #include "CommonIncludes.h"
+#include "BufferHelper.h"
 
 namespace MyGame
 {
-	class DirectXImpl
+	namespace DirectXImpl
 	{
-	public:
-		static void OnInit();
-		static void OnDestroy();
+		extern void OnInit();
+		extern void OnDestroy();
+		extern void OnResize(int Width, int Height);
 
-	protected:
-		static void LoadPipeline();
-		static void LoadAssets();
+		extern void LoadPipeline();
+		extern void LoadAssets();
 
-		static void CreateRenderTargets();
-		static void CleanupRenderTarget();
-		static void GetHardwareAdapter(IDXGIFactory4*, IDXGIAdapter1**);
+		extern void Present();
+		extern void CreateRenderTargetViews();
 
-		static void Present();
-		static void WaitForGpu();
+		extern void GetHardwareAdapter(IDXGIFactory4*, IDXGIAdapter1**);
 
-	protected:
-		inline static constexpr UINT FrameCount = 3;
+		inline constexpr UINT FrameCount = 3;
+		inline UINT FrameIndex = 0;
 
-		inline static CD3DX12_VIEWPORT m_viewport;
-		inline static CD3DX12_RECT m_scissorRect;
-		inline static IDXGISwapChain3* m_swapChain;
-		inline static ID3D12Device* D3D12_Device;
-		inline static ID3D12Resource* D3D12_RenderTargets[FrameCount];
-		inline static ID3D12Resource* m_depthStencil;
-		inline static ID3D12CommandAllocator* D3D12_CmdAlloc;
-		inline static ID3D12GraphicsCommandList* D3D12_CmdList;
-		inline static ID3D12CommandQueue* D3D12_CmdQueue;
-		inline static ID3D12RootSignature* D312_RootSig;
-		inline static ID3D12DescriptorHeap* D3D12_RtvHeap;
-		inline static ID3D12DescriptorHeap* D3D12_SrvHeap;
-		inline static ID3D12DescriptorHeap* D3D12_DsvHeap;
-		inline static ID3D12DescriptorHeap* m_cbvSrvHeap;
-		inline static ID3D12DescriptorHeap* D3D12_SamplerHeap;
-		inline static ID3D12PipelineState* D312_PSO;
-		inline static ID3D12Fence* D3D12_Fence;
+		inline IDXGISwapChain3* SwapChain = nullptr;
+		inline ID3D12Device* Device = nullptr;
+		inline ID3D12DescriptorHeap* SrvHeap = nullptr;
 
-		inline static UINT m_frameIndex = 0;
-		inline static HANDLE D312_FenceEvent = 0;
-		inline static UINT64 D3D12_FenceValue = 1;
-		inline static UINT64 m_LastfenceValue = 0;
-
-		inline static UINT m_rtvDescriptorSize = 0;
-		inline static UINT m_dsvDescriptorSize = 0;
+		inline ColorBuffer RenderTargets[FrameCount];
 	};
 }

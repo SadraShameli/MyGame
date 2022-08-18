@@ -107,6 +107,7 @@ namespace MyGame
 		static void WaitForFence(uint64_t FenceValue);
 		static void IdleGPU()
 		{
+			MYGAME_INFO("Idling, Waiting for GPU");
 			m_GraphicsQueue.WaitForIdle();
 			m_ComputeQueue.WaitForIdle();
 			m_CopyQueue.WaitForIdle();
@@ -176,7 +177,7 @@ namespace MyGame
 	// Command Signature
 
 	class RootSignature;
-	class CommandSignature : public DirectXImpl
+	class CommandSignature
 	{
 	public:
 		CommandSignature(UINT NumParams = 0) : m_Finalized(FALSE), m_NumParameters(NumParams) { Reset(NumParams); }

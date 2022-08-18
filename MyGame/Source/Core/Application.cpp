@@ -19,10 +19,10 @@ namespace MyGame
 		MYGAME_INFO("Welcome to MyGame!");
 
 		m_Window = std::make_unique<Window>(std::forward<WindowProps>(WindowProps()));
-		Renderer::Init();
+		Renderer::OnInit();
 
 		PushLayer(new TriangleLayer());
-		//PushOverlay(new ImGuiLayer());
+		PushOverlay(new ImGuiLayer());
 
 		m_Window->Visibility(true);
 	}
@@ -30,6 +30,7 @@ namespace MyGame
 	void Application::Destroy()
 	{
 		//Renderer::Shutdown();
+		m_Window->OnDestroy();
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -48,7 +49,7 @@ namespace MyGame
 	{
 		MYGAME_INFO_EVENTS(e);
 
-		for (auto it = m_LayerStack.end(); --it != m_LayerStack.begin();)
+		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
 			if (e.Handled) break;
 			(*it)->OnEvent(e);
@@ -59,16 +60,19 @@ namespace MyGame
 	{
 		while (m_Running)
 		{
+			m_TimeStep.Update();
+
 			if (!m_Minimized)
 			{
 				for (Layer* layer : m_LayerStack)
 				{
-					layer->OnUpdate();
+					layer->OnUpdate(m_TimeStep);
 					layer->OnImGuiRender();
 				}
 			}
 
 			m_Window->OnUpdate();
+			Renderer::OnUpdate();
 		}
 	}
 

@@ -68,7 +68,7 @@ namespace MyGame
 		kCpuAllocatorPageSize = 0x200000
 	};
 
-	class LinearAllocatorPageManager : public DirectXImpl
+	class LinearAllocatorPageManager
 	{
 	public:
 		LinearAllocatorPageManager();

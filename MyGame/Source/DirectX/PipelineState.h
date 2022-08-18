@@ -5,7 +5,7 @@
 
 namespace MyGame
 {
-	class PipelineState : public DirectXImpl
+	class PipelineState
 	{
 	public:
 		PipelineState(const std::wstring& Name) : m_Name(Name) {}
@@ -32,7 +32,7 @@ namespace MyGame
 		void SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE TopologyType);
 		void SetInputLayout(const D3D12_INPUT_ELEMENT_DESC* pInputElementDescs, UINT NumElements);
 		void SetDepthTargetFormat(DXGI_FORMAT DSVFormat, UINT MsaaCount = 1, UINT MsaaQuality = 0);
-		void SetRenderTargetFormat(DXGI_FORMAT RTVFormat, DXGI_FORMAT DSVFormat, UINT MsaaCount = 1, UINT MsaaQuality = 0);
+		void SetRenderTargetFormat(DXGI_FORMAT RTVFormat, DXGI_FORMAT DSVFormat = DXGI_FORMAT_UNKNOWN, UINT MsaaCount = 1, UINT MsaaQuality = 0);
 		void SetRenderTargetFormats(UINT NumRTVs, const D3D12_RT_FORMAT_ARRAY* RTVFormats, DXGI_FORMAT DSVFormat, UINT MsaaCount = 1, UINT MsaaQuality = 0);
 
 		template<typename Blob>
@@ -46,7 +46,7 @@ namespace MyGame
 		template<typename Blob>
 		void SetDomainShader(Blob* Binary) { m_PSODesc.DS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
 
-		virtual void Finalize();
+		void Finalize();
 
 	private:
 		friend class CommandContext;

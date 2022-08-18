@@ -24,17 +24,16 @@ namespace MyGame
 	class MouseScrolledEvent : public Event
 	{
 	public:
-		MouseScrolledEvent(int xOffset, int yOffset) : m_XOffset(xOffset), m_YOffset(yOffset) {}
+		MouseScrolledEvent(int offset) : m_Offset(offset) {}
 
-		inline int GetXOffset() { return m_XOffset; }
-		inline int GetYOffset() { return m_YOffset; }
+		inline int GetOffset() { return m_Offset; }
 
-		inline std::string ToString()  override { return   "MouseScrolledEvent: " + std::to_string(GetXOffset()) + ", " + std::to_string(GetYOffset()); }
+		inline std::string ToString()  override { return "MouseScrolledEvent: " + std::to_string(GetOffset()); }
 
 		EVENT_CLASS_TYPE(MouseScrolled)	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	private:
-		int m_XOffset, m_YOffset;
+		int m_Offset;
 	};
 
 	class MouseButtonEvent : public Event

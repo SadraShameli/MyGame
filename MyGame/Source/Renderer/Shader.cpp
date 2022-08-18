@@ -37,7 +37,7 @@ namespace MyGame
 		Timer compileTime;
 
 		if (!std::filesystem::exists(FilePath)) { MYGAME_ERROR(L"Shader: Can't find sourcefile: {0}", FilePath); return S_FALSE; }
-		MYGAME_INFO(L"Shader: Loading sourcefile: {0} / Entry: {1} / Profile: {2}", FilePath, MainEntry, ShaderProfile);
+		MYGAME_INFO(L"Shader: Loading sourcefile: {0} || Entry: {1} || Profile: {2}", FilePath, MainEntry, ShaderProfile);
 
 		ComPtr<IDxcLibrary> library = nullptr;
 		MYGAME_HRESULT_VERIFY(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&library)));
@@ -72,7 +72,7 @@ namespace MyGame
 		Timer compileTime;
 
 		if (!std::filesystem::exists(FilePath)) { MYGAME_ERROR(L"Shader: Can't find sourcefile: {0}", FilePath); return S_FALSE; }
-		MYGAME_INFO("Shader: Loading sourcefile: {0} / Entry: {1} / Profile: {2}", Utility::WideStringToUTF8(FilePath), MainEntry, ShaderProfile);
+		MYGAME_INFO("Shader: Loading sourcefile: {0} || Entry: {1} || Profile: {2}", Utility::WideStringToUTF8(FilePath), MainEntry, ShaderProfile);
 
 #ifdef MYGAME_DEBUG
 		UINT compileFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
