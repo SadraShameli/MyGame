@@ -22,11 +22,17 @@
     <Filter Include="Layers\ImGui">
       <UniqueIdentifier>{FFE4DC83-EB47-6C28-94CD-A4DE800F38AB}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Layers\SceneHierarchy">
+      <UniqueIdentifier>{B1348362-1DA1-3E5D-E694-D6BA52C060C5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Layers\Triangle">
       <UniqueIdentifier>{BA8B8FB9-2617-FD7D-2F28-80729B32597E}</UniqueIdentifier>
     </Filter>
     <Filter Include="Renderer">
       <UniqueIdentifier>{7CCE658F-689B-C09A-91B4-AE427DE0F528}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utilities">
       <UniqueIdentifier>{010A8043-6D74-34BA-B6B2-E55F225C120F}</UniqueIdentifier>
@@ -121,10 +127,10 @@
     <ClInclude Include="Source\Layers\Triangle\Triangle.h">
       <Filter>Layers\Triangle</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\Color.h">
+    <ClInclude Include="Source\Renderer\Camera.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\Camera.h">
+    <ClInclude Include="Source\Renderer\Color.h">
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Source\Renderer\Renderer.h">
@@ -138,6 +144,9 @@
     </ClInclude>
     <ClInclude Include="Source\Renderer\TextureManager.h">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Components.h">
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Utilities\CommonMath.h">
       <Filter>Utilities</Filter>
@@ -202,10 +211,10 @@
     <ClCompile Include="Source\Layers\Triangle\Triangle.cpp">
       <Filter>Layers\Triangle</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\Color.cpp">
+    <ClCompile Include="Source\Renderer\Camera.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\Camera.cpp">
+    <ClCompile Include="Source\Renderer\Color.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\Renderer.cpp">

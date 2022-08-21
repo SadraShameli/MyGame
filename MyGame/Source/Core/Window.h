@@ -18,7 +18,6 @@ namespace MyGame
 	public:
 		Window(const WindowProps&);
 
-		void OnDestroy();
 		void OnUpdate();
 
 		HWND GetHandle() { return m_Handle; }

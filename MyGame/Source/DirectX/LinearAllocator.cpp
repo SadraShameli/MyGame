@@ -22,7 +22,6 @@ namespace MyGame
 
 	LinearAllocationPage* LinearAllocatorPageManager::RequestPage()
 	{
-
 		while (!m_RetiredPages.empty() && CommandListManager::IsFenceComplete(m_RetiredPages.front().first))
 		{
 			m_AvailablePages.push(m_RetiredPages.front().second);

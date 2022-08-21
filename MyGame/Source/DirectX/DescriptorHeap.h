@@ -82,7 +82,7 @@ namespace MyGame
 		DescriptorHeap() {}
 		~DescriptorHeap() { Destroy(); }
 
-		void Create(const std::wstring& DebugHeapName, D3D12_DESCRIPTOR_HEAP_TYPE Type, uint32_t MaxCount);
+		void Create(const std::wstring& DebugHeapName, D3D12_DESCRIPTOR_HEAP_TYPE Type, uint32_t MaxCount = 1);
 		void Destroy() { m_Heap = nullptr; }
 
 		bool HasAvailableSpace(uint32_t Count) { return Count <= m_NumFreeDescriptors; }

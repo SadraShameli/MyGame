@@ -18,11 +18,10 @@ namespace MyGame
 	{
 		void OnInit()
 		{
-			MYGAME_INFO("DirectX: Initializing DirectX 12 API");
 			Timer initTime;
+			MYGAME_INFO("DirectX: Initializing DirectX 12 API");
 
 			LoadPipeline();
-			LoadAssets();
 
 			MYGAME_INFO("DirectX: Initialization done in {0} milliseconds", initTime.ElapsedMillis());
 		}
@@ -114,17 +113,6 @@ namespace MyGame
 			ComPtr<IDXGISwapChain1> swapChain;
 			ThrowIfFailed(factory->CreateSwapChainForHwnd(commandQueue, Application::Get().GetNativeWindow(), &swapChainDesc, nullptr, nullptr, &swapChain));
 			ThrowIfFailed(swapChain->QueryInterface(&SwapChain));
-		}
-
-		void LoadAssets()
-		{
-			MYGAME_INFO("DirectX: Creating SRV Heap");
-			D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-			srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-			srvHeapDesc.NumDescriptors = 1;
-			srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			ThrowIfFailed(Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&SrvHeap)));
-			NAME_D3D12_OBJ(SrvHeap);
 
 			CreateRenderTargetViews();
 		}

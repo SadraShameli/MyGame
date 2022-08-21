@@ -12,7 +12,6 @@ namespace MyGame
 		extern void OnResize(int Width, int Height);
 
 		extern void LoadPipeline();
-		extern void LoadAssets();
 
 		extern void Present();
 		extern void CreateRenderTargetViews();
@@ -24,7 +23,6 @@ namespace MyGame
 
 		inline IDXGISwapChain3* SwapChain = nullptr;
 		inline ID3D12Device* Device = nullptr;
-		inline ID3D12DescriptorHeap* SrvHeap = nullptr;
 
 		inline ColorBuffer RenderTargets[FrameCount];
 	};

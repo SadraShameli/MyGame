@@ -13,3 +13,6 @@
 [submodule "MyGame/Vendor/D3D12MemoryAlloc"]
 	path = MyGame/Vendor/D3D12MemoryAlloc
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator
+[submodule "MyGame/Vendor/entt"]
+	path = MyGame/Vendor/entt
+	url = https://github.com/skypjack/entt

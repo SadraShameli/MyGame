@@ -13,7 +13,6 @@ namespace MyGame
 	public:
 		Application();
 		void Run();
-		void Destroy();
 		void Close() { m_Running = false; }
 
 		void PushLayer(Layer* layer);

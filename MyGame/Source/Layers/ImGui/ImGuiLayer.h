@@ -20,9 +20,9 @@ namespace MyGame
 		virtual void OnEvent(Event& e) override;
 		virtual void OnImGuiRender() override;
 
+		void Begin();
+		void End();
 		void Render();
-
-
 
 		void SetLightMode();
 		void SetDarkMode();

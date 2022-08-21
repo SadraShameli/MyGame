@@ -379,7 +379,7 @@ namespace MyGame
 		size_t BufferSize = Math::AlignUp(NumVertices * VertexStride, 16);
 		DynAlloc vb = m_CpuLinearAllocator.Allocate(BufferSize);
 
-		memcpy(vb.DataPtr, VertexData, BufferSize >> 4);
+		memcpy(vb.DataPtr, VertexData, BufferSize);
 
 		D3D12_VERTEX_BUFFER_VIEW VBView = {};
 		VBView.BufferLocation = vb.GpuAddress;
@@ -396,7 +396,7 @@ namespace MyGame
 		size_t BufferSize = Math::AlignUp(IndexCount * sizeof(uint16_t), 16);
 		DynAlloc ib = m_CpuLinearAllocator.Allocate(BufferSize);
 
-		memcpy(ib.DataPtr, IndexData, BufferSize >> 4);
+		memcpy(ib.DataPtr, IndexData, BufferSize);
 
 		D3D12_INDEX_BUFFER_VIEW IBView = {};
 		IBView.BufferLocation = ib.GpuAddress;

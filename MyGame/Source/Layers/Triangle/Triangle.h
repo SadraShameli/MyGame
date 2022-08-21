@@ -10,16 +10,19 @@
 
 namespace MyGame
 {
+	inline float x, y, z, roll, yaw, pitch;
+
 	class TriangleLayer : public Layer
 	{
 	public:
 		TriangleLayer();
 		~TriangleLayer() = default;
 
-		virtual void OnAttach();
-		virtual void OnDetach();
-		virtual void OnUpdate(Timestep ts);
-		virtual void OnEvent(Event& e);
+		void OnAttach();
+		void OnDetach();
+		void OnUpdate(Timestep ts);
+		void OnEvent(Event& e);
+		void OnImGuiRender();
 
 		void BlockEvents(bool block) { m_BlockEvents = block; }
 

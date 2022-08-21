@@ -19,18 +19,12 @@ namespace MyGame
 		MYGAME_INFO("Welcome to MyGame!");
 
 		m_Window = std::make_unique<Window>(std::forward<WindowProps>(WindowProps()));
-		Renderer::OnInit();
+		Renderer::Init();
 
 		PushLayer(new TriangleLayer());
 		PushOverlay(new ImGuiLayer());
 
 		m_Window->Visibility(true);
-	}
-
-	void Application::Destroy()
-	{
-		//Renderer::Shutdown();
-		m_Window->OnDestroy();
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -64,13 +58,14 @@ namespace MyGame
 
 			if (!m_Minimized)
 			{
+				m_ImGuiLayer->Begin();
 				for (Layer* layer : m_LayerStack)
 				{
 					layer->OnUpdate(m_TimeStep);
 					layer->OnImGuiRender();
 				}
+				m_ImGuiLayer->End();
 			}
-
 			m_Window->OnUpdate();
 			Renderer::OnUpdate();
 		}
@@ -83,7 +78,6 @@ int main()
 {
 	std::unique_ptr<MyGame::Application> app = std::make_unique<MyGame::Application>();
 	app->Run();
-	app->Destroy();
 
 	return 0;
 }

@@ -45,13 +45,14 @@ project "MyGame"
 	includedirs
 	{
 		"%{prj.location}/Source",
-		"%{prj.location}/Vendor/Box2D",
+		"%{prj.location}/Vendor/Box2D/include",
 		"%{prj.location}/Vendor/ImGui",
 		"%{prj.location}/Vendor/ImGui/**",
 		"%{prj.location}/Vendor/SpdLog/include",
 		"%{prj.location}/Vendor/DirectXTK12/Inc",
 		"%{prj.location}/Vendor/DirectXTK12/Src",
 		"%{prj.location}/Vendor/D3D12MemoryAlloc/include",
+		"%{prj.location}/Vendor/entt/single_include/entt"
 	}
 
 	links

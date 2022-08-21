@@ -21,6 +21,8 @@ namespace MyGame
 {
 	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
+	static DescriptorHeap s_SrvHeap;
+
 	void ImGuiLayer::OnAttach()
 	{
 		IMGUI_CHECKVERSION();
@@ -32,29 +34,36 @@ namespace MyGame
 		ImGui::StyleColorsClassic();
 		SetDarkMode();
 
+		s_SrvHeap.Create(L"ImGui SRV Heap", D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
 		float fontSize = 18.0f;
 		io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Light.ttf", fontSize);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
 		ImGui_ImplWin32_Init(Application::Get().GetNativeWindow());
 		MYGAME_ASSERT(ImGui_ImplDX12_Init(DirectXImpl::Device, DirectXImpl::FrameCount, DXGI_FORMAT_R8G8B8A8_UNORM,
-			DirectXImpl::SrvHeap, DirectXImpl::SrvHeap->GetCPUDescriptorHandleForHeapStart(),
-			DirectXImpl::SrvHeap->GetGPUDescriptorHandleForHeapStart()));
+			s_SrvHeap.GetHeapPointer(), s_SrvHeap.GetHeapPointer()->GetCPUDescriptorHandleForHeapStart(),
+			s_SrvHeap.GetHeapPointer()->GetGPUDescriptorHandleForHeapStart()));
 	}
 
 	int temp1 = 0;
 	bool check1;
 
-	void ImGuiLayer::OnImGuiRender()
+	void ImGuiLayer::Begin()
 	{
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
+	}
+
+	void ImGuiLayer::OnImGuiRender()
+	{
+		ImGui::Begin("MyGame");
 
 		ImGui::GetStyle().FrameRounding = 7.0f;
 		ImGui::PushItemWidth(200);
 
-		ImGui::Text("Frametime: %.3f ms\nFramerate: %.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Framerate: %.1f FPS\nFrametime: %.3f ms", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 
 		// Ambient Occlusion
 		std::array<const char*, 3> ambientOcclusionList = { "Off", "Performance", "Quality" };
@@ -74,6 +83,11 @@ namespace MyGame
 		ImGui::Text("MSAA Quality");
 		ImGui::SliderInt(" ", &temp1, 0, 8);
 
+		ImGui::End();
+	}
+
+	void ImGuiLayer::End()
+	{
 		ImGui::Render();
 		Render();
 	}
@@ -85,7 +99,7 @@ namespace MyGame
 
 		ctx.TransitionResource(rtv, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		ctx.SetRenderTarget(rtv.GetRTV());
-		ctx.SetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, DirectXImpl::SrvHeap);
+		ctx.SetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, s_SrvHeap.GetHeapPointer());
 
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), ctx.GetCommandList());
 
@@ -105,6 +119,7 @@ namespace MyGame
 		ImGui_ImplDX12_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
+		s_SrvHeap.Destroy();
 	}
 
 	void ImGuiLayer::SetDarkMode()

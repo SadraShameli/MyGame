@@ -129,11 +129,6 @@ namespace MyGame
 			m_Data.Width, m_Data.Height, nullptr, nullptr, nullptr, nullptr);
 	}
 
-	void Window::OnDestroy()
-	{
-		DestroyWindow(m_Handle);
-	}
-
 	static MSG msg = {};
 	void Window::OnUpdate()
 	{
