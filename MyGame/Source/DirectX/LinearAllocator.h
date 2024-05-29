@@ -27,10 +27,10 @@ namespace MyGame
 	public:
 		LinearAllocationPage(ID3D12Resource* pResource, D3D12_RESOURCE_STATES Usage) : GpuResource()
 		{
-			m_pResource = pResource;
+			m_Resource = pResource;
 			m_UsageState = Usage;
-			m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
-			m_pResource->Map(0, nullptr, &m_CpuVirtualAddress);
+			m_GpuVirtualAddress = m_Resource->GetGPUVirtualAddress();
+			m_Resource->Map(0, nullptr, &m_CpuVirtualAddress);
 		}
 
 		~LinearAllocationPage() { Unmap(); }
@@ -38,14 +38,14 @@ namespace MyGame
 		void Map()
 		{
 			if (m_CpuVirtualAddress == nullptr)
-				m_pResource->Map(0, nullptr, &m_CpuVirtualAddress);
+				m_Resource->Map(0, nullptr, &m_CpuVirtualAddress);
 		}
 
 		void Unmap()
 		{
 			if (m_CpuVirtualAddress != nullptr)
 			{
-				m_pResource->Unmap(0, nullptr);
+				m_Resource->Unmap(0, nullptr);
 				m_CpuVirtualAddress = nullptr;
 			}
 		}

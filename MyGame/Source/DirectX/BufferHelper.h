@@ -16,38 +16,38 @@ namespace MyGame
 
 	public:
 		GpuResource() :
-			m_pResource(nullptr),
+			m_Resource(nullptr),
 			m_GpuVirtualAddress(D3D12_GPU_VIRTUAL_ADDRESS_NULL),
 			m_UsageState(D3D12_RESOURCE_STATE_COMMON),
 			m_TransitioningState((D3D12_RESOURCE_STATES)-1) {}
 
 		GpuResource(ID3D12Resource* pResource, D3D12_RESOURCE_STATES CurrentState) :
 			m_GpuVirtualAddress(D3D12_GPU_VIRTUAL_ADDRESS_NULL),
-			m_pResource(pResource),
+			m_Resource(pResource),
 			m_UsageState(CurrentState),
 			m_TransitioningState((D3D12_RESOURCE_STATES)-1) {}
 
 		~GpuResource() { Destroy(); }
 		virtual void Destroy()
 		{
-			if (m_pResource)
-				m_pResource->Release();
+			if (m_Resource)
+				m_Resource->Release();
 			m_GpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
 			++m_VersionID;
 		}
 
-		ID3D12Resource* operator->() { return m_pResource; }
-		const ID3D12Resource* operator->() const { return m_pResource; }
+		ID3D12Resource* operator->() { return m_Resource; }
+		const ID3D12Resource* operator->() const { return m_Resource; }
 
-		ID3D12Resource* GetResource() { return m_pResource; }
-		const ID3D12Resource* GetResource() const { return m_pResource; }
+		ID3D12Resource* GetResource() { return m_Resource; }
+		const ID3D12Resource* GetResource() const { return m_Resource; }
 
-		ID3D12Resource** GetAddressOf() { return &m_pResource; }
+		ID3D12Resource** GetAddressOf() { return &m_Resource; }
 		D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const { return m_GpuVirtualAddress; }
 		uint32_t GetVersionID() const { return m_VersionID; }
 
 	protected:
-		ID3D12Resource* m_pResource;
+		ID3D12Resource* m_Resource;
 		D3D12_RESOURCE_STATES m_UsageState;
 		D3D12_RESOURCE_STATES m_TransitioningState;
 		D3D12_GPU_VIRTUAL_ADDRESS m_GpuVirtualAddress;
@@ -233,7 +233,7 @@ namespace MyGame
 			BorderColor[3] = Border.A();
 		}
 
-		D3D12_CPU_DESCRIPTOR_HANDLE CreateDescriptor(void);
+		D3D12_CPU_DESCRIPTOR_HANDLE CreateDescriptor();
 		void CreateDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE Handle);
 	};
 }

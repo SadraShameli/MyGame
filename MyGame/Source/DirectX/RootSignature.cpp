@@ -54,15 +54,40 @@ namespace MyGame
 
 		MYGAME_ASSERT(m_NumInitializedStaticSamplers == m_NumSamplers);
 
-		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC  rootSigDesc = {};
-		rootSigDesc.Init_1_1(m_NumParameters, (const D3D12_ROOT_PARAMETER1*)m_ParamArray.get(), m_NumSamplers, m_SamplerArray.get(), Flags);
+		D3D12_ROOT_SIGNATURE_DESC RootDesc = {};
+		RootDesc.NumParameters = m_NumParameters;
+		RootDesc.pParameters = (const D3D12_ROOT_PARAMETER*)m_ParamArray.get();
+		RootDesc.NumStaticSamplers = m_NumSamplers;
+		RootDesc.pStaticSamplers = (const D3D12_STATIC_SAMPLER_DESC*)m_SamplerArray.get();
+		RootDesc.Flags = Flags;
 
-		ComPtr<ID3DBlob> sig;
-		ComPtr<ID3DBlob> error;
-		ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1_1, &sig, &error));
-		ThrowIfFailed(DirectXImpl::Device->CreateRootSignature(0, sig->GetBufferPointer(), sig->GetBufferSize(), IID_PPV_ARGS(&m_Signature)));
+		m_DescriptorTableBitMap = 0;
+		m_SamplerTableBitMap = 0;
 
-		NAME_D3D12_OBJ_STR(m_Signature, name);
+		for (UINT Param = 0; Param < m_NumParameters; ++Param)
+		{
+			const D3D12_ROOT_PARAMETER& RootParam = RootDesc.pParameters[Param];
+			m_DescriptorTableSize[Param] = 0;
+
+			if (RootParam.ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE)
+			{
+				MYGAME_ASSERT(RootParam.DescriptorTable.pDescriptorRanges != nullptr);
+
+				if (RootParam.DescriptorTable.pDescriptorRanges->RangeType == D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER)
+					m_SamplerTableBitMap |= (1 << Param);
+				else
+					m_DescriptorTableBitMap |= (1 << Param);
+
+				for (UINT TableRange = 0; TableRange < RootParam.DescriptorTable.NumDescriptorRanges; ++TableRange)
+					m_DescriptorTableSize[Param] += RootParam.DescriptorTable.pDescriptorRanges[TableRange].NumDescriptors;
+			}
+		}
+
+		ComPtr<ID3DBlob> pOutBlob, pErrorBlob;
+		ThrowIfFailed(D3D12SerializeRootSignature(&RootDesc, D3D_ROOT_SIGNATURE_VERSION_1, pOutBlob.GetAddressOf(), pErrorBlob.GetAddressOf()));
+		ThrowIfFailed(DirectXImpl::Device->CreateRootSignature(1, pOutBlob->GetBufferPointer(), pOutBlob->GetBufferSize(), IID_PPV_ARGS(&m_Signature)));
+		m_Signature->SetName(name.c_str());
+
 		m_Finalized = true;
 	}
 }

@@ -2,18 +2,19 @@
 
 #include "Triangle.h"
 
-#include "Core/Log.h"
-#include "Debugs/Instrumentor.h"
-#include "Debugs/DebugHelpers.h"
+#include "../../Core/Log.h"
+#include "../../Debugs/Instrumentor.h"
+#include "../../Debugs/DebugHelpers.h"
 
-#include "DirectX/DirectXImpl.h"
-#include "DirectX/CommandContext.h"
-#include "DirectX/RootSignature.h"
-#include "DirectX/PipelineState.h"
+#include "../../DirectX/DirectXImpl.h"
+#include "../../DirectX/CommandContext.h"
+#include "../../DirectX/RootSignature.h"
+#include "../../DirectX/PipelineState.h"
 
-#include "Renderer/Shader.h"
-#include "Renderer/Camera.h"
-#include "Renderer/Renderer.h"
+#include "../../Renderer/Shader.h"
+#include "../../Renderer/Camera.h"
+#include "../../Renderer/Renderer.h"
+#include "../../Renderer/TextureManager.h"
 
 #include <imgui.h>
 
@@ -26,18 +27,31 @@ namespace MyGame
 
 	static Camera camera(45.0f, 1600.0f, 900.0f, 0.1f, 100.0f);
 
+	ManagedTexture* texture;
+
 	void TriangleLayer::OnAttach()
 	{
-
+		texture = TextureManager::FindOrLoadTexture(L"Assets/Textures/Lion.dds", false);
 	}
 
 	void TriangleLayer::OnDetach()
 	{
-
 	}
 
 	void TriangleLayer::OnImGuiRender()
 	{
+		ImGui::Begin("Stats");
+
+		auto stats = Renderer::GetStats();
+		ImGui::Text("Renderer Stats:");
+		ImGui::Text("Cubes: %d", stats.CubeCount);
+		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
+		ImGui::End();
+
+
 		ImGui::Begin("Entity");
 
 		ImGui::SliderFloat("X", &x, -25.0f, 25.0f, "%.1f");
@@ -48,6 +62,7 @@ namespace MyGame
 		ImGui::SliderFloat("Pitch", &pitch, -25.0f, 25.0f, "%.1f");
 
 		ImGui::End();
+
 
 		ImGui::Begin("Camera Translation");
 
@@ -63,7 +78,10 @@ namespace MyGame
 
 		ImGui::End();
 
+
 		camera.UpdateProjection();
+
+		Renderer::ResetStats();
 	}
 
 	void TriangleLayer::OnEvent(Event& e)
@@ -79,9 +97,13 @@ namespace MyGame
 
 		Renderer::BeginScene(camera);
 
-		//Renderer::DrawQuad({ x, y, z }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f });
+		Renderer::DrawCube(comp, { 1.0f, 1.0f, 1.0f }, texture);
 
-		Renderer::DrawCube(comp, 1.0f, 1.0f, 1.0f);
+		comp.Translation = { 12.0f, 12.0f, 12.0f };
+		Renderer::DrawCube(comp, { 1.0f, 1.0f, 1.0f });
+
+		comp.Translation = { 5.0f, 5.0f, 5.0f };
+		Renderer::DrawCube(comp, { 1.0f, 1.0f, 1.0f });
 
 		Renderer::EndScene();
 	}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SceneCamera.h"
+#include "../Utilities/UUID.h"
 
 #include <DirectXMath.h>
 
@@ -10,7 +11,7 @@ namespace MyGame
 {
 	struct IDComponent
 	{
-		//UUID ID;
+		UUID ID;
 
 		IDComponent() = default;
 		IDComponent(const IDComponent&) = default;
@@ -29,34 +30,29 @@ namespace MyGame
 	{
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(DirectX::XMVECTOR trans, DirectX::XMVECTOR rot, DirectX::XMVECTOR scale)
+		TransformComponent(const DirectX::XMVECTOR& trans, const DirectX::XMVECTOR& rot, const DirectX::XMVECTOR& scale)
 		{
 			Translation = trans;
 			Rotation = rot;
 			Scale = scale;
 		}
 
-		void SetTranslation(DirectX::XMVECTOR trans) { Translation = trans; }
-		void SetRotation(DirectX::XMVECTOR rot) { Rotation = rot; }
-		void SetScale(DirectX::XMVECTOR scale) { Scale = scale; }
-
 		DirectX::XMMATRIX GetTransform()
 		{
 			DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionRotationRollPitchYawFromVector(Rotation));
 			return DirectX::XMMatrixTranslationFromVector(Translation) * rotation * DirectX::XMMatrixScalingFromVector(Scale);
 		}
-		DirectX::XMMATRIX operator* (DirectX::XMMATRIX) { return GetTransform(); }
+		DirectX::XMMATRIX operator* () { return GetTransform(); }
 		operator DirectX::XMMATRIX() { return GetTransform(); }
 
-		DirectX::XMVECTOR Translation = { 0.0f, 0.0f, 0.0f };
-		DirectX::XMVECTOR Rotation = { 0.0f, 0.0f, 0.0f };
+		DirectX::XMVECTOR Translation = {};
+		DirectX::XMVECTOR Rotation = {};
 		DirectX::XMVECTOR Scale = { 1.0f, 1.0f, 1.0f };
 	};
 
 	struct SpriteRendererComponent
 	{
 		DirectX::XMVECTOR Color{ 1.0f, 1.0f, 1.0f, 1.0f };
-		//Ref<Texture2D> Texture;
 		float TilingFactor = 1.0f;
 
 		SpriteRendererComponent() = default;
@@ -151,7 +147,9 @@ namespace MyGame
 	};
 
 	template<typename... Component>
-	struct ComponentGroup;
+	struct ComponentGroup
+	{
+	};
 
 	using AllComponents =
 		ComponentGroup<TransformComponent, SpriteRendererComponent,

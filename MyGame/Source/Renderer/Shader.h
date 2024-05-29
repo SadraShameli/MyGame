@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../DirectX/CommonIncludes.h"
+
 #include <string>
 
 namespace MyGame
@@ -12,7 +14,7 @@ namespace MyGame
 		static HRESULT D3CompileVertexShader(ID3DBlob** Blob, const std::wstring& FilePath);
 		static HRESULT D3CompilePixelShader(ID3DBlob** Blob, const std::wstring& FilePath);
 
-		static HRESULT CompileFromFile(IDxcBlob** Blob, const std::wstring& FilePath, const std::wstring& ShaderProfile, const std::wstring& MainEntry = L"main");
-		static HRESULT D3CompileFromFile(ID3DBlob** Blob, const std::wstring& FilePath, const std::string& ShaderProfile, const std::string& MainEntry = "main");
+		static HRESULT CompileFromFile(IDxcBlob** Blob, const std::wstring& FilePath, const std::wstring& ShaderProfile, const std::wstring& MainEntry);
+		static HRESULT D3CompileFromFile(ID3DBlob** Blob, const std::wstring& FilePath, const std::string& ShaderProfile, const std::string& MainEntry);
 	};
 }

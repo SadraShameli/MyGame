@@ -11,7 +11,7 @@ namespace MyGame
 {
 	Camera::Camera(float fov, float width, float height, float nearClip, float farClip)
 		: FOV(fov), m_AspectRatio(width / height), m_NearClip(nearClip), m_FarClip(farClip),
-		Projection(XMMatrixPerspectiveFovLH(XMConvertToRadians(fov), width / height, nearClip, farClip))
+		Projection(XMMatrixPerspectiveFovLH(fov, width / height, nearClip, farClip))
 	{
 		UpdateView();
 	}
@@ -23,7 +23,7 @@ namespace MyGame
 
 	void Camera::UpdateProjection()
 	{
-		Projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(FOV), m_AspectRatio, m_NearClip, m_FarClip);
+		Projection = XMMatrixPerspectiveFovLH(FOV, m_AspectRatio, m_NearClip, m_FarClip);
 	}
 
 	XMFLOAT2 Camera::PanSpeed()
@@ -138,6 +138,6 @@ namespace MyGame
 
 	XMVECTOR Camera::GetOrientation()
 	{
-		return XMQuaternionRotationRollPitchYaw(-XMConvertToRadians(Pitch), -XMConvertToRadians(Yaw), 0.0f);
+		return XMQuaternionRotationRollPitchYaw(-Pitch, -Yaw, 0.0f);
 	}
 }

@@ -2,8 +2,7 @@
 
 #include "Scene.h"
 #include "Components.h"
-
-#include <entt.hpp>
+#include "../Debugs/DebugHelpers.h"
 
 namespace MyGame
 {
@@ -17,7 +16,7 @@ namespace MyGame
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			HZ_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
+			MYGAME_ASSERT(!HasComponent<T>(), "Entity already has component!");
 			T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 			m_Scene->OnComponentAdded<T>(*this, component);
 			return component;
@@ -34,20 +33,20 @@ namespace MyGame
 		template<typename T>
 		T& GetComponent()
 		{
-			HZ_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
+			MYGAME_ASSERT(HasComponent<T>(), "Entity does not have component!");
 			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
 
 		template<typename T>
 		bool HasComponent()
 		{
-			return m_Scene->m_Registry.has<T>(m_EntityHandle);
+			return m_Scene->m_Registry.try_get<T>(m_EntityHandle);
 		}
 
 		template<typename T>
 		void RemoveComponent()
 		{
-			HZ_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
+			MYGAME_ASSERT(HasComponent<T>(), "Entity does not have component!");
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
@@ -55,7 +54,7 @@ namespace MyGame
 		operator entt::entity() const { return m_EntityHandle; }
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
 
-		//UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
 		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
 
 		bool operator==(const Entity& other) const
@@ -67,6 +66,7 @@ namespace MyGame
 		{
 			return !(*this == other);
 		}
+
 	private:
 		entt::entity m_EntityHandle{ entt::null };
 		Scene* m_Scene = nullptr;

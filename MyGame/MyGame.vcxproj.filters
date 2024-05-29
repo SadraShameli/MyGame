@@ -145,9 +145,6 @@
     <ClInclude Include="Source\Renderer\TextureManager.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Components.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Utilities\CommonMath.h">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -157,9 +154,17 @@
     <ClInclude Include="Source\Utilities\Hash.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Utilities\UUID.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Utilities\Utility.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="Source\DirectX\GraphicsCommon.h" />
+    <ClInclude Include="Source\Shaders\ScreenQuadPresentVS.h" />
+    <ClInclude Include="Source\Shaders\BufferCopyPS.h" />
+    <ClInclude Include="Source\Shaders\PresentHDRPS.h" />
+    <ClInclude Include="Source\Shaders\PresentSDRPS.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CommonHeaders.cpp" />
@@ -229,5 +234,9 @@
     <ClCompile Include="Source\Renderer\TextureManager.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Utilities\UUID.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX\GraphicsCommon.cpp" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,18 @@
+// Pixel
+
+struct PixelShaderInput
+{
+	float4 Color    : COLOR;
+};
+
+float4 PSMain(PixelShaderInput IN) : SV_Target
+{
+	return IN.Color;
+}
+
+
+// Vertex
+
 struct ModelViewProjection
 {
 	matrix MVP;
@@ -17,7 +32,7 @@ struct VertexShaderOutput
 	float4 Position : SV_Position;
 };
 
-VertexShaderOutput main(VertexPosColor IN)
+VertexShaderOutput VSMain(VertexPosColor IN)
 {
 	VertexShaderOutput OUT;
 

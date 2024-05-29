@@ -25,3 +25,5 @@
 #include <memory>
 #include <vector>
 #include <array>
+
+constexpr const char* AssestPath = "Assets";

@@ -1,37 +1,50 @@
 #pragma once
 
 #include "Texture.h"
+#include <DescriptorHeap.h>
+
+#include "../DirectX/DescriptorHeap.h"
 
 namespace MyGame
 {
-	class ManagedTexture;
-
-	class TextureRef
+	class ManagedTexture : public Texture
 	{
+		friend class TextureRef;
+
 	public:
-		TextureRef(const TextureRef& ref);
-		TextureRef(ManagedTexture* tex = nullptr);
-		~TextureRef();
+		ManagedTexture(const std::wstring& filename, bool sRGB);
 
-		void operator= (nullptr_t);
-		void operator= (TextureRef& rhs);
-
-		bool IsValid() const;
-
-		D3D12_CPU_DESCRIPTOR_HANDLE GetSRV() const;
-
-		const Texture* Get() const;
-		const Texture* operator->() const;
+		void WaitForLoad();
 
 	private:
-		ManagedTexture* m_ref;
+		bool IsValid() { return m_IsValid; }
+		void Unload();
+
+		std::wstring m_Filename;
+		bool m_IsValid;
+		bool m_IsLoading;
+		size_t m_ReferenceCount;
 	};
 
-	namespace TextureManager
+	class TextureManager
 	{
-		void Initialize(const std::string& RootPath);
-		void Shutdown();
+	public:
+		enum DefaultTexture
+		{
+			Magenta2D,
+			BlackOpaque2D,
+			BlackTransparent2D,
+			WhiteOpaque2D,
+			WhiteTransparent2D,
+			DefaultNormalMap,
+			BlackCubeMap,
+			NumDefaultTextures
+		};
 
-		TextureRef LoadDDSFromFile(const std::string& filePath, Texture::DefaultTexture fallback = Texture::kMagenta2D, bool sRGB = false);
-	}
+		static void Initialize(const std::wstring& rootPath);
+		static void Shutdown();
+
+		static void DestroyTexture(const std::wstring& key);
+		static ManagedTexture* FindOrLoadTexture(const std::wstring& fileName, bool forceSRGB);
+	};
 }

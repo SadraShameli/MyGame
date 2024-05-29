@@ -1,78 +1,135 @@
 #pragma once
 
-#include "../Core/Application.h"
-#include "FileManager.h"
-
-#include <commdlg.h>
-
+#include <fstream>
 #include <string>
-#include <optional>
+#include <vector>
+#include <thread>
+#include <future>
 
 namespace MyGame
 {
-	namespace Utility
+	namespace FileManager
 	{
-		inline static std::optional<std::string> OpenFile(const char* filter)
+		using ByteArray = std::vector<uint8_t>;
+		static constexpr size_t MAX_FILEPATH = 260;
+
+		template <typename T>
+		inline ByteArray ReadBinary(const T& fileName)
 		{
-			OPENFILENAMEA ofn;
-			CHAR szFile[260] = {};
-			CHAR currentDir[256] = {};
-			ZeroMemory(&ofn, sizeof(OPENFILENAME));
-			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = Application::Get().GetNativeWindow();
-			ofn.lpstrFile = szFile;
-			ofn.nMaxFile = sizeof(szFile);
-			if (GetCurrentDirectoryA(256, currentDir))
-				ofn.lpstrInitialDir = currentDir;
-			ofn.lpstrFilter = filter;
-			ofn.nFilterIndex = 1;
-			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+			std::ifstream file(fileName, std::ios::binary | std::ios::ate);
+			size_t fileSize = file.tellg();
 
-			if (GetOpenFileNameA(&ofn) == TRUE)
-				return ofn.lpstrFile;
+			ByteArray data;
+			data.resize(fileSize);
 
-			return {};
+			file.clear();
+			file.seekg(0);
+			file.read((char*)data.data(), fileSize);
+
+			return data;
 		}
 
-		inline static std::optional<std::string> SaveFile(const char* filter)
+		template <typename T>
+		inline std::future<ByteArray> ReadBinaryAsync(const T& fileName)
 		{
-			OPENFILENAMEA ofn;
-			CHAR szFile[260] = {};
-			CHAR currentDir[256] = {};
-			ZeroMemory(&ofn, sizeof(OPENFILENAME));
-			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = Application::Get().GetNativeWindow();
-			ofn.lpstrFile = szFile;
-			ofn.nMaxFile = sizeof(szFile);
-			if (GetCurrentDirectoryA(256, currentDir))
-				ofn.lpstrInitialDir = currentDir;
-			ofn.lpstrFilter = filter;
-			ofn.nFilterIndex = 1;
-			ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
-			ofn.lpstrDefExt = strchr(filter, '\0') + 1;
-
-			if (GetSaveFileNameA(&ofn) == TRUE)
-				return ofn.lpstrFile;
-
-			return {};
+			return std::async(std::launch::async, ReadBinary, fileName);
 		}
 
-		inline static std::shared_ptr<std::vector<byte>> ReadFileHelper(const std::string& fileName)
+		template <typename T>
+		inline std::string ReadText(const T& fileName)
 		{
-			struct _stat64 fileStat;
-			int fileExists = _wstat64(Utility::UTF8ToWideString(fileName).c_str(), &fileStat);
-			if (fileExists == -1)
-				return std::make_shared<std::vector<byte>>(std::vector<byte>());
+			std::ifstream file(fileName, std::ios::ate);
+			size_t fileSize = file.tellg();
 
-			std::ifstream file(fileName, std::ios::in | std::ios::binary);
-			if (!file)
-				return std::make_shared<std::vector<byte>>(std::vector<byte>());
+			std::string data;
+			data.resize(fileSize);
+			data.clear();
 
-			std::shared_ptr<std::vector<byte>> byteArray = std::make_shared<std::vector<byte>>(fileStat.st_size);
-			file.read((char*)byteArray->data(), byteArray->size());
-			file.close();
+			file.clear();
+			file.seekg(0);
+			file.read((char*)data.data(), fileSize);
 
-			return byteArray;
+			return data;
+		}
+
+		template <typename T>
+		inline std::future<std::string> ReadTextAsync(const T& fileName)
+		{
+			return std::async(std::launch::async, ReadText, fileName);
+		}
+
+		inline std::string GetBasePath(const std::string& filePath)
+		{
+			size_t lastSlash;
+			if ((lastSlash = filePath.rfind('/')) != std::string::npos)
+				return filePath.substr(0, lastSlash + 1);
+			else if ((lastSlash = filePath.rfind('\\')) != std::string::npos)
+				return filePath.substr(0, lastSlash + 1);
+			else
+				return "";
+		}
+
+		inline std::wstring GetBasePath(const std::wstring& filePath)
+		{
+			size_t lastSlash;
+			if ((lastSlash = filePath.rfind(L'/')) != std::wstring::npos)
+				return filePath.substr(0, lastSlash + 1);
+			else if ((lastSlash = filePath.rfind(L'\\')) != std::wstring::npos)
+				return filePath.substr(0, lastSlash + 1);
+			else
+				return L"";
+		}
+
+		inline std::string RemoveBasePath(const std::string& filePath)
+		{
+			size_t lastSlash;
+			if ((lastSlash = filePath.rfind('/')) != std::string::npos)
+				return filePath.substr(lastSlash + 1, std::string::npos);
+			else if ((lastSlash = filePath.rfind('\\')) != std::string::npos)
+				return filePath.substr(lastSlash + 1, std::string::npos);
+			else
+				return filePath;
+		}
+
+		inline std::wstring RemoveBasePath(const std::wstring& filePath)
+		{
+			size_t lastSlash;
+			if ((lastSlash = filePath.rfind(L'/')) != std::string::npos)
+				return filePath.substr(lastSlash + 1, std::string::npos);
+			else if ((lastSlash = filePath.rfind(L'\\')) != std::string::npos)
+				return filePath.substr(lastSlash + 1, std::string::npos);
+			else
+				return filePath;
+		}
+
+		inline std::string GetFileExtension(const std::string& filePath)
+		{
+			std::string fileName = RemoveBasePath(filePath);
+			size_t extOffset = fileName.rfind('.');
+			if (extOffset == std::wstring::npos)
+				return "";
+
+			return fileName.substr(extOffset + 1);
+		}
+
+		inline std::wstring GetFileExtension(const std::wstring& filePath)
+		{
+			std::wstring fileName = RemoveBasePath(filePath);
+			size_t extOffset = fileName.rfind(L'.');
+			if (extOffset == std::wstring::npos)
+				return L"";
+
+			return fileName.substr(extOffset + 1);
+		}
+
+		inline std::string RemoveExtension(const std::string& filePath)
+		{
+			return filePath.substr(0, filePath.rfind("."));
+		}
+
+		inline std::wstring RemoveExtension(const std::wstring& filePath)
+		{
+			return filePath.substr(0, filePath.rfind(L"."));
 		}
 	}
 }

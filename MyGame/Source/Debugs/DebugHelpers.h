@@ -24,7 +24,7 @@
 #define MYGAME_HRESULT_TOSTR(x) if (FAILED(x)) MYGAME_ERROR(_com_error(x).ErrorMessage());
 
 #else
-#define HZ_DEBUGBREAK()
+#define MYGAME_DEBUGBREAK()
 #define MYGAME_ASSERT(x, ...) (x)
 #define MYGAME_INFO_EVENTS(x)
 

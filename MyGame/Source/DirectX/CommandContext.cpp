@@ -4,6 +4,8 @@
 #include "DescriptorHeap.h"
 #include "DirectXImpl.h"
 
+#include <ResourceUploadBatch.h>
+
 namespace MyGame
 {
 	CommandContext::CommandContext(D3D12_COMMAND_LIST_TYPE Type) :
@@ -115,25 +117,23 @@ namespace MyGame
 
 	uint64_t CommandContext::Finish(bool WaitForCompletion)
 	{
-		MYGAME_ASSERT(m_Type == D3D12_COMMAND_LIST_TYPE_DIRECT || m_Type == D3D12_COMMAND_LIST_TYPE_COMPUTE);
 		FlushResourceBarriers();
-		MYGAME_ASSERT(m_CurrentAllocator != nullptr);
 
-		CommandQueue& Queue = CommandListManager::GetQueue(m_Type);
-		uint64_t FenceValue = Queue.ExecuteCommandList(m_CommandList);
-		Queue.DiscardAllocator(m_CurrentAllocator, FenceValue);
+		CommandQueue& queue = CommandListManager::GetQueue(m_Type);
+		uint64_t fence = queue.ExecuteCommandList(m_CommandList);
+		queue.DiscardAllocator(m_CurrentAllocator, fence);
 		m_CurrentAllocator = nullptr;
 
-		m_CpuLinearAllocator.CleanupUsedPages(FenceValue);
-		m_GpuLinearAllocator.CleanupUsedPages(FenceValue);
-		m_DynamicViewDescriptorHeap.CleanupUsedHeaps(FenceValue);
-		m_DynamicSamplerDescriptorHeap.CleanupUsedHeaps(FenceValue);
+		m_CpuLinearAllocator.CleanupUsedPages(fence);
+		m_GpuLinearAllocator.CleanupUsedPages(fence);
+		m_DynamicViewDescriptorHeap.CleanupUsedHeaps(fence);
+		m_DynamicSamplerDescriptorHeap.CleanupUsedHeaps(fence);
 
 		if (WaitForCompletion)
-			CommandListManager::WaitForFence(FenceValue);
+			CommandListManager::WaitForFence(fence);
 
 		D3D12ContextManager.FreeContext(this);
-		return FenceValue;
+		return fence;
 	}
 
 	void CommandContext::Initialize()
@@ -402,19 +402,15 @@ namespace MyGame
 		CopyBufferRegion(Dest, DestOffset, TempSpace.Buffer, TempSpace.Offset, NumBytes);
 	}
 
-	void CommandContext::InitializeTexture(GpuResource& Dest, UINT NumSubresources, D3D12_SUBRESOURCE_DATA SubData[])
+	void CommandContext::InitializeTexture(GpuResource& resource, D3D12_SUBRESOURCE_DATA* subResources, uint32_t numSubResources)
 	{
-		UINT64 uploadBufferSize = GetRequiredIntermediateSize(Dest.GetResource(), 0, NumSubresources);
+		DirectX::ResourceUploadBatch upload(DirectXImpl::Device);
+		upload.Begin();
+		upload.Upload(resource.GetResource(), 0, subResources, numSubResources);
+		upload.Transition(resource.GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-		CommandContext& InitContext = CommandContext::Begin();
-
-		// copy data to the intermediate upload heap and then schedule a copy from the upload heap to the default texture
-		DynAlloc mem = InitContext.ReserveUploadMemory(uploadBufferSize);
-		UpdateSubresources(InitContext.m_CommandList, Dest.GetResource(), mem.Buffer.GetResource(), 0, 0, NumSubresources, SubData);
-		InitContext.TransitionResource(Dest, D3D12_RESOURCE_STATE_GENERIC_READ);
-
-		// Execute the command list and wait for it to finish so we can release the upload buffer
-		InitContext.Finish(true);
+		auto uploadResourcesFinished = upload.End(CommandListManager::GetCommandQueue());
+		uploadResourcesFinished.wait();
 	}
 
 	void CommandContext::CopySubresource(GpuResource& Dest, UINT DestSubIndex, GpuResource& Src, UINT SrcSubIndex)

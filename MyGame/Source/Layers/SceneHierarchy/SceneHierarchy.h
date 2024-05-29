@@ -5,7 +5,7 @@
 
 namespace MyGame
 {
-	class SceneHierarchy : Layer
+	class SceneHierarchy
 	{
 	public:
 		SceneHierarchy() = default;

@@ -1,179 +1,75 @@
 #include "CommonHeaders.h"
 
-#include "Texture.h"
 #include "TextureManager.h"
-#include "DirectXHelpers.h"
-
-#include "../DirectX/CommandContext.h"
-#include "../DirectX/DirectXImpl.h"
-#include "../Utilities/Utility.h"
 #include "../Utilities/FileManager.h"
 
-using namespace DirectX;
+#include "ResourceUploadBatch.h"
 
 namespace MyGame
 {
-	class ManagedTexture : public Texture
+	static std::wstring s_RootPath;
+	static std::map<std::wstring, std::unique_ptr<ManagedTexture>> s_TextureCache;
+	static std::mutex s_Mutex;
+
+	ManagedTexture* TextureManager::FindOrLoadTexture(const std::wstring& fileName, bool forceSRGB)
 	{
-		friend class TextureRef;
+		std::lock_guard<std::mutex> lock(s_Mutex);
+		std::wstring key = fileName;
+		ManagedTexture* tex = nullptr;
 
-	public:
-		ManagedTexture(const std::string& FileName);
+		if (forceSRGB)
+			key += L"_sRGB";
 
-		void WaitForLoad(void) const;
-		void CreateFromMemory(std::shared_ptr<std::vector<byte>> memory, Texture::DefaultTexture fallback, bool sRGB);
-
-	private:
-		bool IsValid(void) const { return m_IsValid; }
-		void Unload();
-
-		std::string m_MapKey;
-		bool m_IsValid;
-		bool m_IsLoading;
-		size_t m_ReferenceCount;
-	};
-
-	namespace TextureManager
-	{
-		std::string s_RootPath;
-		std::map<std::string, std::unique_ptr<ManagedTexture>> s_TextureCache;
-
-		void Initialize(const std::string& TextureLibRoot) { s_RootPath = TextureLibRoot; }
-		void Shutdown() { s_TextureCache.clear(); }
-
-		ManagedTexture* FindOrLoadTexture(const std::string& fileName, Texture::DefaultTexture fallback, bool forceSRGB)
+		auto iter = s_TextureCache.find(key);
+		if (iter != s_TextureCache.end())
 		{
-			ManagedTexture* tex = nullptr;
-			{
-				std::string key = fileName;
-				if (forceSRGB)
-					key += "_sRGB";
-
-				auto iter = s_TextureCache.find(key);
-				if (iter != s_TextureCache.end())
-				{
-					tex = iter->second.get();
-					tex->WaitForLoad();
-					return tex;
-				}
-				else
-				{
-					tex = new ManagedTexture(key);
-					s_TextureCache[key].reset(tex);
-				}
-			}
-
-			std::shared_ptr<std::vector<byte>> memory = Utility::ReadFileHelper(s_RootPath + fileName);
-			tex->CreateFromMemory(memory, fallback, forceSRGB);
-
+			tex = iter->second.get();
+			tex->WaitForLoad();
 			return tex;
 		}
-
-		void DestroyTexture(const std::string& key)
-		{
-			auto iter = s_TextureCache.find(key);
-			if (iter != s_TextureCache.end())
-				s_TextureCache.erase(iter);
-		}
-	}
-
-	ManagedTexture::ManagedTexture(const std::string& FileName) : m_MapKey(FileName), m_IsValid(false), m_IsLoading(true), m_ReferenceCount(0)
-	{
-		m_hCpuDescriptorHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
-	}
-
-	void ManagedTexture::CreateFromMemory(std::shared_ptr<std::vector<byte>> memory, Texture::DefaultTexture fallback, bool forceSRGB)
-	{
-		if (!memory->size())
-			m_hCpuDescriptorHandle = GetDefaultTexture(fallback);
 		else
 		{
-			m_hCpuDescriptorHandle = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-			/*if (SUCCEEDED(CreateDDSTextureFromMemory(DirectXImpl::Device.Get(), (const uint8_t*)memory->data(), memory->size(),
-				0, forceSRGB, m_pResource.GetAddressOf(), m_hCpuDescriptorHandle)))
-			{
-				m_IsValid = true;
-				D3D12_RESOURCE_DESC desc = GetResource()->GetDesc();
-				m_Width = (uint32_t)desc.Width;
-				m_Height = desc.Height;
-				m_Depth = desc.DepthOrArraySize;
-			}
-			else
-			{
-				DirectXImpl::Device->CopyDescriptorsSimple(1, m_hCpuDescriptorHandle, GetDefaultTexture(fallback),
-					D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			}*/
+			tex = new ManagedTexture(key, forceSRGB);
+			s_TextureCache[key].reset(tex);
 		}
 
-		m_IsLoading = false;
+		return tex;
 	}
 
-	void ManagedTexture::WaitForLoad() const
+	void TextureManager::DestroyTexture(const std::wstring& key)
+	{
+		std::lock_guard<std::mutex> lock(s_Mutex);
+
+		auto iter = s_TextureCache.find(key);
+		if (iter != s_TextureCache.end())
+			s_TextureCache.erase(iter);
+	}
+
+	ManagedTexture::ManagedTexture(const std::wstring& fileName, bool sRGB)
+		: m_Filename(fileName), m_IsValid(false), m_IsLoading(true), m_ReferenceCount(0)
+	{
+		FileManager::ByteArray data = FileManager::ReadBinary(fileName);
+		CreateDDSFromMemory(data.data(), data.size(), sRGB);
+	}
+
+	void ManagedTexture::WaitForLoad()
 	{
 		while ((volatile bool&)m_IsLoading)
 			std::this_thread::yield();
 	}
 
-	void ManagedTexture::Unload() { TextureManager::DestroyTexture(m_MapKey); }
-
-	TextureRef::TextureRef(const TextureRef& ref) : m_ref(ref.m_ref)
+	void ManagedTexture::Unload()
 	{
-		if (m_ref != nullptr)
-			++m_ref->m_ReferenceCount;
+		TextureManager::DestroyTexture(m_Filename);
 	}
 
-	TextureRef::TextureRef(ManagedTexture* tex) : m_ref(tex)
+	void TextureManager::Initialize(const std::wstring& rootPath)
 	{
-		if (m_ref != nullptr)
-			++m_ref->m_ReferenceCount;
+		s_RootPath = rootPath;
 	}
 
-	TextureRef::~TextureRef()
+	void TextureManager::Shutdown()
 	{
-		if (m_ref != nullptr && --m_ref->m_ReferenceCount == 0)
-			m_ref->Unload();
-	}
-
-	void TextureRef::operator= (std::nullptr_t)
-	{
-		if (m_ref != nullptr)
-			--m_ref->m_ReferenceCount;
-
-		m_ref = nullptr;
-	}
-
-	void TextureRef::operator= (TextureRef& rhs)
-	{
-		if (m_ref != nullptr)
-			--m_ref->m_ReferenceCount;
-
-		m_ref = rhs.m_ref;
-
-		if (m_ref != nullptr)
-			++m_ref->m_ReferenceCount;
-	}
-
-	bool TextureRef::IsValid() const { return m_ref && m_ref->IsValid(); }
-
-	const Texture* TextureRef::Get() const { return m_ref; }
-
-	const Texture* TextureRef::operator->() const
-	{
-		MYGAME_ASSERT(m_ref != nullptr);
-		return m_ref;
-	}
-
-	D3D12_CPU_DESCRIPTOR_HANDLE TextureRef::GetSRV() const
-	{
-		if (m_ref != nullptr)
-			return m_ref->GetSRV();
-		else
-			return GetDefaultTexture(Texture::kMagenta2D);
-	}
-
-	TextureRef TextureManager::LoadDDSFromFile(const std::string& filePath, Texture::DefaultTexture fallback, bool forceSRGB)
-	{
-		return TextureManager::FindOrLoadTexture(filePath, fallback, forceSRGB);
+		s_TextureCache.clear();
 	}
 }

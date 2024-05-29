@@ -35,21 +35,21 @@ namespace MyGame
 		ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 		ThrowIfFailed(DirectXImpl::Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_pResource)));
+			D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_Resource)));
 
-		m_GpuVirtualAddress = m_pResource->GetGPUVirtualAddress();
-		NAME_D3D12_OBJ_STR(m_pResource, name);
+		m_GpuVirtualAddress = m_Resource->GetGPUVirtualAddress();
+		NAME_D3D12_OBJ_STR(m_Resource, name);
 	}
 
 	void* UploadBuffer::Map(void)
 	{
 		void* Memory = nullptr;
 		auto range = CD3DX12_RANGE(0, m_BufferSize);
-		m_pResource->Map(0, &range, &Memory);
+		m_Resource->Map(0, &range, &Memory);
 		return Memory;
 	}
 
-	void UploadBuffer::Unmap(size_t begin, size_t end) { auto range = CD3DX12_RANGE(begin, min(end, m_BufferSize)); m_pResource->Unmap(0, &range); }
+	void UploadBuffer::Unmap(size_t begin, size_t end) { auto range = CD3DX12_RANGE(begin, min(end, m_BufferSize)); m_Resource->Unmap(0, &range); }
 
 	// Pixel Buffer Helper
 
@@ -327,7 +327,7 @@ namespace MyGame
 		MYGAME_ASSERT(Resource != nullptr);
 		D3D12_RESOURCE_DESC ResourceDesc = Resource->GetDesc();
 
-		m_pResource = Resource;
+		m_Resource = Resource;
 		m_UsageState = CurrentState;
 
 		m_Width = (uint32_t)ResourceDesc.Width;
@@ -335,7 +335,7 @@ namespace MyGame
 		m_ArraySize = ResourceDesc.DepthOrArraySize;
 		m_Format = ResourceDesc.Format;
 
-		NAME_D3D12_OBJ_STR(m_pResource, Name);
+		NAME_D3D12_OBJ_STR(m_Resource, Name);
 	}
 
 	D3D12_RESOURCE_DESC PixelBuffer::DescribeTex2D(uint32_t Width, uint32_t Height, uint32_t DepthOrArraySize, uint32_t NumMips, DXGI_FORMAT Format, UINT Flags)
@@ -366,12 +366,12 @@ namespace MyGame
 		Destroy();
 
 		CD3DX12_HEAP_PROPERTIES HeapProps(D3D12_HEAP_TYPE_DEFAULT);
-		ThrowIfFailed(Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, D3D12_RESOURCE_STATE_COMMON, &ClearValue, IID_PPV_ARGS(&m_pResource)));
+		ThrowIfFailed(Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &ResourceDesc, D3D12_RESOURCE_STATE_COMMON, &ClearValue, IID_PPV_ARGS(&m_Resource)));
 
 		m_UsageState = D3D12_RESOURCE_STATE_COMMON;
 		m_GpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
 
-		NAME_D3D12_OBJ_STR(m_pResource, Name);
+		NAME_D3D12_OBJ_STR(m_Resource, Name);
 	}
 
 	void PixelBuffer::ExportToFile(const std::string& FilePath)
@@ -454,7 +454,7 @@ namespace MyGame
 			m_SRVHandle = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		}
 
-		ID3D12Resource* Resource = m_pResource;
+		ID3D12Resource* Resource = m_Resource;
 		Device->CreateRenderTargetView(Resource, &RTVDesc, m_RTVHandle);
 		Device->CreateShaderResourceView(Resource, &SRVDesc, m_SRVHandle);
 
@@ -477,7 +477,7 @@ namespace MyGame
 		AssociateWithResource(Name, BaseResource, D3D12_RESOURCE_STATE_PRESENT);
 
 		m_RTVHandle = DescriptorHeap::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		DirectXImpl::Device->CreateRenderTargetView(m_pResource, nullptr, m_RTVHandle);
+		DirectXImpl::Device->CreateRenderTargetView(m_Resource, nullptr, m_RTVHandle);
 	}
 
 	void ColorBuffer::Create(const std::wstring& Name, uint32_t Width, uint32_t Height, uint32_t NumMips, DXGI_FORMAT Format)
@@ -578,7 +578,7 @@ namespace MyGame
 	{
 		MYGAME_INFO("DepthBuffer: Creating DSV Heap");
 
-		ID3D12Resource* Resource = m_pResource;
+		ID3D12Resource* Resource = m_Resource;
 		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 		dsvDesc.Format = GetDSVFormat(Format);
 

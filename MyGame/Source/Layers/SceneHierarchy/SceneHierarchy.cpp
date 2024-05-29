@@ -9,6 +9,8 @@
 
 #include <DirectXMath.h>
 
+using namespace DirectX;
+
 namespace MyGame
 {
 	SceneHierarchy::SceneHierarchy(const std::shared_ptr<Scene>& context)
@@ -96,7 +98,7 @@ namespace MyGame
 		}
 	}
 
-	static void DrawVec3Control(const std::string& label, DirectX::XMFLOAT3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
+	static void DrawVec3Control(const std::string& label, DirectX::XMVECTOR& values, float resetValue = 0.0f, float columnWidth = 100.0f)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0];
@@ -109,40 +111,40 @@ namespace MyGame
 		ImGui::NextColumn();
 
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
 
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0.8f, 0.1f, 0.15f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.9f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.8f, 0.1f, 0.15f, 1.0f });
 		ImGui::PushFont(boldFont);
 
 		if (ImGui::Button("X", buttonSize))
-			values.x = resetValue;
+			values.m128_f32[0] = resetValue;
 
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##X", &values.m128_f32[0], 0.1f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0.2f, 0.7f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.3f, 0.8f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.2f, 0.7f, 0.2f, 1.0f });
 		ImGui::PushFont(boldFont);
 
 		if (ImGui::Button("Y", buttonSize))
-			values.y = resetValue;
+			values.m128_f32[1] = resetValue;
 
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##Y", &values.m128_f32[1], 0.1f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
@@ -152,13 +154,13 @@ namespace MyGame
 		ImGui::PushFont(boldFont);
 
 		if (ImGui::Button("Z", buttonSize))
-			values.z = resetValue;
+			values.m128_f32[2] = resetValue;
 
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
+		ImGui::DragFloat("##Z", &values.m128_f32[2], 0.1f, 0.0f, 0.0f, "%.2f");
 		ImGui::PopItemWidth();
 
 		ImGui::PopStyleVar();
@@ -245,9 +247,9 @@ namespace MyGame
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 			{
 				DrawVec3Control("Translation", component.Translation);
-				glm::vec3 rotation = glm::degrees(component.Rotation);
+				XMVECTOR rotation = { XMConvertToDegrees(component.Rotation.m128_f32[0]), XMConvertToDegrees(component.Rotation.m128_f32[1]), XMConvertToDegrees(component.Rotation.m128_f32[2]) };
 				DrawVec3Control("Rotation", rotation);
-				component.Rotation = glm::radians(rotation);
+				component.Rotation = { XMConvertToRadians(rotation.m128_f32[0]), XMConvertToRadians(rotation.m128_f32[1]), XMConvertToRadians(rotation.m128_f32[2]) };
 				DrawVec3Control("Scale", component.Scale, 1.0f);
 			});
 
@@ -280,9 +282,9 @@ namespace MyGame
 
 				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
 				{
-					float perspectiveVerticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
+					float perspectiveVerticalFov = XMConvertToDegrees(camera.GetPerspectiveVerticalFOV());
 					if (ImGui::DragFloat("Vertical FOV", &perspectiveVerticalFov))
-						camera.SetPerspectiveVerticalFOV(glm::radians(perspectiveVerticalFov));
+						camera.SetPerspectiveVerticalFOV(XMConvertToRadians(perspectiveVerticalFov));
 
 					float perspectiveNear = camera.GetPerspectiveNearClip();
 					if (ImGui::DragFloat("Near", &perspectiveNear))
@@ -313,17 +315,18 @@ namespace MyGame
 
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
 			{
-				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
-				ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+				ImGui::ColorEdit4("Color", component.Color.m128_f32);
+				ImGui::Button("Texture", { 100.0f, 0.0f });
 
 				if (ImGui::BeginDragDropTarget())
 				{
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 					{
 						const wchar_t* path = (const wchar_t*)payload->Data;
-						std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-						std::shared_ptr<Texture2D> texture = Texture2D::Create(texturePath.string());
-						if (texture->IsLoaded())
+						std::filesystem::path texturePath = std::filesystem::path(AssestPath) / path;
+
+						std::shared_ptr texture = std::make_shared<TextureRef>(TextureManager::LoadDDSFromFile(texturePath.string()));
+						if (texture->IsValid())
 							component.Texture = texture;
 						else
 							MYGAME_WARN("Could not load texture {0}", texturePath.filename().string());
@@ -336,7 +339,7 @@ namespace MyGame
 
 		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](auto& component)
 			{
-				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+				ImGui::ColorEdit4("Color", component.Color.m128_f32);
 				ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f, 1.0f);
 				ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
 			});
@@ -369,8 +372,8 @@ namespace MyGame
 
 		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component)
 			{
-				ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
-				ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
+				ImGui::DragFloat2("Offset", &component.Offset.x);
+				ImGui::DragFloat2("Size", &component.Size.x);
 				ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
@@ -379,18 +382,18 @@ namespace MyGame
 
 		DrawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](auto& component)
 			{
-				ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
+				ImGui::DragFloat2("Offset", &component.Offset.x);
 				ImGui::DragFloat("Radius", &component.Radius);
 				ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
 				ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
 			});
-
 	}
 
 	template<typename T>
-	void SceneHierarchy::DisplayAddComponentEntry(const std::string& entryName) {
+	void SceneHierarchy::DisplayAddComponentEntry(const std::string& entryName)
+	{
 		if (!m_SelectionContext.HasComponent<T>())
 		{
 			if (ImGui::MenuItem(entryName.c_str()))

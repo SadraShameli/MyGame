@@ -18,7 +18,7 @@ namespace MyGame
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
-		void OnEvent(Event&);
+		void OnEvent(Event& e);
 		void OnWindowResize(WindowResizeEvent& e);
 		void OnWindowMinimize(WindowMinimizeEvent e) { m_Minimized = e.GetMinimized(); }
 		void OnWindowClose() { m_Running = false; }

@@ -84,7 +84,7 @@ namespace MyGame
 
 		DynAlloc ReserveUploadMemory(size_t SizeInBytes) { return m_CpuLinearAllocator.Allocate(SizeInBytes); }
 
-		static void InitializeTexture(GpuResource& Dest, UINT NumSubresources, D3D12_SUBRESOURCE_DATA SubData[]);
+		static void InitializeTexture(GpuResource& resource, D3D12_SUBRESOURCE_DATA* subResources, uint32_t numSubResources);
 		static void InitializeBuffer(GpuBuffer& Dest, const void* Data, size_t NumBytes, size_t DestOffset = 0);
 		static void InitializeBuffer(GpuBuffer& Dest, const UploadBuffer& Src, size_t SrcOffset, size_t NumBytes = -1, size_t DestOffset = 0);
 		static void InitializeTextureArraySlice(GpuResource& Dest, UINT SliceIndex, GpuResource& Src);
@@ -144,7 +144,10 @@ namespace MyGame
 	class GraphicsContext : public CommandContext
 	{
 	public:
-		static GraphicsContext& Begin(const std::wstring& ID = L"GraphicsContext") { return CommandContext::Begin(ID).GetGraphicsContext(); }
+		static GraphicsContext& Begin(const wchar_t* ID = L"Graphics Context")
+		{
+			return CommandContext::Begin(ID).GetGraphicsContext();
+		}
 
 		void ClearUAV(GpuBuffer& Target);
 		void ClearUAV(ColorBuffer& Target);
@@ -357,6 +360,7 @@ namespace MyGame
 	inline void GraphicsContext::SetDynamicConstantBufferView(UINT RootIndex, size_t BufferSize, const void* BufferData)
 	{
 		MYGAME_ASSERT(BufferData != nullptr && Math::IsAligned(BufferData, 16));
+
 		DynAlloc cb = m_CpuLinearAllocator.Allocate(BufferSize);
 		//SIMDMemCopy(cb.DataPtr, BufferData, Math::AlignUp(BufferSize, 16) >> 4);
 		memcpy(cb.DataPtr, BufferData, BufferSize);
@@ -365,7 +369,8 @@ namespace MyGame
 
 	inline void ComputeContext::SetDynamicConstantBufferView(UINT RootIndex, size_t BufferSize, const void* BufferData)
 	{
-		MYGAME_ASSERT(BufferData != nullptr && Math::IsAligned(BufferData, 16));
+		MYGAME_ASSERT(!BufferData && Math::IsAligned(BufferData, 16));
+
 		DynAlloc cb = m_CpuLinearAllocator.Allocate(BufferSize);
 		//SIMDMemCopy(cb.DataPtr, BufferData, Math::AlignUp(BufferSize, 16) >> 4);
 		memcpy(cb.DataPtr, BufferData, BufferSize);
@@ -374,7 +379,7 @@ namespace MyGame
 
 	inline void GraphicsContext::SetDynamicVB(UINT Slot, size_t NumVertices, size_t VertexStride, const void* VertexData)
 	{
-		MYGAME_ASSERT(VertexData != nullptr && Math::IsAligned(VertexData, 16));
+		//MYGAME_ASSERT(!VertexData && Math::IsAligned(VertexData, 16));
 
 		size_t BufferSize = Math::AlignUp(NumVertices * VertexStride, 16);
 		DynAlloc vb = m_CpuLinearAllocator.Allocate(BufferSize);

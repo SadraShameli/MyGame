@@ -19,12 +19,17 @@
 
 namespace MyGame
 {
-	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
-
+	static ColorBuffer s_ColorBuffer;
+	extern ColorBuffer s_SceneBuffer;
 	static DescriptorHeap s_SrvHeap;
+
+	ImGuiLayer::ImGuiLayer() : Layer("ImGui Layer") {}
 
 	void ImGuiLayer::OnAttach()
 	{
+		s_SrvHeap.Create(L"ImGui SRV Heap", D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		s_ColorBuffer.Create(L"ImGui Color Buffer", 1600, 900, 1, DXGI_FORMAT_R8G8B8A8_UNORM);
+
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
@@ -34,14 +39,12 @@ namespace MyGame
 		ImGui::StyleColorsClassic();
 		SetDarkMode();
 
-		s_SrvHeap.Create(L"ImGui SRV Heap", D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
 		float fontSize = 18.0f;
 		io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Light.ttf", fontSize);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
 		ImGui_ImplWin32_Init(Application::Get().GetNativeWindow());
-		MYGAME_ASSERT(ImGui_ImplDX12_Init(DirectXImpl::Device, DirectXImpl::FrameCount, DXGI_FORMAT_R8G8B8A8_UNORM,
+		MYGAME_ASSERT(ImGui_ImplDX12_Init(DirectXImpl::Device, 1, DXGI_FORMAT_R8G8B8A8_UNORM,
 			s_SrvHeap.GetHeapPointer(), s_SrvHeap.GetHeapPointer()->GetCPUDescriptorHandleForHeapStart(),
 			s_SrvHeap.GetHeapPointer()->GetGPUDescriptorHandleForHeapStart()));
 	}
@@ -65,21 +68,18 @@ namespace MyGame
 
 		ImGui::Text("Framerate: %.1f FPS\nFrametime: %.3f ms", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 
-		// Ambient Occlusion
-		std::array<const char*, 3> ambientOcclusionList = { "Off", "Performance", "Quality" };
+		const char* ambientOcclusionList[] = { "Off", "Performance", "Quality" };
 		ImGui::Text("Ambient Occlusion");
-		ImGui::ListBox(" ", &temp1, ambientOcclusionList.data(), 3);
+		ImGui::ListBox(" ", &temp1, ambientOcclusionList, 3);
 
 		ImGui::Text("Anisotropic Filtering");
 		ImGui::SliderInt(" ", &temp1, 0, 16);
 
-		// Antialiasing	
 		ImGui::Text("Anitialiasing - Transparency");
 		ImGui::SliderInt(" ", &temp1, 0, 8);
 		ImGui::SameLine();
 		ImGui::Checkbox("FXAA", &check1);
 
-		// MSAA
 		ImGui::Text("MSAA Quality");
 		ImGui::SliderInt(" ", &temp1, 0, 8);
 
@@ -95,15 +95,15 @@ namespace MyGame
 	void ImGuiLayer::Render()
 	{
 		GraphicsContext& ctx = GraphicsContext::Begin(L"ImGui Layer");
-		auto& rtv = DirectXImpl::RenderTargets[DirectXImpl::FrameIndex];
 
-		ctx.TransitionResource(rtv, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		ctx.SetRenderTarget(rtv.GetRTV());
 		ctx.SetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, s_SrvHeap.GetHeapPointer());
+		ctx.SetViewportAndScissor(0, 0, s_SceneBuffer.GetWidth(), s_SceneBuffer.GetHeight());
+		ctx.TransitionResource(s_SceneBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		ctx.ClearColor(s_SceneBuffer);
+		ctx.SetRenderTarget(s_SceneBuffer.GetRTV());
 
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), ctx.GetCommandList());
 
-		ctx.TransitionResource(rtv, D3D12_RESOURCE_STATE_PRESENT);
 		ctx.Finish();
 	}
 

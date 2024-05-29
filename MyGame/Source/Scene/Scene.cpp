@@ -1,10 +1,10 @@
 #include "CommonHeaders.h"
 
 #include "Scene.h"
-#include "Components.h"
 #include "Entity.h"
-#include "ScriptableEntity.h"
 
+#include "Components.h"
+#include "ScriptableEntity.h"
 #include "../Renderer/Renderer.h"
 
 #include <box2d/b2_world.h>
@@ -41,7 +41,7 @@ namespace MyGame
 		([&]()
 			{
 				auto view = src.view<Component>();
-				for (auto srcEntity : view)
+				for (auto& srcEntity : view)
 				{
 					entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
 
@@ -106,10 +106,12 @@ namespace MyGame
 	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
 	{
 		Entity entity = { m_Registry.create(), this };
+
 		entity.AddComponent<IDComponent>(uuid);
 		entity.AddComponent<TransformComponent>();
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = name.empty() ? "Entity" : name;
+
 		return entity;
 	}
 
@@ -227,7 +229,7 @@ namespace MyGame
 
 	}
 
-	void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
+	void Scene::OnUpdateSimulation(Timestep ts, Camera& camera)
 	{
 		// Physics
 		{
@@ -245,9 +247,9 @@ namespace MyGame
 
 				b2Body* body = (b2Body*)rb2d.RuntimeBody;
 				const auto& position = body->GetPosition();
-				transform.Translation.x = position.x;
-				transform.Translation.y = position.y;
-				transform.Rotation.z = body->GetAngle();
+				transform.Translation.m128_f32[0] = position.x;
+				transform.Translation.m128_f32[1] = position.y;
+				transform.Rotation.m128_f32[2] = body->GetAngle();
 			}
 		}
 
@@ -255,7 +257,7 @@ namespace MyGame
 		RenderScene(camera);
 	}
 
-	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
+	void Scene::OnUpdateEditor(Timestep ts, Camera& camera)
 	{
 		// Render
 		RenderScene(camera);
@@ -307,8 +309,8 @@ namespace MyGame
 
 			b2BodyDef bodyDef;
 			bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
-			bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
-			bodyDef.angle = transform.Rotation.z;
+			bodyDef.position.Set(transform.Translation.m128_f32[0], transform.Translation.m128_f32[0]);
+			bodyDef.angle = transform.Rotation.m128_f32[2];
 
 			b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
 			body->SetFixedRotation(rb2d.FixedRotation);
@@ -319,7 +321,7 @@ namespace MyGame
 				auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
 
 				b2PolygonShape boxShape;
-				boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);
+				boxShape.SetAsBox(bc2d.Size.x * transform.Scale.m128_f32[0], bc2d.Size.y * transform.Scale.m128_f32[1]);
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &boxShape;
@@ -336,7 +338,7 @@ namespace MyGame
 
 				b2CircleShape circleShape;
 				circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
-				circleShape.m_radius = transform.Scale.x * cc2d.Radius;
+				circleShape.m_radius = transform.Scale.m128_f32[0] * cc2d.Radius;
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &circleShape;
@@ -355,7 +357,7 @@ namespace MyGame
 		m_PhysicsWorld = nullptr;
 	}
 
-	void Scene::RenderScene(EditorCamera& camera)
+	void Scene::RenderScene(Camera& camera)
 	{
 		Renderer::BeginScene(camera);
 
@@ -391,55 +393,9 @@ namespace MyGame
 	}
 
 	template<>
-	void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
-	{
-	}
-
-	template<>
 	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 	{
 		if (m_ViewportWidth > 0 && m_ViewportHeight > 0)
 			component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
 	}
-
-	template<>
-	void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
-	{
-	}
-
 }

@@ -36,15 +36,21 @@ namespace MyGame
 		void SetRenderTargetFormats(UINT NumRTVs, const D3D12_RT_FORMAT_ARRAY* RTVFormats, DXGI_FORMAT DSVFormat, UINT MsaaCount = 1, UINT MsaaQuality = 0);
 
 		template<typename Blob>
-		void SetVertexShader(Blob* Binary) { m_PSODesc.VS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		void SetVertexShader(Blob* data) { m_PSODesc.VS = { reinterpret_cast<UINT8*>(data->GetBufferPointer()), data->GetBufferSize() }; }
 		template<typename Blob>
-		void SetPixelShader(Blob* Binary) { m_PSODesc.PS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		void SetPixelShader(Blob* data) { m_PSODesc.PS = { reinterpret_cast<UINT8*>(data->GetBufferPointer()), data->GetBufferSize() }; }
 		template<typename Blob>
-		void SetGeometryShader(Blob* Binary) { m_PSODesc.GS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		void SetGeometryShader(Blob* data) { m_PSODesc.GS = { reinterpret_cast<UINT8*>(data->GetBufferPointer()), data->GetBufferSize() }; }
 		template<typename Blob>
-		void SetHullShader(Blob* Binary) { m_PSODesc.HS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		void SetHullShader(Blob* data) { m_PSODesc.HS = { reinterpret_cast<UINT8*>(data->GetBufferPointer()), data->GetBufferSize() }; }
 		template<typename Blob>
-		void SetDomainShader(Blob* Binary) { m_PSODesc.DS = { reinterpret_cast<UINT8*>(Binary->GetBufferPointer()), Binary->GetBufferSize() }; }
+		void SetDomainShader(Blob* data) { m_PSODesc.DS = { reinterpret_cast<UINT8*>(data->GetBufferPointer()), data->GetBufferSize() }; }
+
+		void SetVertexShader(const void* data, size_t size) { m_PSODesc.VS = CD3DX12_SHADER_BYTECODE(const_cast<void*>(data), size); }
+		void SetPixelShader(const void* data, size_t size) { m_PSODesc.PS = CD3DX12_SHADER_BYTECODE(const_cast<void*>(data), size); }
+		void SetGeometryShader(const void* data, size_t size) { m_PSODesc.GS = CD3DX12_SHADER_BYTECODE(const_cast<void*>(data), size); }
+		void SetHullShader(const void* data, size_t size) { m_PSODesc.HS = CD3DX12_SHADER_BYTECODE(const_cast<void*>(data), size); }
+		void SetDomainShader(const void* data, size_t size) { m_PSODesc.DS = CD3DX12_SHADER_BYTECODE(const_cast<void*>(data), size); }
 
 		void Finalize();
 
@@ -54,12 +60,12 @@ namespace MyGame
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC m_PSODesc = {};
 	};
 
-	class ComputePipelineState : public PipelineState
+	class ComputePSO : public PipelineState
 	{
 	public:
-		ComputePipelineState(const std::wstring& Name = L"Unnamed Compute PipelineState") : PipelineState(Name) {}
+		ComputePSO(const std::wstring& Name = L"Unnamed Compute PipelineState") : PipelineState(Name) {}
 
-		void SetComputeShader(ID3DBlob* Binary) { m_PSODesc.CS = CD3DX12_SHADER_BYTECODE(Binary); }
+		void SetComputeShader(ID3DBlob* data) { m_PSODesc.CS = CD3DX12_SHADER_BYTECODE(data); }
 
 	private:
 		friend class CommandContext;

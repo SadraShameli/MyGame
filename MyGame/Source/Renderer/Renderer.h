@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Camera.h"
-#include "TextureManager.h"
+#include "Texture.h"
 
 #include "../Scene/Components.h"
 #include "../DirectX/DirectXImpl.h"
@@ -15,7 +15,7 @@ namespace MyGame
 	public:
 		static void Init();
 		static void OnUpdate();
-		static void OnWindowResize(int width, int height) { DirectXImpl::OnResize(width, height); }
+		static void OnWindowResize(uint32_t width, uint32_t height) { DirectXImpl::OnResize(width, height); }
 
 		static void BeginScene(const BaseCamera& camera, const DirectX::XMMATRIX& transform);
 		static void BeginScene(const Camera& camera);
@@ -24,19 +24,20 @@ namespace MyGame
 		static void Flush();
 
 		static void DrawQuad(const DirectX::XMVECTOR& position, const DirectX::XMVECTOR& size, const DirectX::XMVECTOR& color);
-		static void DrawQuad(const DirectX::XMVECTOR& position, const DirectX::XMVECTOR& size, const TextureRef& texture,
+		static void DrawQuad(const DirectX::XMVECTOR& position, const DirectX::XMVECTOR& size, const Texture& texture,
 			float tilingFactor = 1.0f, const DirectX::XMVECTOR& tintColor = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 		static void DrawQuad(const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& color, int entityID = -1);
-		static void DrawQuad(const DirectX::XMMATRIX& transform, const TextureRef& texture, float tilingFactor = 1.0f,
+		static void DrawQuad(const DirectX::XMMATRIX& transform, const Texture& texture, float tilingFactor = 1.0f,
 			const DirectX::XMVECTOR& tintColor = { 1.0f, 1.0f, 1.0f, 1.0f }, int entityID = -1);
 
 		static void DrawRotatedQuad(const DirectX::XMVECTOR& position, const DirectX::XMVECTOR& size, float rotation, const DirectX::XMVECTOR& color);
-		static void DrawRotatedQuad(const DirectX::XMVECTOR& position, const DirectX::XMVECTOR& size, float rotation, const TextureRef& texture,
+		static void DrawRotatedQuad(const DirectX::XMVECTOR& position, const DirectX::XMVECTOR& size, float rotation, const Texture& texture,
 			float tilingFactor = 1.0f, const DirectX::XMVECTOR& tintColor = { 1.0f, 1.0f, 1.0f, 1.0f });
 
-		static void DrawCube(const DirectX::XMMATRIX& transform, float r, float g, float b, int entityID = -1) { DrawCube(transform, { r, g, b }); };
 		static void DrawCube(const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& color, int entityID = -1);
+		static void DrawCube(const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& color, Texture* texture,
+			float tilingFactor = 1.0f, const DirectX::XMVECTOR& tintColor = { 1.0f, 1.0f, 1.0f, 1.0f }, int entityID = -1);
 
 		static void DrawCircle(const DirectX::XMMATRIX& transform, const DirectX::XMVECTOR& color, float thickness = 1.0f, float fade = 0.005f, int entityID = -1);
 
@@ -55,7 +56,7 @@ namespace MyGame
 		};
 
 		static void ResetStats();
-		static Statistics GetStats();
+		static const Statistics& GetStats();
 
 	private:
 		static void StartBatch();

@@ -8,8 +8,6 @@
 
 namespace MyGame
 {
-	// Command Allocator Pool
-
 	class CommandAllocatorPool
 	{
 	public:
@@ -36,8 +34,6 @@ namespace MyGame
 		};
 		std::queue<AllocatorPool> m_ReadyAllocators;
 	};
-
-	// Command Queue
 
 	class CommandQueue
 	{
@@ -76,8 +72,6 @@ namespace MyGame
 
 		CommandAllocatorPool m_AllocatorPool;
 	};
-
-	// Command List Manager
 
 	class CommandListManager
 	{
@@ -120,8 +114,6 @@ namespace MyGame
 		static inline CommandQueue m_ComputeQueue = D3D12_COMMAND_LIST_TYPE_COMPUTE;
 		static inline CommandQueue m_CopyQueue = D3D12_COMMAND_LIST_TYPE_COPY;
 	};
-
-	// IndirectParameter
 
 	class IndirectParameter
 	{
@@ -173,8 +165,6 @@ namespace MyGame
 	protected:
 		D3D12_INDIRECT_ARGUMENT_DESC m_IndirectParam = {};
 	};
-
-	// Command Signature
 
 	class RootSignature;
 	class CommandSignature

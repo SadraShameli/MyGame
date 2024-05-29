@@ -5,25 +5,24 @@
 
 namespace MyGame
 {
-	namespace DirectXImpl
+	class DirectXImpl
 	{
-		extern void OnInit();
-		extern void OnDestroy();
-		extern void OnResize(int Width, int Height);
+	public:
+		static void Init();
+		static void OnDestroy();
+		static void OnResize(uint32_t width, uint32_t height);
 
-		extern void LoadPipeline();
+		static void LoadPipeline();
+		static void Present();
 
-		extern void Present();
-		extern void CreateRenderTargetViews();
+		static void CreateRenderTargetViews();
+		static void GetHardwareAdapter(IDXGIFactory4*, IDXGIAdapter1**);
 
-		extern void GetHardwareAdapter(IDXGIFactory4*, IDXGIAdapter1**);
+		inline static IDXGISwapChain3* SwapChain = nullptr;
+		inline static ID3D12Device* Device = nullptr;
 
-		inline constexpr UINT FrameCount = 3;
-		inline UINT FrameIndex = 0;
-
-		inline IDXGISwapChain3* SwapChain = nullptr;
-		inline ID3D12Device* Device = nullptr;
-
-		inline ColorBuffer RenderTargets[FrameCount];
+	private:
+		inline static void InitCommonStates();
+		inline static void PreparePresentSDR();
 	};
 }

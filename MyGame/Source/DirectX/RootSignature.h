@@ -116,18 +116,20 @@ namespace MyGame
 			return m_ParamArray.get()[EntryIndex];
 		}
 
-		void InitStaticSampler(UINT Register, const D3D12_SAMPLER_DESC& NonStaticSamplerDesc, D3D12_SHADER_VISIBILITY Visibility);
+		void InitStaticSampler(UINT Register, const D3D12_SAMPLER_DESC& NonStaticSamplerDesc, D3D12_SHADER_VISIBILITY Visibility = D3D12_SHADER_VISIBILITY_ALL);
 		void Finalize(const std::wstring& name, D3D12_ROOT_SIGNATURE_FLAGS Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE);
 		ID3D12RootSignature* GetSignature() const { return m_Signature; }
 
 	private:
+		friend class DynamicDescriptorHeap;
+
 		bool m_Finalized;
 		UINT m_NumParameters;
 		UINT m_NumSamplers;
 		UINT m_NumInitializedStaticSamplers;
-		uint32_t m_DescriptorTableBitMap;
-		uint32_t m_SamplerTableBitMap;
-		uint32_t m_DescriptorTableSize[16];
+		uint32_t m_DescriptorTableBitMap = 0;
+		uint32_t m_SamplerTableBitMap = 0;
+		uint32_t m_DescriptorTableSize[16] = {};
 		std::unique_ptr<RootParameter[]> m_ParamArray;
 		std::unique_ptr<D3D12_STATIC_SAMPLER_DESC[]> m_SamplerArray;
 		ID3D12RootSignature* m_Signature;

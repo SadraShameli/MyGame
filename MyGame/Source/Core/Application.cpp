@@ -21,7 +21,6 @@ namespace MyGame
 		m_Window = std::make_unique<Window>(std::forward<WindowProps>(WindowProps()));
 		Renderer::Init();
 
-		PushLayer(new TriangleLayer());
 		PushOverlay(new ImGuiLayer());
 
 		m_Window->Visibility(true);
@@ -61,11 +60,12 @@ namespace MyGame
 				m_ImGuiLayer->Begin();
 				for (Layer* layer : m_LayerStack)
 				{
-					layer->OnUpdate(m_TimeStep);
 					layer->OnImGuiRender();
+					//layer->OnUpdate(m_TimeStep);
 				}
 				m_ImGuiLayer->End();
 			}
+
 			m_Window->OnUpdate();
 			Renderer::OnUpdate();
 		}

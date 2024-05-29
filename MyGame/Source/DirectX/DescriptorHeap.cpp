@@ -11,129 +11,153 @@ using namespace Microsoft::WRL;
 
 namespace MyGame
 {
-	std::mutex DescriptorAllocator::sm_AllocationMutex;
-	std::vector<ComPtr<ID3D12DescriptorHeap>> DescriptorAllocator::sm_DescriptorHeapPool;
+	// DescriptorAllocator
 
-	void DescriptorAllocator::DestroyAll(void) { sm_DescriptorHeapPool.clear(); }
-
-	ID3D12DescriptorHeap* DescriptorAllocator::RequestNewHeap(D3D12_DESCRIPTOR_HEAP_TYPE Type)
+	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorAllocator::Allocate(uint32_t count)
 	{
-		std::lock_guard<std::mutex> LockGuard(sm_AllocationMutex);
-
-		D3D12_DESCRIPTOR_HEAP_DESC Desc = {};
-		Desc.Type = Type;
-		Desc.NumDescriptors = sm_NumDescriptorsPerHeap;
-		Desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-
-		ComPtr<ID3D12DescriptorHeap> pHeap;
-		ThrowIfFailed(DirectXImpl::Device->CreateDescriptorHeap(&Desc, IID_PPV_ARGS(&pHeap)));
-		sm_DescriptorHeapPool.emplace_back(pHeap);
-		return pHeap.Get();
-	}
-
-	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorAllocator::Allocate(uint32_t Count)
-	{
-		if (m_CurrentHeap == nullptr || m_RemainingFreeHandles < Count)
+		if (!m_CurrentHeap || m_RemainingFreeHandles < count)
 		{
 			m_CurrentHeap = RequestNewHeap(m_Type);
 			m_CurrentHandle = m_CurrentHeap->GetCPUDescriptorHandleForHeapStart();
-			m_RemainingFreeHandles = sm_NumDescriptorsPerHeap;
+			m_RemainingFreeHandles = s_NumDescriptorsPerHeap;
 
-			if (m_DescriptorSize == 0)
+			if (!m_DescriptorSize)
+			{
 				m_DescriptorSize = DirectXImpl::Device->GetDescriptorHandleIncrementSize(m_Type);
+			}
 		}
 
-		D3D12_CPU_DESCRIPTOR_HANDLE ret = m_CurrentHandle;
-		m_CurrentHandle.ptr += Count * m_DescriptorSize;
-		m_RemainingFreeHandles -= Count;
-		return ret;
+		D3D12_CPU_DESCRIPTOR_HANDLE handle = m_CurrentHandle;
+		m_CurrentHandle.ptr += static_cast<size_t>(count) * m_DescriptorSize;
+		m_RemainingFreeHandles -= count;
+		return handle;
 	}
 
-	void DescriptorHeap::Create(const std::wstring& Name, D3D12_DESCRIPTOR_HEAP_TYPE Type, uint32_t MaxCount)
+	ID3D12DescriptorHeap* DescriptorAllocator::RequestNewHeap(D3D12_DESCRIPTOR_HEAP_TYPE type)
 	{
-		m_HeapDesc.Type = Type;
-		m_HeapDesc.NumDescriptors = MaxCount;
+		std::lock_guard<std::mutex> LockGuard(s_Mutex);
+
+		D3D12_DESCRIPTOR_HEAP_DESC desc = {
+			.Type = type,
+			.NumDescriptors = s_NumDescriptorsPerHeap,
+			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+		};
+
+		ComPtr<ID3D12DescriptorHeap> heap;
+		ThrowIfFailed(DirectXImpl::Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap)));
+		s_HeapPool.emplace_back(heap);
+		return heap.Get();
+	}
+
+	void DescriptorAllocator::DestroyAll()
+	{
+		s_HeapPool.clear();
+	}
+
+	// DescriptorHeap
+
+	DescriptorHandle DescriptorHeap::Allocate(uint32_t count)
+	{
+		MYGAME_ASSERT(HasAvailableSpace(count), "Descriptor Heap out of space. Increase heap size.");
+		DescriptorHandle handle = m_NextFreeHandle;
+		m_NextFreeHandle += static_cast<size_t>(count) * m_DescriptorSize;
+		m_NumFreeDescriptors -= count;
+		return handle;
+	}
+
+	void DescriptorHeap::Create(const std::wstring& name, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t maxCount)
+	{
+		m_HeapDesc.Type = type;
+		m_HeapDesc.NumDescriptors = maxCount;
 		m_HeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		m_HeapDesc.NodeMask = 1;
+
 		ThrowIfFailed(DirectXImpl::Device->CreateDescriptorHeap(&m_HeapDesc, IID_PPV_ARGS(m_Heap.ReleaseAndGetAddressOf())));
-		NAME_D3D12_OBJ_STR(m_Heap, Name);
+		NAME_D3D12_OBJ_STR(m_Heap, name);
 
 		m_DescriptorSize = DirectXImpl::Device->GetDescriptorHandleIncrementSize(m_HeapDesc.Type);
-		m_NumFreeDescriptors = m_HeapDesc.NumDescriptors;
 		m_FirstHandle = DescriptorHandle(m_Heap->GetCPUDescriptorHandleForHeapStart(), m_Heap->GetGPUDescriptorHandleForHeapStart());
 		m_NextFreeHandle = m_FirstHandle;
+		m_NumFreeDescriptors = m_HeapDesc.NumDescriptors;
 	}
 
-	// Descriptor Handle
-
-	DescriptorHandle DescriptorHeap::Alloc(uint32_t Count)
+	bool DescriptorHeap::ValidateHandle(const DescriptorHandle& handle)
 	{
-		MYGAME_ASSERT(HasAvailableSpace(Count), "Descriptor Heap out of space.  Increase heap size.");
-		DescriptorHandle ret = m_NextFreeHandle;
-		m_NextFreeHandle += Count * m_DescriptorSize;
-		m_NumFreeDescriptors -= Count;
-		return ret;
-	}
-
-	bool DescriptorHeap::ValidateHandle(DescriptorHandle& DHandle)
-	{
-		if (DHandle.GetCpuPtr() < m_FirstHandle.GetCpuPtr() || DHandle.GetCpuPtr() >= m_FirstHandle.GetCpuPtr() + m_HeapDesc.NumDescriptors * m_DescriptorSize)
+		if (handle.GetCpuPtr() < m_FirstHandle.GetCpuPtr() || handle.GetCpuPtr() >= m_FirstHandle.GetCpuPtr() + static_cast<uint64_t>(m_HeapDesc.NumDescriptors) * m_DescriptorSize)
 			return false;
-
-		if (DHandle.GetGpuPtr() - m_FirstHandle.GetGpuPtr() != DHandle.GetCpuPtr() - m_FirstHandle.GetCpuPtr())
+		if (handle.GetGpuPtr() - m_FirstHandle.GetGpuPtr() != handle.GetCpuPtr() - m_FirstHandle.GetCpuPtr())
 			return false;
 		return true;
 	}
 
 	// Dynamic Descriptor Heap
 
-	ID3D12DescriptorHeap* DynamicDescriptorHeap::RequestDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE HeapType)
+	DynamicDescriptorHeap::DynamicDescriptorHeap(CommandContext& ctx, D3D12_DESCRIPTOR_HEAP_TYPE heapType)
+		: m_OwningContext(ctx), m_DescriptorType(heapType)
 	{
-		std::lock_guard<std::mutex> LockGuard(sm_Mutex);
-		uint32_t idx = HeapType == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER ? 1 : 0;
+		m_CurrentHeapPtr = nullptr;
+		m_CurrentOffset = 0;
+		m_DescriptorSize = DirectXImpl::Device->GetDescriptorHandleIncrementSize(heapType);
+	}
 
-		while (!sm_RetiredDescriptorHeaps[idx].empty() && CommandListManager::IsFenceComplete(sm_RetiredDescriptorHeaps[idx].front().first))
+	void DynamicDescriptorHeap::DestroyAll()
+	{
+		for (auto& heap : s_HeapPool)
+			heap.clear();
+	}
+
+	ID3D12DescriptorHeap* DynamicDescriptorHeap::RequestDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType)
+	{
+		std::lock_guard<std::mutex> LockGuard(m_Mutex);
+		uint32_t idx = heapType == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER ? 1 : 0;
+
+		while (!s_RetiredHeaps[idx].empty() && CommandListManager::IsFenceComplete(s_RetiredHeaps[idx].front().first))
 		{
-			sm_AvailableDescriptorHeaps[idx].push(sm_RetiredDescriptorHeaps[idx].front().second);
-			sm_RetiredDescriptorHeaps[idx].pop();
+			s_AvailableHeaps[idx].push(s_RetiredHeaps[idx].front().second);
+			s_RetiredHeaps[idx].pop();
 		}
 
-		if (!sm_AvailableDescriptorHeaps[idx].empty())
+		if (!s_AvailableHeaps[idx].empty())
 		{
-			ID3D12DescriptorHeap* HeapPtr = sm_AvailableDescriptorHeaps[idx].front();
-			sm_AvailableDescriptorHeaps[idx].pop();
-			return HeapPtr;
+			ID3D12DescriptorHeap* ptr = s_AvailableHeaps[idx].front();
+			s_AvailableHeaps[idx].pop();
+			return ptr;
 		}
 		else
 		{
-			D3D12_DESCRIPTOR_HEAP_DESC HeapDesc = {};
-			HeapDesc.Type = HeapType;
-			HeapDesc.NumDescriptors = kNumDescriptorsPerHeap;
-			HeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> HeapPtr;
+			D3D12_DESCRIPTOR_HEAP_DESC desc = {
+				.Type = heapType,
+				.NumDescriptors = s_NumDescriptorsPerHeap,
+				.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+				.NodeMask = 1
+			};
 
-			ThrowIfFailed(DirectXImpl::Device->CreateDescriptorHeap(&HeapDesc, IID_PPV_ARGS(&HeapPtr)));
-			sm_DescriptorHeapPool[idx].emplace_back(HeapPtr);
-			return HeapPtr.Get();
+			ComPtr<ID3D12DescriptorHeap> ptr;
+			ThrowIfFailed(DirectXImpl::Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&ptr)));
+			s_HeapPool[idx].emplace_back(ptr);
+			return ptr.Get();
 		}
 	}
 
-	void DynamicDescriptorHeap::DiscardDescriptorHeaps(D3D12_DESCRIPTOR_HEAP_TYPE HeapType, uint64_t FenceValue, const std::vector<ID3D12DescriptorHeap*>& UsedHeaps)
+	void DynamicDescriptorHeap::DiscardDescriptorHeaps(D3D12_DESCRIPTOR_HEAP_TYPE heapType, uint64_t fenceValue, const std::vector<ID3D12DescriptorHeap*>& usedHeaps)
 	{
-		uint32_t idx = HeapType == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER ? 1 : 0;
-		std::lock_guard<std::mutex> LockGuard(sm_Mutex);
-		for (auto iter = UsedHeaps.begin(); iter != UsedHeaps.end(); ++iter)
-			sm_RetiredDescriptorHeaps[idx].push(std::make_pair(FenceValue, *iter));
+		std::lock_guard<std::mutex> LockGuard(m_Mutex);
+		uint32_t idx = heapType == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER ? 1 : 0;
+
+		for (auto iter = usedHeaps.begin(); iter != usedHeaps.end(); ++iter)
+			s_RetiredHeaps[idx].push(std::make_pair(fenceValue, *iter));
 	}
 
 	void DynamicDescriptorHeap::RetireCurrentHeap(void)
 	{
-		if (m_CurrentOffset == 0)
+		if (!m_CurrentOffset)
 		{
 			MYGAME_ASSERT(!m_CurrentHeapPtr);
 			return;
 		}
 
-		m_RetiredHeaps.push_back(m_CurrentHeapPtr);
+		MYGAME_ASSERT(m_CurrentHeapPtr);
+		m_RetiredHeaps.emplace_back(m_CurrentHeapPtr);
 		m_CurrentHeapPtr = nullptr;
 		m_CurrentOffset = 0;
 	}
@@ -142,13 +166,6 @@ namespace MyGame
 	{
 		DiscardDescriptorHeaps(m_DescriptorType, fenceValue, m_RetiredHeaps);
 		m_RetiredHeaps.clear();
-	}
-
-	DynamicDescriptorHeap::DynamicDescriptorHeap(CommandContext& OwningContext, D3D12_DESCRIPTOR_HEAP_TYPE HeapType) : m_OwningContext(OwningContext), m_DescriptorType(HeapType)
-	{
-		m_CurrentHeapPtr = nullptr;
-		m_CurrentOffset = 0;
-		m_DescriptorSize = DirectXImpl::Device->GetDescriptorHandleIncrementSize(HeapType);
 	}
 
 	void DynamicDescriptorHeap::CleanupUsedHeaps(uint64_t fenceValue)
@@ -176,15 +193,15 @@ namespace MyGame
 	uint32_t DynamicDescriptorHeap::DescriptorHandleCache::ComputeStagedSize()
 	{
 		uint32_t NeededSpace = 0;
-		uint32_t RootIndex = 0;
+		uint32_t rootIndex = 0;
 		uint32_t StaleParams = m_StaleRootParamsBitMap;
 
-		while (_BitScanForward((unsigned long*)&RootIndex, StaleParams))
+		while (_BitScanForward((unsigned long*)&rootIndex, StaleParams))
 		{
-			StaleParams ^= (1 << RootIndex);
+			StaleParams ^= (1 << rootIndex);
 
 			uint32_t MaxSetHandle = 0;
-			MYGAME_ASSERT(TRUE == _BitScanReverse((unsigned long*)&MaxSetHandle, m_RootDescriptorTable[RootIndex].AssignedHandlesBitMap),
+			MYGAME_ASSERT(TRUE == _BitScanReverse((unsigned long*)&MaxSetHandle, m_RootDescriptorTable[rootIndex].AssignedHandlesBitMap),
 				"Root entry marked as stale but has no stale descriptors");
 			NeededSpace += MaxSetHandle + 1;
 		}
@@ -192,24 +209,24 @@ namespace MyGame
 	}
 
 	void DynamicDescriptorHeap::DescriptorHandleCache::CopyAndBindStaleTables(
-		D3D12_DESCRIPTOR_HEAP_TYPE Type, uint32_t DescriptorSize,
+		D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t DescriptorSize,
 		DescriptorHandle DestHandleStart, ID3D12GraphicsCommandList* CmdList,
-		void (STDMETHODCALLTYPE ID3D12GraphicsCommandList::* SetFunc)(UINT, D3D12_GPU_DESCRIPTOR_HANDLE))
+		void (STDMETHODCALLTYPE ID3D12GraphicsCommandList::* SetFunc)(uint32_t, D3D12_GPU_DESCRIPTOR_HANDLE))
 	{
 		uint32_t StaleParamCount = 0;
-		uint32_t TableSize[DescriptorHandleCache::kMaxNumDescriptorTables] = {};
-		uint32_t RootIndices[DescriptorHandleCache::kMaxNumDescriptorTables] = {};
+		uint32_t TableSize[DescriptorHandleCache::s_MaxNumDescriptorTables] = {};
+		uint32_t RootIndices[DescriptorHandleCache::s_MaxNumDescriptorTables] = {};
 		uint32_t NeededSpace = 0;
-		uint32_t RootIndex = 0;
+		uint32_t rootIndex = 0;
 
 		uint32_t StaleParams = m_StaleRootParamsBitMap;
-		while (_BitScanForward((unsigned long*)&RootIndex, StaleParams))
+		while (_BitScanForward((unsigned long*)&rootIndex, StaleParams))
 		{
-			RootIndices[StaleParamCount] = RootIndex;
-			StaleParams ^= (1 << RootIndex);
+			RootIndices[StaleParamCount] = rootIndex;
+			StaleParams ^= (1 << rootIndex);
 
 			uint32_t MaxSetHandle = 0;
-			MYGAME_ASSERT(TRUE == _BitScanReverse((unsigned long*)&MaxSetHandle, m_RootDescriptorTable[RootIndex].AssignedHandlesBitMap),
+			MYGAME_ASSERT(TRUE == _BitScanReverse((unsigned long*)&MaxSetHandle, m_RootDescriptorTable[rootIndex].AssignedHandlesBitMap),
 				"Root entry marked as stale but has no stale descriptors");
 
 			NeededSpace += MaxSetHandle + 1;
@@ -218,40 +235,40 @@ namespace MyGame
 			++StaleParamCount;
 		}
 
-		MYGAME_ASSERT(StaleParamCount <= DescriptorHandleCache::kMaxNumDescriptorTables,
+		MYGAME_ASSERT(StaleParamCount <= DescriptorHandleCache::s_MaxNumDescriptorTables,
 			"We're only equipped to handle so many descriptor tables");
 
 		m_StaleRootParamsBitMap = 0;
 
 		static const uint32_t kMaxDescriptorsPerCopy = 16;
-		UINT NumDestDescriptorRanges = 0;
+		uint32_t NumDestDescriptorRanges = 0;
 		D3D12_CPU_DESCRIPTOR_HANDLE pDestDescriptorRangeStarts[kMaxDescriptorsPerCopy] = {};
-		UINT pDestDescriptorRangeSizes[kMaxDescriptorsPerCopy] = {};
+		uint32_t pDestDescriptorRangeSizes[kMaxDescriptorsPerCopy] = {};
 
-		UINT NumSrcDescriptorRanges = 0;
+		uint32_t NumSrcDescriptorRanges = 0;
 		D3D12_CPU_DESCRIPTOR_HANDLE pSrcDescriptorRangeStarts[kMaxDescriptorsPerCopy] = {};
-		UINT pSrcDescriptorRangeSizes[kMaxDescriptorsPerCopy] = {};
+		uint32_t pSrcDescriptorRangeSizes[kMaxDescriptorsPerCopy] = {};
 
 		for (uint32_t i = 0; i < StaleParamCount; ++i)
 		{
-			RootIndex = RootIndices[i];
-			(CmdList->*SetFunc)(RootIndex, DestHandleStart);
+			rootIndex = RootIndices[i];
+			(CmdList->*SetFunc)(rootIndex, DestHandleStart);
 
-			DescriptorTableCache& RootDescTable = m_RootDescriptorTable[RootIndex];
+			DescriptorTableCache& RootDescTable = m_RootDescriptorTable[rootIndex];
 
 			D3D12_CPU_DESCRIPTOR_HANDLE* SrcHandles = RootDescTable.TableStart;
 			uint64_t SetHandles = (uint64_t)RootDescTable.AssignedHandlesBitMap;
 			D3D12_CPU_DESCRIPTOR_HANDLE CurDest = DestHandleStart;
 			DestHandleStart += TableSize[i] * DescriptorSize;
 
-			unsigned long SkipCount;
+			DWORD SkipCount;
 			while (_BitScanForward64(&SkipCount, SetHandles))
 			{
 				SetHandles >>= SkipCount;
 				SrcHandles += SkipCount;
 				CurDest.ptr += SkipCount * DescriptorSize;
 
-				unsigned long DescriptorCount;
+				DWORD DescriptorCount;
 				_BitScanForward64(&DescriptorCount, ~SetHandles);
 				SetHandles >>= DescriptorCount;
 
@@ -259,7 +276,7 @@ namespace MyGame
 				{
 					DirectXImpl::Device->CopyDescriptors(
 						NumDestDescriptorRanges, pDestDescriptorRangeStarts, pDestDescriptorRangeSizes,
-						NumSrcDescriptorRanges, pSrcDescriptorRangeStarts, pSrcDescriptorRangeSizes, Type);
+						NumSrcDescriptorRanges, pSrcDescriptorRangeStarts, pSrcDescriptorRangeSizes, type);
 
 					NumSrcDescriptorRanges = 0;
 					NumDestDescriptorRanges = 0;
@@ -283,11 +300,11 @@ namespace MyGame
 
 		DirectXImpl::Device->CopyDescriptors(
 			NumDestDescriptorRanges, pDestDescriptorRangeStarts, pDestDescriptorRangeSizes,
-			NumSrcDescriptorRanges, pSrcDescriptorRangeStarts, pSrcDescriptorRangeSizes, Type);
+			NumSrcDescriptorRanges, pSrcDescriptorRangeStarts, pSrcDescriptorRangeSizes, type);
 	}
 
 	void DynamicDescriptorHeap::CopyAndBindStagedTables(DescriptorHandleCache& HandleCache, ID3D12GraphicsCommandList* CmdList,
-		void (STDMETHODCALLTYPE ID3D12GraphicsCommandList::* SetFunc)(UINT, D3D12_GPU_DESCRIPTOR_HANDLE))
+		void (STDMETHODCALLTYPE ID3D12GraphicsCommandList::* SetFunc)(uint32_t, D3D12_GPU_DESCRIPTOR_HANDLE))
 	{
 		uint32_t NeededSize = HandleCache.ComputeStagedSize();
 		if (!HasSpace(NeededSize))
@@ -327,45 +344,55 @@ namespace MyGame
 		m_StaleRootParamsBitMap = 0;
 
 		unsigned long TableParams = m_RootDescriptorTablesBitMap;
-		unsigned long RootIndex = 0;
-		while (_BitScanForward(&RootIndex, TableParams))
+		unsigned long rootIndex = 0;
+		while (_BitScanForward(&rootIndex, TableParams))
 		{
-			TableParams ^= (1 << RootIndex);
-			if (m_RootDescriptorTable[RootIndex].AssignedHandlesBitMap != 0)
-				m_StaleRootParamsBitMap |= (1 << RootIndex);
+			TableParams ^= (1 << rootIndex);
+			if (m_RootDescriptorTable[rootIndex].AssignedHandlesBitMap != 0)
+				m_StaleRootParamsBitMap |= (1 << rootIndex);
 		}
 	}
 
-	void DynamicDescriptorHeap::DescriptorHandleCache::StageDescriptorHandles(UINT RootIndex, UINT Offset, UINT NumHandles, const D3D12_CPU_DESCRIPTOR_HANDLE Handles[])
+	void DynamicDescriptorHeap::DescriptorHandleCache::StageDescriptorHandles(uint32_t rootIndex, uint32_t offset, uint32_t numHandles, const D3D12_CPU_DESCRIPTOR_HANDLE* handles)
 	{
-		MYGAME_ASSERT(((1 << RootIndex) & m_RootDescriptorTablesBitMap) != 0, "Root parameter is not a CBV_SRV_UAV descriptor table");
-		MYGAME_ASSERT(Offset + NumHandles <= m_RootDescriptorTable[RootIndex].TableSize);
+		MYGAME_ASSERT(((1 << rootIndex) & m_RootDescriptorTablesBitMap) != 0, "Root parameter is not a CBV_SRV_UAV descriptor table");
+		MYGAME_ASSERT(offset + numHandles <= m_RootDescriptorTable[rootIndex].TableSize);
 
-		DescriptorTableCache& TableCache = m_RootDescriptorTable[RootIndex];
-		D3D12_CPU_DESCRIPTOR_HANDLE* CopyDest = TableCache.TableStart + Offset;
-		for (UINT i = 0; i < NumHandles; ++i)
-			CopyDest[i] = Handles[i];
-		TableCache.AssignedHandlesBitMap |= ((1 << NumHandles) - 1) << Offset;
-		m_StaleRootParamsBitMap |= (1 << RootIndex);
+		DescriptorTableCache& TableCache = m_RootDescriptorTable[rootIndex];
+		D3D12_CPU_DESCRIPTOR_HANDLE* CopyDest = TableCache.TableStart + offset;
+
+		for (uint32_t i = 0; i < numHandles; ++i)
+		{
+			CopyDest[i] = handles[i];
+		}
+
+		TableCache.AssignedHandlesBitMap |= ((1 << numHandles) - 1) << offset;
+		m_StaleRootParamsBitMap |= (1 << rootIndex);
 	}
 
-	void DynamicDescriptorHeap::DescriptorHandleCache::ParseRootSignature(D3D12_DESCRIPTOR_HEAP_TYPE Type, const RootSignature& RootSig)
+	void DynamicDescriptorHeap::DescriptorHandleCache::ParseRootSignature(D3D12_DESCRIPTOR_HEAP_TYPE type, const RootSignature& rootSig)
 	{
-		UINT CurrentOffset = 0;
+		uint32_t CurrentOffset = 0;
 		m_StaleRootParamsBitMap = 0;
+		m_RootDescriptorTablesBitMap = (type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER ?
+			rootSig.m_SamplerTableBitMap : rootSig.m_DescriptorTableBitMap);
 
-		unsigned long TableParams = m_RootDescriptorTablesBitMap;
-		unsigned long RootIndex = 0;
-		while (_BitScanForward(&RootIndex, TableParams))
+		uint32_t TableParams = m_RootDescriptorTablesBitMap;
+		DWORD rootIndex;
+		while (_BitScanForward(&rootIndex, TableParams))
 		{
-			TableParams ^= (1 << RootIndex);
+			TableParams ^= (1 << rootIndex);
 
-			DescriptorTableCache& RootDescriptorTable = m_RootDescriptorTable[RootIndex];
+			auto TableSize = rootSig.m_DescriptorTableSize[rootIndex];
+
+			DescriptorTableCache& RootDescriptorTable = m_RootDescriptorTable[rootIndex];
 			RootDescriptorTable.AssignedHandlesBitMap = 0;
 			RootDescriptorTable.TableStart = m_HandleCache + CurrentOffset;
+			RootDescriptorTable.TableSize = TableSize;
+			CurrentOffset += TableSize;
 		}
 
 		m_MaxCachedDescriptors = CurrentOffset;
-		MYGAME_ASSERT(m_MaxCachedDescriptors <= kMaxNumDescriptors, "Exceeded user-supplied maximum cache size");
+		MYGAME_ASSERT(m_MaxCachedDescriptors <= s_MaxNumDescriptors, "Exceeded user-supplied maximum cache size");
 	}
 }

@@ -70,15 +70,17 @@ project "MyGame"
 	filter "configurations:Debug"
 	runtime "Debug"
 		symbols "on"
+
 		defines 
 		{
 			"MYGAME_DEBUG",
-			"MYGAME_USE_DXCOMPILER"
+			"_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING"
 		}		
 
 	filter "configurations:Release"
 		runtime "Release"
 		optimize "Speed"	
+
 		buildoptions 
 		{ 
 			"/Ox",
@@ -88,6 +90,7 @@ project "MyGame"
 			"/GT",
 			"/Oy-"
 		}	
+
 		flags
 		{
 			"LinkTimeOptimization"

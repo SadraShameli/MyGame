@@ -60,7 +60,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>CommonHeaders.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MYGAME_DEBUG;MYGAME_USE_DXCOMPILER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MYGAME_DEBUG;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Source;Vendor\Box2D\include;Vendor\ImGui;Vendor\ImGui\.github;Vendor\ImGui\backends;Vendor\ImGui\docs;Vendor\ImGui\examples;Vendor\ImGui\misc;Vendor\ImGui\.github\workflows;Vendor\ImGui\backends\vulkan;Vendor\ImGui\examples\example_allegro5;Vendor\ImGui\examples\example_android_opengl3;Vendor\ImGui\examples\example_apple_metal;Vendor\ImGui\examples\example_apple_opengl2;Vendor\ImGui\examples\example_emscripten_opengl3;Vendor\ImGui\examples\example_emscripten_wgpu;Vendor\ImGui\examples\example_glfw_metal;Vendor\ImGui\examples\example_glfw_opengl2;Vendor\ImGui\examples\example_glfw_opengl3;Vendor\ImGui\examples\example_glfw_vulkan;Vendor\ImGui\examples\example_glut_opengl2;Vendor\ImGui\examples\example_null;Vendor\ImGui\examples\example_sdl_directx11;Vendor\ImGui\examples\example_sdl_metal;Vendor\ImGui\examples\example_sdl_opengl2;Vendor\ImGui\examples\example_sdl_opengl3;Vendor\ImGui\examples\example_sdl_sdlrenderer;Vendor\ImGui\examples\example_sdl_vulkan;Vendor\ImGui\examples\example_win32_directx10;Vendor\ImGui\examples\example_win32_directx11;Vendor\ImGui\examples\example_win32_directx12;Vendor\ImGui\examples\example_win32_directx9;Vendor\ImGui\examples\libs;Vendor\ImGui\examples\example_android_opengl3\android;Vendor\ImGui\examples\example_android_opengl3\android\app;Vendor\ImGui\examples\example_android_opengl3\android\app\src;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main;Vendor\ImGui\examples\example_android_opengl3\android\app\src\main\java;Vendor\ImGui\examples\example_apple_metal\example_apple_metal.xcodeproj;Vendor\ImGui\examples\example_apple_metal\iOS;Vendor\ImGui\examples\example_apple_metal\macOS;Vendor\ImGui\examples\example_apple_opengl2\example_apple_opengl2.xcodeproj;Vendor\ImGui\examples\example_emscripten_wgpu\web;Vendor\ImGui\examples\libs\glfw;Vendor\ImGui\examples\libs\usynergy;Vendor\ImGui\examples\libs\glfw\include;Vendor\ImGui\examples\libs\glfw\lib-vc2010-32;Vendor\ImGui\examples\libs\glfw\lib-vc2010-64;Vendor\ImGui\examples\libs\glfw\include\GLFW;Vendor\ImGui\misc\cpp;Vendor\ImGui\misc\debuggers;Vendor\ImGui\misc\fonts;Vendor\ImGui\misc\freetype;Vendor\ImGui\misc\single_file;Vendor\SpdLog\include;Vendor\DirectXTK12\Inc;Vendor\DirectXTK12\Src;Vendor\D3D12MemoryAlloc\include;Vendor\entt\single_include\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -119,6 +119,7 @@
     <ClInclude Include="Source\DirectX\DirectXHelpers.h" />
     <ClInclude Include="Source\DirectX\DirectXImpl.h" />
     <ClInclude Include="Source\DirectX\GpuBuffer.h" />
+    <ClInclude Include="Source\DirectX\GraphicsCommon.h" />
     <ClInclude Include="Source\DirectX\LinearAllocator.h" />
     <ClInclude Include="Source\DirectX\PipelineState.h" />
     <ClInclude Include="Source\DirectX\RootSignature.h" />
@@ -136,10 +137,14 @@
     <ClInclude Include="Source\Renderer\Shader.h" />
     <ClInclude Include="Source\Renderer\Texture.h" />
     <ClInclude Include="Source\Renderer\TextureManager.h" />
-    <ClInclude Include="Source\Scene\Components.h" />
+    <ClInclude Include="Source\Shaders\BufferCopyPS.h" />
+    <ClInclude Include="Source\Shaders\PresentHDRPS.h" />
+    <ClInclude Include="Source\Shaders\PresentSDRPS.h" />
+    <ClInclude Include="Source\Shaders\ScreenQuadPresentVS.h" />
     <ClInclude Include="Source\Utilities\CommonMath.h" />
     <ClInclude Include="Source\Utilities\FileManager.h" />
     <ClInclude Include="Source\Utilities\Hash.h" />
+    <ClInclude Include="Source\Utilities\UUID.h" />
     <ClInclude Include="Source\Utilities\Utility.h" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +162,7 @@
     <ClCompile Include="Source\DirectX\DescriptorHeap.cpp" />
     <ClCompile Include="Source\DirectX\DirectXImpl.cpp" />
     <ClCompile Include="Source\DirectX\GpuBuffer.cpp" />
+    <ClCompile Include="Source\DirectX\GraphicsCommon.cpp" />
     <ClCompile Include="Source\DirectX\LinearAllocator.cpp" />
     <ClCompile Include="Source\DirectX\PipelineState.cpp" />
     <ClCompile Include="Source\DirectX\RootSignature.cpp" />
@@ -168,6 +174,7 @@
     <ClCompile Include="Source\Renderer\Shader.cpp" />
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\Renderer\TextureManager.cpp" />
+    <ClCompile Include="Source\Utilities\UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Box2D.vcxproj">

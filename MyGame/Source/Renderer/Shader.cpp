@@ -14,22 +14,22 @@ namespace MyGame
 {
 	HRESULT Shader::CompileVertexShader(IDxcBlob** Blob, const std::wstring& FilePath)
 	{
-		return CompileFromFile(Blob, FilePath, L"vs_6_2");
+		return CompileFromFile(Blob, FilePath, L"vs_6_2", L"VSMain");
 	}
 
 	HRESULT Shader::CompilePixelShader(IDxcBlob** Blob, const std::wstring& FilePath)
 	{
-		return CompileFromFile(Blob, FilePath, L"ps_6_2");
+		return CompileFromFile(Blob, FilePath, L"ps_6_2", L"PSMain");
 	}
 
 	HRESULT Shader::D3CompileVertexShader(ID3DBlob** Blob, const std::wstring& FilePath)
 	{
-		return D3CompileFromFile(Blob, FilePath, "vs_5_1");
+		return D3CompileFromFile(Blob, FilePath, "vs_5_1", "VSMain");
 	}
 
 	HRESULT Shader::D3CompilePixelShader(ID3DBlob** Blob, const std::wstring& FilePath)
 	{
-		return D3CompileFromFile(Blob, FilePath, "ps_5_1");
+		return D3CompileFromFile(Blob, FilePath, "ps_5_1", "PSMain");
 	}
 
 	HRESULT Shader::CompileFromFile(IDxcBlob** Blob, const std::wstring& FilePath, const std::wstring& ShaderProfile, const std::wstring& MainEntry)
@@ -58,7 +58,7 @@ namespace MyGame
 		{
 			ComPtr<IDxcBlobEncoding> errorsBlob;
 			if (SUCCEEDED(result->GetErrorBuffer(&errorsBlob)) && errorsBlob)
-				MYGAME_ERROR("Shader: Failed to Compile : {0}", (const char*)errorsBlob->GetBufferPointer());
+				MYGAME_ERROR("Shader: Failed to Compile: {0}", (const char*)errorsBlob->GetBufferPointer());
 			return hr;
 		}
 		result->GetResult(Blob);
@@ -86,7 +86,7 @@ namespace MyGame
 		if (FAILED(hr = D3DCompileFromFile(FilePath.c_str(), nullptr, nullptr, MainEntry.c_str(), ShaderProfile.c_str(), compileFlags, 0, Blob, &errorMsg)))
 		{
 			if (errorMsg)
-				MYGAME_ERROR("Shader: Failed to Compile : {0}", (const char*)errorMsg->GetBufferPointer());
+				MYGAME_ERROR("Shader: Failed to Compile: {0}", (const char*)errorMsg->GetBufferPointer());
 		}
 
 		MYGAME_INFO("Shader: Compiling done in {0} milliseconds", compileTime.ElapsedMillis());
